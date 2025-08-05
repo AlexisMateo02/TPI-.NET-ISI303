@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "APIWeb+WindowsForms",
+    "Projects": [
+      {
+        "Path": "APIWeb\\APIWeb.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Academia.ClienteServicios\\Academia.ClienteServicios.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
