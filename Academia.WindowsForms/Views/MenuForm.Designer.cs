@@ -1,4 +1,4 @@
-﻿namespace Academia.ClienteServicios.Views
+﻿namespace Academia.WindowsForms.Views
 {
     partial class MenuForm
     {

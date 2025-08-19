@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using APIWeb.Context;
+using Academia.Entidades;
+using DTOs;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using APIWeb.Context;
-using APIWeb.Models;
-using APIWeb.DTOs;
 
 namespace APIWeb.Controllers
 {

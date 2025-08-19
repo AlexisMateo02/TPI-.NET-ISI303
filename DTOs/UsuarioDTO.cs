@@ -1,4 +1,4 @@
-﻿namespace APIWeb.DTOs
+﻿namespace DTOs
 {
     public class UsuarioDTO
     {

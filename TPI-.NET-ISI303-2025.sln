@@ -7,9 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIWeb", "APIWeb\APIWeb.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Academia.Negocio", "Academia.Negocio\Academia.Negocio.csproj", "{8455CA20-B524-4F2D-B4C0-EE6FB706D529}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Academia.ClienteServicios", "Academia.ClienteServicios\Academia.ClienteServicios.csproj", "{A4432C7B-A458-4CDF-9B5E-08154B0D47CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Academia.WindowsForms", "Academia.WindowsForms\Academia.WindowsForms.csproj", "{A4432C7B-A458-4CDF-9B5E-08154B0D47CE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Academia.Entidades", "Academia.Entidades\Academia.Entidades.csproj", "{4F8D1C3E-4952-49E7-8871-A01E2A039673}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOs", "DTOs\DTOs.csproj", "{C8F2D382-8818-4869-BCDD-0C23C5391333}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{4F8D1C3E-4952-49E7-8871-A01E2A039673}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F8D1C3E-4952-49E7-8871-A01E2A039673}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F8D1C3E-4952-49E7-8871-A01E2A039673}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8F2D382-8818-4869-BCDD-0C23C5391333}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8F2D382-8818-4869-BCDD-0C23C5391333}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8F2D382-8818-4869-BCDD-0C23C5391333}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8F2D382-8818-4869-BCDD-0C23C5391333}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

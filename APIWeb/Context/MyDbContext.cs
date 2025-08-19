@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using APIWeb.Models;
+using Academia.Entidades;
 
 namespace APIWeb.Context
 {

@@ -1,6 +1,6 @@
 ﻿using APIWeb.Context;
-using APIWeb.Models;
-using APIWeb.DTOs;
+using Academia.Entidades;
+using DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

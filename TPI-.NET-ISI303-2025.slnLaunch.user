@@ -7,7 +7,7 @@
         "Action": "Start"
       },
       {
-        "Path": "Academia.ClienteServicios\\Academia.ClienteServicios.csproj",
+        "Path": "Academia.WindowsForms\\Academia.WindowsForms.csproj",
         "Action": "Start"
       }
     ]

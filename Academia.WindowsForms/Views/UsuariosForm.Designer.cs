@@ -1,4 +1,4 @@
-﻿namespace Academia.ClienteServicios
+﻿namespace Academia.WindowsForms.Views
 {
     partial class UsuariosForm
     {

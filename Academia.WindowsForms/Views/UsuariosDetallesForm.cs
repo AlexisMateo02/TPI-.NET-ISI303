@@ -1,7 +1,7 @@
 ﻿using Academia.Entidades;
 using System.Windows.Forms;
 
-namespace Academia.ClienteServicios.Views
+namespace Academia.WindowsForms.Views
 {
     public partial class UsuariosDetallesForm : Form
     {
