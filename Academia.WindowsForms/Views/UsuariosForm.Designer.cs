@@ -29,14 +29,11 @@
         private void InitializeComponent()
         {
             dgvUsuarios = new DataGridView();
-            Id = new DataGridViewTextBoxColumn();
-            Nombre = new DataGridViewTextBoxColumn();
-            Clave = new DataGridViewTextBoxColumn();
-            Habilitado = new DataGridViewTextBoxColumn();
-            button1 = new Button();
-            button2 = new Button();
+            buttonListar = new Button();
+            buttonEliminar = new Button();
             buttonAgregar = new Button();
             buttonModificar = new Button();
+            buscarTextBox = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dgvUsuarios).BeginInit();
             SuspendLayout();
             // 
@@ -44,61 +41,37 @@
             // 
             dgvUsuarios.AllowUserToAddRows = false;
             dgvUsuarios.AllowUserToDeleteRows = false;
+            dgvUsuarios.AllowUserToOrderColumns = true;
             dgvUsuarios.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvUsuarios.Columns.AddRange(new DataGridViewColumn[] { Id, Nombre, Clave, Habilitado });
-            dgvUsuarios.Location = new Point(89, 33);
+            dgvUsuarios.Location = new Point(25, 58);
             dgvUsuarios.Name = "dgvUsuarios";
             dgvUsuarios.ReadOnly = true;
-            dgvUsuarios.Size = new Size(495, 277);
+            dgvUsuarios.Size = new Size(692, 277);
             dgvUsuarios.TabIndex = 0;
             // 
-            // Id
+            // buttonListar
             // 
-            Id.HeaderText = "Id";
-            Id.Name = "Id";
-            Id.ReadOnly = true;
+            buttonListar.Location = new Point(627, 19);
+            buttonListar.Name = "buttonListar";
+            buttonListar.Size = new Size(81, 23);
+            buttonListar.TabIndex = 1;
+            buttonListar.Text = "Buscar";
+            buttonListar.UseVisualStyleBackColor = true;
+            buttonListar.Click += buttonListar_Click;
             // 
-            // Nombre
+            // buttonEliminar
             // 
-            Nombre.HeaderText = "Nombre";
-            Nombre.Name = "Nombre";
-            Nombre.ReadOnly = true;
-            // 
-            // Clave
-            // 
-            Clave.HeaderText = "Clave";
-            Clave.Name = "Clave";
-            Clave.ReadOnly = true;
-            // 
-            // Habilitado
-            // 
-            Habilitado.HeaderText = "Habilitado";
-            Habilitado.Name = "Habilitado";
-            Habilitado.ReadOnly = true;
-            // 
-            // button1
-            // 
-            button1.Location = new Point(89, 341);
-            button1.Name = "button1";
-            button1.Size = new Size(104, 47);
-            button1.TabIndex = 1;
-            button1.Text = "Listar";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
-            // 
-            // button2
-            // 
-            button2.Location = new Point(339, 341);
-            button2.Name = "button2";
-            button2.Size = new Size(115, 47);
-            button2.TabIndex = 2;
-            button2.Text = "Eliminar";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
+            buttonEliminar.Location = new Point(330, 351);
+            buttonEliminar.Name = "buttonEliminar";
+            buttonEliminar.Size = new Size(115, 47);
+            buttonEliminar.TabIndex = 2;
+            buttonEliminar.Text = "Eliminar";
+            buttonEliminar.UseVisualStyleBackColor = true;
+            buttonEliminar.Click += buttonEliminar_Click;
             // 
             // buttonAgregar
             // 
-            buttonAgregar.Location = new Point(211, 341);
+            buttonAgregar.Location = new Point(597, 351);
             buttonAgregar.Name = "buttonAgregar";
             buttonAgregar.Size = new Size(111, 47);
             buttonAgregar.TabIndex = 3;
@@ -108,7 +81,7 @@
             // 
             // buttonModificar
             // 
-            buttonModificar.Location = new Point(473, 341);
+            buttonModificar.Location = new Point(466, 351);
             buttonModificar.Name = "buttonModificar";
             buttonModificar.Size = new Size(111, 47);
             buttonModificar.TabIndex = 4;
@@ -116,32 +89,39 @@
             buttonModificar.UseVisualStyleBackColor = true;
             buttonModificar.Click += buttonModificar_Click;
             // 
+            // buscarTextBox
+            // 
+            buscarTextBox.Location = new Point(25, 19);
+            buscarTextBox.Name = "buscarTextBox";
+            buscarTextBox.Size = new Size(587, 23);
+            buscarTextBox.TabIndex = 5;
+            buscarTextBox.Text = "Buscar por nombre de usuario";
+            // 
             // UsuariosForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(655, 431);
+            ClientSize = new Size(751, 422);
+            Controls.Add(buscarTextBox);
             Controls.Add(buttonModificar);
             Controls.Add(buttonAgregar);
-            Controls.Add(button2);
-            Controls.Add(button1);
+            Controls.Add(buttonEliminar);
+            Controls.Add(buttonListar);
             Controls.Add(dgvUsuarios);
             Name = "UsuariosForm";
             Text = "ABMUsuariosForm";
             ((System.ComponentModel.ISupportInitialize)dgvUsuarios).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private DataGridView dgvUsuarios;
-        private DataGridViewTextBoxColumn Id;
-        private DataGridViewTextBoxColumn Nombre;
-        private DataGridViewTextBoxColumn Clave;
-        private DataGridViewTextBoxColumn Habilitado;
-        private Button button1;
-        private Button button2;
+        private Button buttonListar;
+        private Button buttonEliminar;
         private Button buttonAgregar;
         private Button buttonModificar;
+        private TextBox buscarTextBox;
     }
 }

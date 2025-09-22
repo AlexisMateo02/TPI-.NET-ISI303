@@ -1,6 +1,6 @@
 ﻿namespace Academia.WindowsForms.Views
 {
-    partial class UsuariosDetallesForm
+    partial class UsuarioDetallesForm
     {
         /// <summary>
         /// Required designer variable.
@@ -35,27 +35,32 @@
             btnAceptar = new Button();
             btnCancelar = new Button();
             checkHabilitado = new CheckBox();
+            idLabel = new Label();
+            textId = new TextBox();
+            fechaAltaLabel = new Label();
+            textFechaAlta = new TextBox();
             SuspendLayout();
             // 
             // textNombre
             // 
-            textNombre.Location = new Point(152, 39);
+            textNombre.Location = new Point(152, 70);
             textNombre.Name = "textNombre";
             textNombre.Size = new Size(315, 23);
             textNombre.TabIndex = 1;
             // 
             // textClave
             // 
-            textClave.Location = new Point(152, 106);
+            textClave.Location = new Point(152, 123);
             textClave.Name = "textClave";
             textClave.Size = new Size(315, 23);
             textClave.TabIndex = 2;
+            textClave.UseSystemPasswordChar = true;
             // 
             // Nombre
             // 
             Nombre.AutoSize = true;
             Nombre.Font = new Font("Segoe UI", 15F);
-            Nombre.Location = new Point(25, 34);
+            Nombre.Location = new Point(25, 65);
             Nombre.Name = "Nombre";
             Nombre.Size = new Size(85, 28);
             Nombre.TabIndex = 5;
@@ -65,7 +70,7 @@
             // 
             Clave.AutoSize = true;
             Clave.Font = new Font("Segoe UI", 15F);
-            Clave.Location = new Point(25, 101);
+            Clave.Location = new Point(25, 115);
             Clave.Name = "Clave";
             Clave.Size = new Size(59, 28);
             Clave.TabIndex = 6;
@@ -73,7 +78,7 @@
             // 
             // btnAceptar
             // 
-            btnAceptar.Location = new Point(106, 221);
+            btnAceptar.Location = new Point(345, 274);
             btnAceptar.Name = "btnAceptar";
             btnAceptar.Size = new Size(122, 51);
             btnAceptar.TabIndex = 8;
@@ -83,7 +88,7 @@
             // 
             // btnCancelar
             // 
-            btnCancelar.Location = new Point(281, 221);
+            btnCancelar.Location = new Point(486, 274);
             btnCancelar.Name = "btnCancelar";
             btnCancelar.Size = new Size(122, 51);
             btnCancelar.TabIndex = 9;
@@ -95,18 +100,56 @@
             // 
             checkHabilitado.AutoSize = true;
             checkHabilitado.Font = new Font("Segoe UI", 15F);
-            checkHabilitado.Location = new Point(25, 160);
+            checkHabilitado.Location = new Point(25, 224);
             checkHabilitado.Name = "checkHabilitado";
             checkHabilitado.Size = new Size(123, 32);
             checkHabilitado.TabIndex = 10;
             checkHabilitado.Text = "Habilitado";
             checkHabilitado.UseVisualStyleBackColor = true;
             // 
-            // UsuariosDetallesForm
+            // idLabel
+            // 
+            idLabel.AutoSize = true;
+            idLabel.Font = new Font("Segoe UI", 15F);
+            idLabel.Location = new Point(25, 17);
+            idLabel.Name = "idLabel";
+            idLabel.Size = new Size(29, 28);
+            idLabel.TabIndex = 13;
+            idLabel.Text = "Id";
+            // 
+            // textId
+            // 
+            textId.Location = new Point(152, 22);
+            textId.Name = "textId";
+            textId.Size = new Size(315, 23);
+            textId.TabIndex = 12;
+            // 
+            // fechaAltaLabel
+            // 
+            fechaAltaLabel.AutoSize = true;
+            fechaAltaLabel.Font = new Font("Segoe UI", 15F);
+            fechaAltaLabel.Location = new Point(25, 172);
+            fechaAltaLabel.Name = "fechaAltaLabel";
+            fechaAltaLabel.Size = new Size(102, 28);
+            fechaAltaLabel.TabIndex = 15;
+            fechaAltaLabel.Text = "Fecha Alta";
+            // 
+            // textFechaAlta
+            // 
+            textFechaAlta.Location = new Point(152, 177);
+            textFechaAlta.Name = "textFechaAlta";
+            textFechaAlta.Size = new Size(315, 23);
+            textFechaAlta.TabIndex = 14;
+            // 
+            // UsuarioDetallesForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(527, 313);
+            ClientSize = new Size(643, 350);
+            Controls.Add(fechaAltaLabel);
+            Controls.Add(textFechaAlta);
+            Controls.Add(idLabel);
+            Controls.Add(textId);
             Controls.Add(checkHabilitado);
             Controls.Add(btnCancelar);
             Controls.Add(btnAceptar);
@@ -114,7 +157,7 @@
             Controls.Add(Nombre);
             Controls.Add(textClave);
             Controls.Add(textNombre);
-            Name = "UsuariosDetallesForm";
+            Name = "UsuarioDetallesForm";
             Text = "Form1";
             ResumeLayout(false);
             PerformLayout();
@@ -128,5 +171,9 @@
         private Button btnAceptar;
         private Button btnCancelar;
         private CheckBox checkHabilitado;
+        private Label idLabel;
+        private TextBox textId;
+        private Label fechaAltaLabel;
+        private TextBox textFechaAlta;
     }
 }

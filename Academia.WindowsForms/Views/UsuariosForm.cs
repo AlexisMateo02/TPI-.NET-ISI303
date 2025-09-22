@@ -1,64 +1,80 @@
-﻿using Academia.WindowsForms.Views;
-using Academia.Entidades;
-using Academia.Negocio;
+﻿using DTOs;
+using APIClients;
 
 namespace Academia.WindowsForms.Views
 {
     public partial class UsuariosForm : Form
     {
-        private UsuarioControlador usuarioControlador;
-        private Usuarios usuarios;
-
         public UsuariosForm()
         {
             InitializeComponent();
-            usuarioControlador = new UsuarioControlador();
-            usuarios = new Usuarios();
+            ConfigurarColumnas();
+            ConfigurarBusqueda();
         }
 
-        private async void GetUsuarios()
+        private void ConfigurarColumnas()
         {
-            dgvUsuarios.Rows.Clear();
+            this.dgvUsuarios.AutoGenerateColumns = false;
 
-            try
+            this.dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
             {
-                usuarios = await UsuarioControlador.GetAll();
+                Name = "Id",
+                HeaderText = "Id",
+                DataPropertyName = "Id",
+                Width = 80
+            });
 
-                if (usuarios != null)
-                {
-                    foreach (var usuario in usuarios?.ListaUsuarios!)
-                    {
-                        DataGridViewRow row = new DataGridViewRow();
-                        row.CreateCells(dgvUsuarios);
-                        row.Cells[0].Value = usuario.IdUsuario;
-                        row.Cells[1].Value = usuario.NombreUsuario;
-                        row.Cells[2].Value = usuario.Clave;
-                        row.Cells[3].Value = usuario.Habilitado ? "Sí" : "No";
-                        row.Tag = usuario;
-                        dgvUsuarios.Rows.Add(row);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("No se encontraron usuarios.", "Aviso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
+            this.dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
             {
-                MessageBox.Show($"Error al obtener usuarios: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                Name = "Nombre",
+                HeaderText = "Nombre",
+                DataPropertyName = "Nombre",
+                Width = 200
+            });
+
+            this.dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Clave",
+                HeaderText = "Clave",
+                DataPropertyName = "Clave",
+                Width = 200,
+                Visible = false
+            });
+
+            this.dgvUsuarios.Columns.Add(new DataGridViewCheckBoxColumn
+            {
+                Name = "Habilitado",
+                HeaderText = "Habilitado",
+                DataPropertyName = "Habilitado",
+                Width = 100
+            });
+
+            this.dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "FechaAlta",
+                HeaderText = "Fecha Alta",
+                DataPropertyName = "FechaAlta",
+                Width = 250,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Format = "dd/MM/yyyy HH:mm:ss"
+                }
+            });
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonListar_Click(object sender, EventArgs e)
         {
-            GetUsuarios();
+            string texto = this.buscarTextBox.Text.Trim();
+            if (texto == "Buscar por nombre de usuario")
+            {
+                texto = "";
+            }
+            this.GetByCriteriaAndLoad(texto);
         }
 
         private async void EliminarUsuarioSeleccionado()
         {
-            Usuario usuarioExistente = this.SelectedItem();
+            UsuarioDTO usuarioExistente = this.SelectedItem();
 
             if (usuarioExistente == null)
             {
@@ -69,25 +85,19 @@ namespace Academia.WindowsForms.Views
 
             try
             {
-                string nombreUsuario = usuarioExistente.NombreUsuario;
+                string nombreUsuario = usuarioExistente.Nombre;
 
-                DialogResult confirmResult = MessageBox.Show(
+                DialogResult result = MessageBox.Show(
                     $"¿Está seguro que desea eliminar el usuario '{nombreUsuario}'?",
                     "Confirmar eliminación",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question);
 
-                if (confirmResult == DialogResult.Yes)
+                if (result == DialogResult.Yes)
                 {
-                    bool eliminado = await UsuarioControlador.Delete(usuarioExistente.IdUsuario);
-
-                    if (eliminado)
-                    {
-                        MessageBox.Show("Usuario eliminado exitosamente.", "Éxito",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        GetUsuarios();
-                    }
+                    await UsuarioAPIClient.DeleteAsync(usuarioExistente.Id);
+                    MessageBox.Show("Usuario eliminado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    GetByCriteriaAndLoad();
                 }
             }
             catch (Exception ex)
@@ -97,29 +107,27 @@ namespace Academia.WindowsForms.Views
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonEliminar_Click(object sender, EventArgs e)
         {
             EliminarUsuarioSeleccionado();
         }
 
-        private async void CreateUsuario()
+        private void CreateUsuario()
         {
             try
             {
-                using (UsuariosDetallesForm detallesForm = new UsuariosDetallesForm())
+                UsuarioDetallesForm usuarioDetalles = new UsuarioDetallesForm();
+                UsuarioDTO usuarioNuevo = new UsuarioDTO();
+                usuarioDetalles.Mode = FormMode.Add;
+                usuarioDetalles.Usuario = usuarioNuevo;
                 {
-                    if (detallesForm.ShowDialog() == DialogResult.OK)
+                    if (usuarioDetalles.ShowDialog() == DialogResult.OK)
                     {
-                        Usuario nuevoUsuario = detallesForm.Usuario;
-                        bool creado = await UsuarioControlador.Create(nuevoUsuario);
-
-                        if (creado)
-                        {
-                            MessageBox.Show("Usuario creado exitosamente.", "Éxito",
+                        MessageBox.Show("Usuario creado exitosamente.", "Éxito",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
                     }
                 }
+                this.GetByCriteriaAndLoad();
             }
             catch (Exception ex)
             {
@@ -131,12 +139,11 @@ namespace Academia.WindowsForms.Views
         private void buttonAgregar_Click(object sender, EventArgs e)
         {
             CreateUsuario();
-            GetUsuarios();
         }
 
         private async void EditarUsuarioSeleccionado()
         {
-            Usuario usuarioExistente = this.SelectedItem();
+            UsuarioDTO usuarioExistente = this.SelectedItem();
 
             if (usuarioExistente == null)
             {
@@ -147,22 +154,17 @@ namespace Academia.WindowsForms.Views
 
             try
             {
-                using (UsuariosDetallesForm detallesForm = new UsuariosDetallesForm(usuarioExistente))
+                int idExistente = usuarioExistente.Id;
+                UsuarioDetallesForm usuarioDetalles = new UsuarioDetallesForm();
+                UsuarioDTO usuarioAModificar = await UsuarioAPIClient.GetAsync(idExistente);
+                usuarioDetalles.Mode = FormMode.Update;
+                usuarioDetalles.Usuario = usuarioAModificar;
+                if (usuarioDetalles.ShowDialog() == DialogResult.OK)
                 {
-                    if (detallesForm.ShowDialog() == DialogResult.OK)
-                    {
-                        Usuario usuarioModificado = detallesForm.Usuario;
-                        bool actualizado = await UsuarioControlador.Update(usuarioModificado);
-
-                        if (actualizado)
-                        {
-                            MessageBox.Show("Usuario actualizado exitosamente.", "Éxito",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                            GetUsuarios();
-                        }
-                    }
+                    MessageBox.Show("Usuario actualizado exitosamente.", "Éxito",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+                this.GetByCriteriaAndLoad();
             }
             catch (Exception ex)
             {
@@ -178,15 +180,77 @@ namespace Academia.WindowsForms.Views
         }
 
 
-        private Usuario SelectedItem()
+        private UsuarioDTO SelectedItem()
         {
-            if (dgvUsuarios.SelectedRows.Count > 0)
+            if (dgvUsuarios.SelectedRows.Count > 0 &&
+                dgvUsuarios.SelectedRows[0].DataBoundItem != null)
             {
-                return (Usuario)dgvUsuarios.SelectedRows[0].Tag;
+                return (UsuarioDTO)dgvUsuarios.SelectedRows[0].DataBoundItem;
             }
-            else
+            return null;
+        }
+
+        private async void GetByCriteriaAndLoad(string texto = "")
+        {
+            try
             {
-                return null;
+                this.dgvUsuarios.DataSource = null;
+
+                IEnumerable<UsuarioDTO> usuarios;
+                if (string.IsNullOrWhiteSpace(texto))
+                {
+                    usuarios = await UsuarioAPIClient.GetAllAsync();
+                }
+                else
+                {
+                    usuarios = await UsuarioAPIClient.GetByCriteriaAsync(texto);
+                }
+
+                this.dgvUsuarios.DataSource = usuarios;
+
+                if (this.dgvUsuarios.Rows.Count > 0)
+                {
+                    this.dgvUsuarios.Rows[0].Selected = true;
+                    this.buttonEliminar.Enabled = true;
+                    this.buttonModificar.Enabled = true;
+                }
+                else
+                {
+                    this.buttonEliminar.Enabled = false;
+                    this.buttonModificar.Enabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar la lista de usuarios: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.buttonEliminar.Enabled = false;
+                this.buttonModificar.Enabled = false;
+            }
+        }
+
+        private void ConfigurarBusqueda()
+        {
+            buscarTextBox.Text = "Buscar por nombre de usuario";
+            buscarTextBox.ForeColor = SystemColors.GrayText;
+            buscarTextBox.Enter += BuscarTextBox_Enter;
+            buscarTextBox.Leave += BuscarTextBox_Leave;
+        }
+
+        private void BuscarTextBox_Enter(object sender, EventArgs e)
+        {
+            if (buscarTextBox.Text == "Buscar por nombre de usuario")
+            {
+                buscarTextBox.Text = "";
+                buscarTextBox.ForeColor = SystemColors.WindowText;
+            }
+        }
+
+        private void BuscarTextBox_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(buscarTextBox.Text))
+            {
+                buscarTextBox.Text = "Buscar por nombre de usuario";
+                buscarTextBox.ForeColor = SystemColors.GrayText;
             }
         }
     }

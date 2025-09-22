@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             buttonUsuario = new Button();
-            label1 = new Label();
+            menu = new Label();
             buttonEspecialidad = new Button();
             SuspendLayout();
             // 
@@ -45,17 +45,17 @@
             buttonUsuario.UseVisualStyleBackColor = false;
             buttonUsuario.Click += buttonUsuario_Click;
             // 
-            // label1
+            // menu
             // 
-            label1.AutoSize = true;
-            label1.BackColor = SystemColors.MenuHighlight;
-            label1.BorderStyle = BorderStyle.Fixed3D;
-            label1.Font = new Font("Segoe UI", 28F);
-            label1.Location = new Point(138, 21);
-            label1.Name = "label1";
-            label1.Size = new Size(122, 53);
-            label1.TabIndex = 1;
-            label1.Text = "Menú";
+            menu.AutoSize = true;
+            menu.BackColor = SystemColors.MenuHighlight;
+            menu.BorderStyle = BorderStyle.Fixed3D;
+            menu.Font = new Font("Segoe UI", 28F);
+            menu.Location = new Point(138, 21);
+            menu.Name = "menu";
+            menu.Size = new Size(122, 53);
+            menu.TabIndex = 1;
+            menu.Text = "Menú";
             // 
             // buttonEspecialidad
             // 
@@ -76,7 +76,7 @@
             BackColor = SystemColors.GradientActiveCaption;
             ClientSize = new Size(400, 185);
             Controls.Add(buttonEspecialidad);
-            Controls.Add(label1);
+            Controls.Add(menu);
             Controls.Add(buttonUsuario);
             Name = "MenuForm";
             Text = "MenuForm";
@@ -87,7 +87,7 @@
         #endregion
 
         private Button buttonUsuario;
-        private Label label1;
+        private Label menu;
         private Button buttonEspecialidad;
     }
 }

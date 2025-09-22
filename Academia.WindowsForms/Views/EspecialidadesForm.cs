@@ -1,60 +1,77 @@
-﻿using Academia.WindowsForms.Views;
-using Academia.Entidades;
-using Academia.Negocio;
+﻿using DTOs;
+using APIClients;
 
 namespace Academia.WindowsForms.Views
 {
     public partial class EspecialidadesForm : Form
     {
-        private EspecialidadControlador especialidadControlador;
-        private Especialidades especialidades;
         public EspecialidadesForm()
         {
             InitializeComponent();
-            especialidadControlador = new EspecialidadControlador();
-            especialidades = new Especialidades();
+            ConfigurarColumnas();
         }
-        private async void GetEspecialidades()
-        {
-            dgvEspecialidades.Rows.Clear();
 
+        private void ConfigurarColumnas()
+        {
+            this.dgvEspecialidades.AutoGenerateColumns = false;
+
+            this.dgvEspecialidades.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Id",
+                HeaderText = "Id",
+                DataPropertyName = "Id",
+                Width = 80
+            });
+
+            this.dgvEspecialidades.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Descripcion",
+                HeaderText = "Descripción",
+                DataPropertyName = "Descripcion",
+                Width = 500
+            });
+        }
+
+        private async void LoadEspecialidades()
+        {
             try
             {
-                especialidades = await EspecialidadControlador.GetAll();
+                this.dgvEspecialidades.DataSource = null;
 
-                if (especialidades != null)
+                IEnumerable<EspecialidadDTO> especialidades;
+                especialidades = await EspecialidadAPIClient.GetAllAsync();
+
+                this.dgvEspecialidades.DataSource = especialidades;
+
+                if (this.dgvEspecialidades.Rows.Count > 0)
                 {
-                    foreach (var especialidad in especialidades?.ListaEspecialidades!)
-                    {
-                        DataGridViewRow row = new DataGridViewRow();
-                        row.CreateCells(dgvEspecialidades);
-                        row.Cells[0].Value = especialidad.IdEspecialidad;
-                        row.Cells[1].Value = especialidad.DescEspecialidad;
-                        row.Tag = especialidad;
-                        dgvEspecialidades.Rows.Add(row);
-                    }
+                    this.dgvEspecialidades.Rows[0].Selected = true;
+                    this.buttonEliminar.Enabled = true;
+                    this.buttonModificar.Enabled = true;
                 }
                 else
                 {
-                    MessageBox.Show("No se encontraron especialidades.", "Aviso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.buttonEliminar.Enabled = false;
+                    this.buttonModificar.Enabled = false;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al obtener especialidades: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al cargar la lista de especialidades: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.buttonEliminar.Enabled = false;
+                this.buttonModificar.Enabled = false;
             }
         }
 
         private void buttonListar_Click(object sender, EventArgs e)
         {
-            GetEspecialidades();
+            this.LoadEspecialidades();
+
         }
 
         private async void EliminarEspecialidadSeleccionada()
         {
-            Especialidad especialidadExistente = this.SelectedItem();
+            EspecialidadDTO especialidadExistente = this.SelectedItem();
 
             if (especialidadExistente == null)
             {
@@ -65,25 +82,17 @@ namespace Academia.WindowsForms.Views
 
             try
             {
-                int idEspecialidad = especialidadExistente.IdEspecialidad;
-
-                DialogResult confirmResult = MessageBox.Show(
-                    $"¿Está seguro que desea eliminar la especialidad '{idEspecialidad}'?",
+                DialogResult result = MessageBox.Show(
+                    $"¿Está seguro que desea eliminar la especialidad?",
                     "Confirmar eliminación",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question);
 
-                if (confirmResult == DialogResult.Yes)
+                if (result == DialogResult.Yes)
                 {
-                    bool eliminado = await EspecialidadControlador.Delete(especialidadExistente.IdEspecialidad);
-
-                    if (eliminado)
-                    {
-                        MessageBox.Show("Especialidad eliminada exitosamente.", "Éxito",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        GetEspecialidades();
-                    }
+                    await EspecialidadAPIClient.DeleteAsync(especialidadExistente.Id);
+                    MessageBox.Show("Especialidad eliminada exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadEspecialidades();
                 }
             }
             catch (Exception ex)
@@ -96,26 +105,25 @@ namespace Academia.WindowsForms.Views
         private void buttonEliminar_Click(object sender, EventArgs e)
         {
             EliminarEspecialidadSeleccionada();
+
         }
 
-        private async void CreateEspecialidad()
+        private void CreateEspecialidad()
         {
             try
             {
-                using (EspDetallesForm detallesForm = new EspDetallesForm())
+                EspecialidadDetallesForm especialidadDetalles = new EspecialidadDetallesForm();
+                EspecialidadDTO especialidadNueva = new EspecialidadDTO();
+                especialidadDetalles.Mode = FormMode.Add;
+                especialidadDetalles.Especialidad = especialidadNueva;
                 {
-                    if (detallesForm.ShowDialog() == DialogResult.OK)
+                    if (especialidadDetalles.ShowDialog() == DialogResult.OK)
                     {
-                        Especialidad nuevaEspecialidad = detallesForm.Especialidad;
-                        bool creado = await EspecialidadControlador.Create(nuevaEspecialidad);
-
-                        if (creado)
-                        {
-                            MessageBox.Show("Especialidad creada exitosamente.", "Éxito",
+                        MessageBox.Show("Especialidad creada exitosamente.", "Éxito",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
                     }
                 }
+                this.LoadEspecialidades();
             }
             catch (Exception ex)
             {
@@ -127,38 +135,32 @@ namespace Academia.WindowsForms.Views
         private void buttonAgregar_Click(object sender, EventArgs e)
         {
             CreateEspecialidad();
-            GetEspecialidades();
         }
 
         private async void EditarEspecialidadSeleccionada()
         {
-            Especialidad especialidadExistente = this.SelectedItem();
+            EspecialidadDTO especialidadExistente = this.SelectedItem();
 
             if (especialidadExistente == null)
             {
-                MessageBox.Show("Debe seleccionar una especialidad de la lista.", "Selección requerida",
+                MessageBox.Show("Debe seleccionar una Especialidad de la lista.", "Selección requerida",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             try
             {
-                using (EspDetallesForm detallesForm = new EspDetallesForm(especialidadExistente))
+                int idExistente = especialidadExistente.Id;
+                EspecialidadDetallesForm especialidadDetalles = new EspecialidadDetallesForm();
+                EspecialidadDTO especialidadAModificar = await EspecialidadAPIClient.GetAsync(idExistente);
+                especialidadDetalles.Mode = FormMode.Update;
+                especialidadDetalles.Especialidad = especialidadAModificar;
+                if (especialidadDetalles.ShowDialog() == DialogResult.OK)
                 {
-                    if (detallesForm.ShowDialog() == DialogResult.OK)
-                    {
-                        Especialidad especialidadModificada = detallesForm.Especialidad;
-                        bool actualizada = await EspecialidadControlador.Update(especialidadModificada);
-
-                        if (actualizada)
-                        {
-                            MessageBox.Show("Especialidad actualizada exitosamente.", "Éxito",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                            GetEspecialidades();
-                        }
-                    }
+                    MessageBox.Show("Especialidad actualizada exitosamente.", "Éxito",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+                this.LoadEspecialidades();
             }
             catch (Exception ex)
             {
@@ -172,16 +174,14 @@ namespace Academia.WindowsForms.Views
             EditarEspecialidadSeleccionada();
         }
 
-        private Especialidad SelectedItem()
+        private EspecialidadDTO SelectedItem()
         {
-            if (dgvEspecialidades.SelectedRows.Count > 0)
+            if (dgvEspecialidades.SelectedRows.Count > 0 &&
+                dgvEspecialidades.SelectedRows[0].DataBoundItem != null)
             {
-                return (Especialidad)dgvEspecialidades.SelectedRows[0].Tag;
+                return (EspecialidadDTO)dgvEspecialidades.SelectedRows[0].DataBoundItem;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
     }
 }

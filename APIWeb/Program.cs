@@ -1,27 +1,42 @@
-using Microsoft.EntityFrameworkCore;
-using APIWeb.Context;
+using APIWeb;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddDbContext<MyDbContext>
-(
-    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+// Add services to the container.
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpLogging(o => { });
+
+// Add CORS for Blazor WebAssembly
+/*builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazorWasm",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:7099;http://localhost:5226")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});*/
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHttpLogging();
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
-app.Run();
+
+// Use CORS
+//app.UseCors("AllowBlazorWasm");
+
+// Map endpoints
+app.MapUsuarioEndpoints();
+app.MapEspecialidadEndpoints();
 
 app.Run();

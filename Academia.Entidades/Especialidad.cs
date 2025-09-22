@@ -1,15 +1,27 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Academia.Entidades
 {
     public class Especialidad
     {
-        private int _idEspecialidad;
-        private string _descEspecialidad;
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int IdEspecialidad { get => _idEspecialidad; set => _idEspecialidad = value; }
-        public string DescEspecialidad { get => _descEspecialidad; set => _descEspecialidad = value; }
+        public int Id { get; set; }
+        public string Descripcion { get; set; }
+        // Constructor para Post
+        public Especialidad(string descripcion)
+        {
+            SetDescripcion(descripcion);
+        }
+        public Especialidad(int id, string descripcion)
+        {
+            Id = id;
+            SetDescripcion(descripcion);
+        }
+        public void SetDescripcion(string descripcion)
+        {
+            if (string.IsNullOrWhiteSpace(descripcion))
+                throw new ArgumentException("La descripcion no puede ser nulo o vacía.", nameof(descripcion));
+            Descripcion = descripcion;
+        }
+
     }
 }

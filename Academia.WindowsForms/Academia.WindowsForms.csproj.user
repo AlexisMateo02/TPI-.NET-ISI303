@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Compile Update="Views\EspDetallesForm.cs">
+    <Compile Update="Views\EspecialidadDetallesForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Views\EspecialidadesForm.cs">
@@ -10,7 +10,7 @@
     <Compile Update="Views\MenuForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\UsuariosDetallesForm.cs">
+    <Compile Update="Views\UsuarioDetallesForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Views\UsuariosForm.cs">

@@ -9,18 +9,22 @@
 
         private void buttonUsuario_Click(object sender, EventArgs e)
         {
+            this.Hide();
             using (UsuariosForm form = new UsuariosForm())
             {
                 form.ShowDialog();
             }
+            this.Show();
         }
 
         private void buttonEspecialidad_Click(object sender, EventArgs e)
         {
+            this.Hide();
             using (EspecialidadesForm form = new EspecialidadesForm())
             {
                 form.ShowDialog();
             }
+            this.Show();
         }
     }
 }
