@@ -31,15 +31,16 @@
             buttonUsuario = new Button();
             menu = new Label();
             buttonEspecialidad = new Button();
+            buttonPlan = new Button();
             SuspendLayout();
             // 
             // buttonUsuario
             // 
             buttonUsuario.BackColor = SystemColors.ButtonFace;
-            buttonUsuario.Font = new Font("Segoe UI", 20F);
-            buttonUsuario.Location = new Point(26, 91);
+            buttonUsuario.Font = new Font("Segoe UI", 12F);
+            buttonUsuario.Location = new Point(41, 75);
             buttonUsuario.Name = "buttonUsuario";
-            buttonUsuario.Size = new Size(171, 66);
+            buttonUsuario.Size = new Size(163, 35);
             buttonUsuario.TabIndex = 0;
             buttonUsuario.Text = "Usuario";
             buttonUsuario.UseVisualStyleBackColor = false;
@@ -51,30 +52,43 @@
             menu.BackColor = SystemColors.MenuHighlight;
             menu.BorderStyle = BorderStyle.Fixed3D;
             menu.Font = new Font("Segoe UI", 28F);
-            menu.Location = new Point(138, 21);
+            menu.Location = new Point(12, 9);
             menu.Name = "menu";
-            menu.Size = new Size(122, 53);
+            menu.Size = new Size(222, 53);
             menu.TabIndex = 1;
-            menu.Text = "Menú";
+            menu.Text = "     Menú     ";
             // 
             // buttonEspecialidad
             // 
             buttonEspecialidad.BackColor = SystemColors.ButtonFace;
-            buttonEspecialidad.Font = new Font("Segoe UI", 20F);
-            buttonEspecialidad.Location = new Point(203, 91);
+            buttonEspecialidad.Font = new Font("Segoe UI", 12F);
+            buttonEspecialidad.Location = new Point(41, 125);
             buttonEspecialidad.Name = "buttonEspecialidad";
-            buttonEspecialidad.Size = new Size(175, 66);
+            buttonEspecialidad.Size = new Size(163, 35);
             buttonEspecialidad.TabIndex = 2;
             buttonEspecialidad.Text = "Especialidad";
             buttonEspecialidad.UseVisualStyleBackColor = false;
             buttonEspecialidad.Click += buttonEspecialidad_Click;
+            // 
+            // buttonPlan
+            // 
+            buttonPlan.BackColor = SystemColors.ButtonFace;
+            buttonPlan.Font = new Font("Segoe UI", 12F);
+            buttonPlan.Location = new Point(41, 175);
+            buttonPlan.Name = "buttonPlan";
+            buttonPlan.Size = new Size(163, 35);
+            buttonPlan.TabIndex = 3;
+            buttonPlan.Text = "Plan";
+            buttonPlan.UseVisualStyleBackColor = false;
+            buttonPlan.Click += buttonPlan_Click;
             // 
             // MenuForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.GradientActiveCaption;
-            ClientSize = new Size(400, 185);
+            ClientSize = new Size(247, 224);
+            Controls.Add(buttonPlan);
             Controls.Add(buttonEspecialidad);
             Controls.Add(menu);
             Controls.Add(buttonUsuario);
@@ -89,5 +103,6 @@
         private Button buttonUsuario;
         private Label menu;
         private Button buttonEspecialidad;
+        private Button buttonPlan;
     }
 }

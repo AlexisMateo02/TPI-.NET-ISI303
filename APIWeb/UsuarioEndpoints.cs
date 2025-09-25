@@ -99,6 +99,7 @@ namespace APIWeb
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
+            // Endpoint para validación desde Forms
             app.MapGet("/usuarios/existsNombre", (string nombre, int? excludeId) =>
             {
                 try

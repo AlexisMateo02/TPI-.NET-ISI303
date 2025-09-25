@@ -81,7 +81,7 @@ namespace Services
             var usuarioRepository = new UsuarioRepository();
             return usuarioRepository.Delete(id);
         }
-
+        // Método para validación desde Forms
         public bool ExistsNombre(string nombre, int? excludeId = null)
         {
             var usuarioRepository = new UsuarioRepository();

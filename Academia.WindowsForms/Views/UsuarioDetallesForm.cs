@@ -121,6 +121,20 @@ namespace Academia.WindowsForms.Views
                 textNombre.Focus();
                 isValid = false;
             }
+            if (this.Mode == FormMode.Add && string.IsNullOrWhiteSpace(textClave.Text))
+            {
+                MessageBox.Show("La clave es obligatoria.", "Error de validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                textClave.Focus();
+                isValid = false;
+            }
+            if (textClave.Text.Length < 6 && !string.IsNullOrWhiteSpace(textClave.Text))
+            {
+                MessageBox.Show("La clave debe tener al menos 6 caracteres.", "Error de validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                textClave.Focus();
+                isValid = false;
+            }
             if (this.Mode == FormMode.Add || textNombre.Text != this.Usuario.Nombre)
             {
                 try
@@ -150,20 +164,6 @@ namespace Academia.WindowsForms.Views
                     this.Enabled = true;
                     this.Cursor = Cursors.Default;
                 }
-            }
-            if (this.Mode == FormMode.Add && string.IsNullOrWhiteSpace(textClave.Text))
-            {
-                MessageBox.Show("La clave es obligatoria.", "Error de validación",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                textClave.Focus();
-                isValid = false;
-            }
-            if (textClave.Text.Length < 6 && !string.IsNullOrWhiteSpace(textClave.Text))
-            {
-                MessageBox.Show("La clave debe tener al menos 6 caracteres.", "Error de validación",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                textClave.Focus();
-                isValid = false;
             }
             return isValid;
         }

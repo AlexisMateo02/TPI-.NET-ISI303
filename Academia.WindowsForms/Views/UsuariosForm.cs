@@ -46,7 +46,7 @@ namespace Academia.WindowsForms.Views
                 Name = "Habilitado",
                 HeaderText = "Habilitado",
                 DataPropertyName = "Habilitado",
-                Width = 100
+                Width = 80
             });
 
             this.dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn

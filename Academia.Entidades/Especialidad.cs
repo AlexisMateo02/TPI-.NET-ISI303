@@ -1,11 +1,9 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace Academia.Entidades
+﻿namespace Academia.Entidades
 {
     public class Especialidad
     {
-        public int Id { get; set; }
-        public string Descripcion { get; set; }
+        public int Id { get; private set; }
+        public string Descripcion { get; private set; }
         // Constructor para Post
         public Especialidad(string descripcion)
         {

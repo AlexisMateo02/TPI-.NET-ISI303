@@ -1,5 +1,4 @@
-﻿using Academia.Entidades;
-using APIClients;
+﻿using APIClients;
 using DTOs;
 
 namespace Academia.WindowsForms.Views

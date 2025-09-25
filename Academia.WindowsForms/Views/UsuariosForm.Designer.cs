@@ -46,12 +46,12 @@
             dgvUsuarios.Location = new Point(25, 58);
             dgvUsuarios.Name = "dgvUsuarios";
             dgvUsuarios.ReadOnly = true;
-            dgvUsuarios.Size = new Size(692, 277);
+            dgvUsuarios.Size = new Size(653, 277);
             dgvUsuarios.TabIndex = 0;
             // 
             // buttonListar
             // 
-            buttonListar.Location = new Point(627, 19);
+            buttonListar.Location = new Point(593, 19);
             buttonListar.Name = "buttonListar";
             buttonListar.Size = new Size(81, 23);
             buttonListar.TabIndex = 1;
@@ -61,9 +61,9 @@
             // 
             // buttonEliminar
             // 
-            buttonEliminar.Location = new Point(330, 351);
+            buttonEliminar.Location = new Point(296, 346);
             buttonEliminar.Name = "buttonEliminar";
-            buttonEliminar.Size = new Size(115, 47);
+            buttonEliminar.Size = new Size(115, 35);
             buttonEliminar.TabIndex = 2;
             buttonEliminar.Text = "Eliminar";
             buttonEliminar.UseVisualStyleBackColor = true;
@@ -71,9 +71,9 @@
             // 
             // buttonAgregar
             // 
-            buttonAgregar.Location = new Point(597, 351);
+            buttonAgregar.Location = new Point(563, 346);
             buttonAgregar.Name = "buttonAgregar";
-            buttonAgregar.Size = new Size(111, 47);
+            buttonAgregar.Size = new Size(111, 35);
             buttonAgregar.TabIndex = 3;
             buttonAgregar.Text = "Agregar";
             buttonAgregar.UseVisualStyleBackColor = true;
@@ -81,9 +81,9 @@
             // 
             // buttonModificar
             // 
-            buttonModificar.Location = new Point(466, 351);
+            buttonModificar.Location = new Point(432, 346);
             buttonModificar.Name = "buttonModificar";
-            buttonModificar.Size = new Size(111, 47);
+            buttonModificar.Size = new Size(111, 35);
             buttonModificar.TabIndex = 4;
             buttonModificar.Text = "Modificar";
             buttonModificar.UseVisualStyleBackColor = true;
@@ -93,7 +93,7 @@
             // 
             buscarTextBox.Location = new Point(25, 19);
             buscarTextBox.Name = "buscarTextBox";
-            buscarTextBox.Size = new Size(587, 23);
+            buscarTextBox.Size = new Size(562, 23);
             buscarTextBox.TabIndex = 5;
             buscarTextBox.Text = "Buscar por nombre de usuario";
             // 
@@ -101,7 +101,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(751, 422);
+            ClientSize = new Size(702, 392);
             Controls.Add(buscarTextBox);
             Controls.Add(buttonModificar);
             Controls.Add(buttonAgregar);

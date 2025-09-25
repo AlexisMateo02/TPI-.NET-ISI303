@@ -1,5 +1,6 @@
-﻿using DTOs;
-using APIClients;
+﻿using APIClients;
+using DTOs;
+using System.Windows.Forms;
 
 namespace Academia.WindowsForms.Views
 {
@@ -14,6 +15,8 @@ namespace Academia.WindowsForms.Views
         private void ConfigurarColumnas()
         {
             this.dgvEspecialidades.AutoGenerateColumns = false;
+            this.dgvEspecialidades.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            this.dgvEspecialidades.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
 
             this.dgvEspecialidades.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -28,7 +31,11 @@ namespace Academia.WindowsForms.Views
                 Name = "Descripcion",
                 HeaderText = "Descripción",
                 DataPropertyName = "Descripcion",
-                Width = 500
+                Width = 400,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    WrapMode = DataGridViewTriState.True
+                }
             });
         }
 
@@ -42,6 +49,7 @@ namespace Academia.WindowsForms.Views
                 especialidades = await EspecialidadAPIClient.GetAllAsync();
 
                 this.dgvEspecialidades.DataSource = especialidades;
+                this.dgvEspecialidades.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCells);
 
                 if (this.dgvEspecialidades.Rows.Count > 0)
                 {

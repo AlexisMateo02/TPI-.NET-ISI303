@@ -1,6 +1,4 @@
 ﻿using Academia.Entidades;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
 
 namespace Data
 {

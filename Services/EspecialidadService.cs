@@ -1,7 +1,6 @@
 ﻿using Academia.Entidades;
 using Data;
 using DTOs;
-//using Academia.Entidades;
 
 namespace Services
 {
@@ -36,7 +35,6 @@ namespace Services
         {
             var especialidadRepository = new EspecialidadRepository();
 
-            var fechaAlta = DateTime.Now;
             Especialidad especialidad = new Especialidad(dto.Descripcion);
 
             especialidadRepository.Add(especialidad);

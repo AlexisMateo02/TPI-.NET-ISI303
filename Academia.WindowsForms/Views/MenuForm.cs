@@ -26,5 +26,15 @@
             }
             this.Show();
         }
+
+        private void buttonPlan_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            using (PlanesForm form = new PlanesForm())
+            {
+                form.ShowDialog();
+            }
+            this.Show();
+        }
     }
 }

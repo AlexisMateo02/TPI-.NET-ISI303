@@ -6,11 +6,13 @@ namespace Data
 {
     public class TPIContext : DbContext
     {
-        public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Especialidad> Especialidades { get; set; }
+        public DbSet<Plan> Planes { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
 
         internal TPIContext()
         {
+            //this.Database.EnsureDeleted(); // Solo en desarrollo
             this.Database.EnsureCreated();
         }
 
@@ -35,25 +37,19 @@ namespace Data
             modelBuilder.Entity<Usuario>(entity =>
             {
                 entity.HasKey(e => e.Id);
-
                 entity.Property(e => e.Id)
                     .ValueGeneratedOnAdd();
-
                 entity.Property(e => e.Nombre)
                     .IsRequired()
                     .HasMaxLength(100);
-
                 entity.HasIndex(e => e.Nombre)
                     .IsUnique();
-
                 entity.Property(e => e.Clave)
                     .IsRequired()
                     .HasMaxLength(100);
-
                 entity.Property(e => e.Habilitado)
                     .IsRequired()
                     .HasDefaultValue(true);
-
                 entity.Property(e => e.FechaAlta)
                     .IsRequired();
             });
@@ -61,15 +57,30 @@ namespace Data
             modelBuilder.Entity<Especialidad>(entity =>
             {
                 entity.HasKey(e => e.Id);
-
                 entity.Property(e => e.Id)
                     .ValueGeneratedOnAdd();
-
                 entity.Property(e => e.Descripcion)
                     .IsRequired()
                     .HasMaxLength(500);
             });
 
+
+            modelBuilder.Entity<Plan>(entity =>
+            {
+                entity.HasKey(e => e.IdPlan);
+                entity.Property(e => e.IdPlan)
+                    .ValueGeneratedOnAdd();
+                entity.Property(e => e.Descripcion)
+                    .IsRequired()
+                    .HasMaxLength(500);
+                entity.Property(e => e.IdEspecialidad)
+                    .IsRequired();
+                entity.HasOne(e => e.Especialidad)
+                    .WithMany()
+                    .HasForeignKey(e => e.IdEspecialidad)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
         }
+
     }
 }

@@ -39,18 +39,19 @@
             textId = new TextBox();
             fechaAltaLabel = new Label();
             textFechaAlta = new TextBox();
+            label2 = new Label();
             SuspendLayout();
             // 
             // textNombre
             // 
-            textNombre.Location = new Point(152, 70);
+            textNombre.Location = new Point(152, 84);
             textNombre.Name = "textNombre";
             textNombre.Size = new Size(315, 23);
             textNombre.TabIndex = 1;
             // 
             // textClave
             // 
-            textClave.Location = new Point(152, 123);
+            textClave.Location = new Point(152, 137);
             textClave.Name = "textClave";
             textClave.Size = new Size(315, 23);
             textClave.TabIndex = 2;
@@ -60,7 +61,7 @@
             // 
             Nombre.AutoSize = true;
             Nombre.Font = new Font("Segoe UI", 15F);
-            Nombre.Location = new Point(25, 65);
+            Nombre.Location = new Point(25, 79);
             Nombre.Name = "Nombre";
             Nombre.Size = new Size(85, 28);
             Nombre.TabIndex = 5;
@@ -70,7 +71,7 @@
             // 
             Clave.AutoSize = true;
             Clave.Font = new Font("Segoe UI", 15F);
-            Clave.Location = new Point(25, 115);
+            Clave.Location = new Point(25, 129);
             Clave.Name = "Clave";
             Clave.Size = new Size(59, 28);
             Clave.TabIndex = 6;
@@ -78,7 +79,7 @@
             // 
             // btnAceptar
             // 
-            btnAceptar.Location = new Point(345, 274);
+            btnAceptar.Location = new Point(355, 278);
             btnAceptar.Name = "btnAceptar";
             btnAceptar.Size = new Size(122, 51);
             btnAceptar.TabIndex = 8;
@@ -88,7 +89,7 @@
             // 
             // btnCancelar
             // 
-            btnCancelar.Location = new Point(486, 274);
+            btnCancelar.Location = new Point(496, 278);
             btnCancelar.Name = "btnCancelar";
             btnCancelar.Size = new Size(122, 51);
             btnCancelar.TabIndex = 9;
@@ -100,7 +101,7 @@
             // 
             checkHabilitado.AutoSize = true;
             checkHabilitado.Font = new Font("Segoe UI", 15F);
-            checkHabilitado.Location = new Point(25, 224);
+            checkHabilitado.Location = new Point(25, 238);
             checkHabilitado.Name = "checkHabilitado";
             checkHabilitado.Size = new Size(123, 32);
             checkHabilitado.TabIndex = 10;
@@ -110,25 +111,25 @@
             // idLabel
             // 
             idLabel.AutoSize = true;
-            idLabel.Font = new Font("Segoe UI", 15F);
-            idLabel.Location = new Point(25, 17);
+            idLabel.Font = new Font("Segoe UI", 12F);
+            idLabel.Location = new Point(529, 12);
             idLabel.Name = "idLabel";
-            idLabel.Size = new Size(29, 28);
+            idLabel.Size = new Size(23, 21);
             idLabel.TabIndex = 13;
             idLabel.Text = "Id";
             // 
             // textId
             // 
-            textId.Location = new Point(152, 22);
+            textId.Location = new Point(558, 12);
             textId.Name = "textId";
-            textId.Size = new Size(315, 23);
+            textId.Size = new Size(73, 23);
             textId.TabIndex = 12;
             // 
             // fechaAltaLabel
             // 
             fechaAltaLabel.AutoSize = true;
             fechaAltaLabel.Font = new Font("Segoe UI", 15F);
-            fechaAltaLabel.Location = new Point(25, 172);
+            fechaAltaLabel.Location = new Point(25, 186);
             fechaAltaLabel.Name = "fechaAltaLabel";
             fechaAltaLabel.Size = new Size(102, 28);
             fechaAltaLabel.TabIndex = 15;
@@ -136,16 +137,28 @@
             // 
             // textFechaAlta
             // 
-            textFechaAlta.Location = new Point(152, 177);
+            textFechaAlta.Location = new Point(152, 191);
             textFechaAlta.Name = "textFechaAlta";
             textFechaAlta.Size = new Size(315, 23);
             textFechaAlta.TabIndex = 14;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.BorderStyle = BorderStyle.Fixed3D;
+            label2.Font = new Font("Segoe UI", 20F);
+            label2.Location = new Point(247, 12);
+            label2.Name = "label2";
+            label2.Size = new Size(130, 39);
+            label2.TabIndex = 16;
+            label2.Text = "USUARIO";
             // 
             // UsuarioDetallesForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(643, 350);
+            Controls.Add(label2);
             Controls.Add(fechaAltaLabel);
             Controls.Add(textFechaAlta);
             Controls.Add(idLabel);
@@ -175,5 +188,6 @@
         private TextBox textId;
         private Label fechaAltaLabel;
         private TextBox textFechaAlta;
+        private Label label2;
     }
 }

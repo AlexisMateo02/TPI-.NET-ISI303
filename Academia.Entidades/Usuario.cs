@@ -2,10 +2,10 @@
 {
     public class Usuario
     {
-        public int Id { get; set; }
-        public string Nombre { get; set; }
-        public string Clave { get; set; }
-        public bool Habilitado { get; set; }
+        public int Id { get; private set; }
+        public string Nombre { get; private set; }
+        public string Clave { get; private set; }
+        public bool Habilitado { get; private set; }
         public DateTime FechaAlta { get; private set; }
         // Constructor para Post
         public Usuario(string nombre, string clave, DateTime fechaAlta)

@@ -44,12 +44,12 @@
             dgvEspecialidades.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvEspecialidades.Location = new Point(12, 12);
             dgvEspecialidades.Name = "dgvEspecialidades";
-            dgvEspecialidades.Size = new Size(701, 325);
+            dgvEspecialidades.Size = new Size(523, 280);
             dgvEspecialidades.TabIndex = 0;
             // 
             // buttonListar
             // 
-            buttonListar.Location = new Point(609, 355);
+            buttonListar.Location = new Point(436, 307);
             buttonListar.Name = "buttonListar";
             buttonListar.Size = new Size(93, 33);
             buttonListar.TabIndex = 1;
@@ -59,7 +59,7 @@
             // 
             // buttonAgregar
             // 
-            buttonAgregar.Location = new Point(497, 355);
+            buttonAgregar.Location = new Point(324, 307);
             buttonAgregar.Name = "buttonAgregar";
             buttonAgregar.Size = new Size(93, 33);
             buttonAgregar.TabIndex = 2;
@@ -69,7 +69,7 @@
             // 
             // buttonModificar
             // 
-            buttonModificar.Location = new Point(385, 355);
+            buttonModificar.Location = new Point(212, 307);
             buttonModificar.Name = "buttonModificar";
             buttonModificar.Size = new Size(93, 33);
             buttonModificar.TabIndex = 3;
@@ -79,7 +79,7 @@
             // 
             // buttonEliminar
             // 
-            buttonEliminar.Location = new Point(275, 355);
+            buttonEliminar.Location = new Point(102, 307);
             buttonEliminar.Name = "buttonEliminar";
             buttonEliminar.Size = new Size(93, 33);
             buttonEliminar.TabIndex = 4;
@@ -91,7 +91,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(726, 401);
+            ClientSize = new Size(550, 352);
             Controls.Add(buttonEliminar);
             Controls.Add(buttonModificar);
             Controls.Add(buttonAgregar);

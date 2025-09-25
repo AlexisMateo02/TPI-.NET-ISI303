@@ -38,5 +38,6 @@ app.UseHttpsRedirection();
 // Map endpoints
 app.MapUsuarioEndpoints();
 app.MapEspecialidadEndpoints();
+app.MapPlanEndpoints();
 
 app.Run();

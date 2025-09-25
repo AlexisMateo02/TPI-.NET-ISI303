@@ -34,13 +34,14 @@
             textId = new TextBox();
             buttonAceptar = new Button();
             buttonCancelar = new Button();
+            label2 = new Label();
             SuspendLayout();
             // 
             // textDescripcion
             // 
-            textDescripcion.Location = new Point(12, 48);
+            textDescripcion.Location = new Point(12, 94);
             textDescripcion.Name = "textDescripcion";
-            textDescripcion.Size = new Size(624, 258);
+            textDescripcion.Size = new Size(682, 250);
             textDescripcion.TabIndex = 0;
             textDescripcion.Text = "";
             // 
@@ -48,17 +49,17 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 12F);
-            label1.Location = new Point(12, 11);
+            label1.Location = new Point(12, 70);
             label1.Name = "label1";
-            label1.Size = new Size(289, 21);
+            label1.Size = new Size(91, 21);
             label1.TabIndex = 1;
-            label1.Text = "Ingrese la descripción de la especialidad:";
+            label1.Text = "Descripción";
             // 
             // labelId
             // 
             labelId.AutoSize = true;
             labelId.Font = new Font("Segoe UI", 12F);
-            labelId.Location = new Point(539, 11);
+            labelId.Location = new Point(597, 14);
             labelId.Name = "labelId";
             labelId.Size = new Size(23, 21);
             labelId.TabIndex = 2;
@@ -66,14 +67,14 @@
             // 
             // textId
             // 
-            textId.Location = new Point(568, 9);
+            textId.Location = new Point(626, 12);
             textId.Name = "textId";
             textId.Size = new Size(68, 23);
             textId.TabIndex = 3;
             // 
             // buttonAceptar
             // 
-            buttonAceptar.Location = new Point(530, 312);
+            buttonAceptar.Location = new Point(601, 350);
             buttonAceptar.Name = "buttonAceptar";
             buttonAceptar.Size = new Size(93, 36);
             buttonAceptar.TabIndex = 4;
@@ -83,7 +84,7 @@
             // 
             // buttonCancelar
             // 
-            buttonCancelar.Location = new Point(421, 312);
+            buttonCancelar.Location = new Point(492, 350);
             buttonCancelar.Name = "buttonCancelar";
             buttonCancelar.Size = new Size(93, 36);
             buttonCancelar.TabIndex = 5;
@@ -91,11 +92,23 @@
             buttonCancelar.UseVisualStyleBackColor = true;
             buttonCancelar.Click += buttonCancelar_Click;
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.BorderStyle = BorderStyle.Fixed3D;
+            label2.Font = new Font("Segoe UI", 20F);
+            label2.Location = new Point(260, 23);
+            label2.Name = "label2";
+            label2.Size = new Size(191, 39);
+            label2.TabIndex = 14;
+            label2.Text = "ESPECIALIDAD";
+            // 
             // EspecialidadDetallesForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(648, 360);
+            ClientSize = new Size(706, 398);
+            Controls.Add(label2);
             Controls.Add(buttonCancelar);
             Controls.Add(buttonAceptar);
             Controls.Add(textId);
@@ -116,5 +129,6 @@
         private TextBox textId;
         private Button buttonAceptar;
         private Button buttonCancelar;
+        private Label label2;
     }
 }

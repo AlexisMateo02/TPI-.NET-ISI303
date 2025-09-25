@@ -10,6 +10,12 @@
     <Compile Update="Views\MenuForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Views\PlanDetallesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Views\PlanesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Views\UsuarioDetallesForm.cs">
       <SubType>Form</SubType>
     </Compile>
