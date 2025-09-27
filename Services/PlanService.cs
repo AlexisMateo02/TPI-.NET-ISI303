@@ -75,6 +75,20 @@ namespace Services
         public bool Delete(int id)
         {
             var planRepository = new PlanRepository();
+            var cantidadPersonas = planRepository.CountPersonasByPlan(id);
+            if (cantidadPersonas > 0)
+            {
+                string mensaje = $"No se puede eliminar el plan. ";
+                if (cantidadPersonas == 1)
+                {
+                    mensaje += $"Tiene una persona asignada.";
+                }
+                else
+                {
+                    mensaje += $"Tiene {cantidadPersonas} personas asignadas.";
+                }
+                throw new InvalidOperationException(mensaje);
+            }
             return planRepository.Delete(id);
 
         }

@@ -86,27 +86,6 @@ namespace APIClients
                 throw new Exception($"Timeout al crear plan: {ex.Message}", ex);
             }
         }
-        public static async Task DeleteAsync(int id)
-        {
-            try
-            {
-                HttpResponseMessage response = await client.DeleteAsync("planes/" + id);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    string errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Error al eliminar plan con Id {id}. Status: {response.StatusCode}, Detalle: {errorContent}");
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                throw new Exception($"Error de conexión al eliminar plan con Id {id}: {ex.Message}", ex);
-            }
-            catch (TaskCanceledException ex)
-            {
-                throw new Exception($"Timeout al eliminar plan con Id {id}: {ex.Message}", ex);
-            }
-        }
         public static async Task UpdateAsync(PlanDTO plan)
         {
             try
@@ -126,6 +105,27 @@ namespace APIClients
             catch (TaskCanceledException ex)
             {
                 throw new Exception($"Timeout al actualizar plan con Id {plan.IdPlan}: {ex.Message}", ex);
+            }
+        }
+        public static async Task DeleteAsync(int id)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.DeleteAsync("planes/" + id);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Error al eliminar plan con Id {id}. Status: {response.StatusCode}, Detalle: {errorContent}");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"Error de conexión al eliminar plan con Id {id}: {ex.Message}", ex);
+            }
+            catch (TaskCanceledException ex)
+            {
+                throw new Exception($"Timeout al eliminar plan con Id {id}: {ex.Message}", ex);
             }
         }
         public static async Task<bool> ExistsDescripcionInEspecialidadAsync(string descripcion, int idEspecialidad, int? excludeId = null)

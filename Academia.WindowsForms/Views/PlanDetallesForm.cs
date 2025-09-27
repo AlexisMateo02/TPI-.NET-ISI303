@@ -7,6 +7,7 @@ namespace Academia.WindowsForms.Views
     {
         private PlanDTO plan;
         private FormMode mode;
+        private List<EspecialidadDTO> especialidades;
         public PlanDTO Plan
         {
             get { return plan; }
@@ -33,8 +34,8 @@ namespace Academia.WindowsForms.Views
             try
             {
                 comboBoxEspecialidad.DataSource = null;
-                var especialidades = await EspecialidadAPIClient.GetAllAsync();
-                comboBoxEspecialidad.DataSource = especialidades.ToList();
+                especialidades = (await EspecialidadAPIClient.GetAllAsync()).ToList();
+                comboBoxEspecialidad.DataSource = especialidades;
                 comboBoxEspecialidad.DisplayMember = "Descripcion";
                 comboBoxEspecialidad.ValueMember = "Id";
                 comboBoxEspecialidad.SelectedIndex = -1;

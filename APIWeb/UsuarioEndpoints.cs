@@ -100,12 +100,12 @@ namespace APIWeb
             .WithOpenApi();
 
             // Endpoint para validación desde Forms
-            app.MapGet("/usuarios/existsNombre", (string nombre, int? excludeId) =>
+            app.MapGet("/usuarios/existsNombreUsuario", (string nombreUsuario, int? excludeId) =>
             {
                 try
                 {
                     UsuarioService usuarioService = new UsuarioService();
-                    bool exists = usuarioService.ExistsNombre(nombre, excludeId);
+                    bool exists = usuarioService.ExistsNombreUsuario(nombreUsuario, excludeId);
                     return Results.Ok(exists);
                 }
                 catch (Exception ex)

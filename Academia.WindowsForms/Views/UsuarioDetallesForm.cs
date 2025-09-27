@@ -1,4 +1,5 @@
-﻿using APIClients;
+﻿using Academia.Entidades;
+using APIClients;
 using DTOs;
 
 namespace Academia.WindowsForms.Views
@@ -12,6 +13,7 @@ namespace Academia.WindowsForms.Views
     {
         private UsuarioDTO usuario;
         private FormMode mode;
+        private List<PersonaDTO> personas;
 
         public UsuarioDTO Usuario
         {
@@ -32,7 +34,26 @@ namespace Academia.WindowsForms.Views
         public UsuarioDetallesForm()
         {
             InitializeComponent();
+            LoadPersonas();
             Mode = FormMode.Add;
+        }
+
+        private async void LoadPersonas()
+        {
+            try
+            {
+                listBoxPersona.DataSource = null;
+                personas = (await PersonaAPIClient.GetAllAsync()).ToList();
+                listBoxPersona.DataSource = personas;
+                listBoxPersona.DisplayMember = "NombreCompletoPersona";
+                listBoxPersona.ValueMember = "IdPersona";
+                listBoxPersona.SelectedIndex = -1;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar datos: {ex.Message}", "Error",
+                              MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private async void btnAceptar_Click(object sender, EventArgs e)
@@ -41,21 +62,30 @@ namespace Academia.WindowsForms.Views
             {
                 try
                 {
-                    this.Usuario.Nombre = textNombre.Text;
-                    this.Usuario.Clave = textClave.Text;
+                    this.Usuario.NombreUsuario = textNombreUsuario.Text;
                     this.Usuario.Habilitado = checkHabilitado.Checked;
+
+                    if (listBoxPersona.SelectedItem != null)
+                    {
+                        var personaSeleccionada = (PersonaDTO)listBoxPersona.SelectedItem;
+                        this.Usuario.IdPersona = personaSeleccionada.IdPersona;
+                    }
+                    else
+                    {
+                        this.Usuario.IdPersona = null;
+                    }
 
                     if (this.Mode == FormMode.Update)
                     {
                         if (!string.IsNullOrWhiteSpace(textClave.Text))
                         {
-                            this.Usuario.Clave = PasswordHelper.HashPassword(textClave.Text);
+                            this.Usuario.Clave = textClave.Text;
                         }
                         await UsuarioAPIClient.UpdateAsync(this.Usuario);
                     }
                     else
                     {
-                        this.Usuario.Clave = PasswordHelper.HashPassword(textClave.Text);
+                        this.Usuario.Clave = textClave.Text;
                         this.Usuario.FechaAlta = DateTime.Now;
                         await UsuarioAPIClient.AddAsync(this.Usuario);
                     }
@@ -79,10 +109,18 @@ namespace Academia.WindowsForms.Views
         private void SetUsuario()
         {
             this.textId.Text = this.Usuario.Id.ToString();
-            this.textNombre.Text = this.Usuario.Nombre;
+            this.textNombreUsuario.Text = this.Usuario.NombreUsuario;
             this.textClave.Text = "";
             this.checkHabilitado.Checked = this.Usuario.Habilitado;
-            this.textFechaAlta.Text = this.Usuario.FechaAlta.ToString();
+            this.textFechaAlta.Text = this.Usuario.FechaAlta.ToString("dd/MM/yyyy HH:mm:ss");
+            if (this.Usuario.IdPersona.HasValue)
+            {
+                listBoxPersona.SelectedValue = this.Usuario.IdPersona.Value;
+            }
+            else
+            {
+                listBoxPersona.SelectedIndex = -1;
+            }
         }
 
         private void SetFormMode(FormMode value)
@@ -114,11 +152,11 @@ namespace Academia.WindowsForms.Views
         {
             bool isValid = true;
 
-            if (string.IsNullOrWhiteSpace(textNombre.Text))
+            if (string.IsNullOrWhiteSpace(textNombreUsuario.Text))
             {
                 MessageBox.Show("El nombre de usuario es obligatorio.", "Error de validación",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                textNombre.Focus();
+                textNombreUsuario.Focus();
                 isValid = false;
             }
             if (this.Mode == FormMode.Add && string.IsNullOrWhiteSpace(textClave.Text))
@@ -135,7 +173,7 @@ namespace Academia.WindowsForms.Views
                 textClave.Focus();
                 isValid = false;
             }
-            if (this.Mode == FormMode.Add || textNombre.Text != this.Usuario.Nombre)
+            if (this.Mode == FormMode.Add || textNombreUsuario.Text != this.Usuario.NombreUsuario)
             {
                 try
                 {
@@ -143,13 +181,13 @@ namespace Academia.WindowsForms.Views
                     this.Cursor = Cursors.WaitCursor;
 
                     int? excludeId = this.Mode == FormMode.Update ? this.Usuario.Id : null;
-                    bool nombreExiste = await UsuarioAPIClient.ExistsNombreAsync(textNombre.Text, excludeId);
+                    bool nombreUsuarioExiste = await UsuarioAPIClient.ExistsNombreUsuarioAsync(textNombreUsuario.Text, excludeId);
 
-                    if (nombreExiste)
+                    if (nombreUsuarioExiste)
                     {
-                        MessageBox.Show($"Ya existe un usuario con el nombre '{textNombre.Text}'.",
+                        MessageBox.Show($"Ya existe un usuario con el nombre '{textNombreUsuario.Text}'.",
                             "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        textNombre.Focus();
+                        textNombreUsuario.Focus();
                         return false;
                     }
                 }

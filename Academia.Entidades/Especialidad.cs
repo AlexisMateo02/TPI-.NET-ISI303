@@ -9,6 +9,7 @@
         {
             SetDescripcion(descripcion);
         }
+        // Constructor completo
         public Especialidad(int id, string descripcion)
         {
             Id = id;

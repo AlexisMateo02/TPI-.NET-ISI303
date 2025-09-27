@@ -115,7 +115,7 @@ namespace Academia.WindowsForms.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al eliminar plan: {ex.Message}", "Error",
+                MessageBox.Show($"{ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

@@ -2,32 +2,77 @@
 {
     public class Usuario
     {
+        private int? _idPersona;
+        private Persona? _persona;
         public int Id { get; private set; }
-        public string Nombre { get; private set; }
+        public string NombreUsuario { get; private set; }
         public string Clave { get; private set; }
         public bool Habilitado { get; private set; }
         public DateTime FechaAlta { get; private set; }
-        // Constructor para Post
-        public Usuario(string nombre, string clave, DateTime fechaAlta)
+
+        public int? IdPersona
         {
-            SetNombre(nombre);
+            get => _persona?.IdPersona ?? _idPersona;
+            private set => _idPersona = value;
+        }
+
+        public Persona? Persona
+        {
+            get => _persona;
+            private set
+            {
+                _persona = value;
+                _idPersona = value?.IdPersona; // null si no hay persona
+            }
+        }
+
+        // Constructor para Post con Persona
+        public Usuario(string nombreUsuario, string clave, DateTime fechaAlta, int idPersona)
+        {
+            SetNombreUsuario(nombreUsuario);
             SetClave(clave);
             Habilitado = true;
             SetFechaAlta(fechaAlta);
+            SetIdPersona(idPersona);
         }
-        public Usuario(int id, string nombre, string clave, bool habilitado, DateTime fechaAlta)
+
+        // Constructor para Post sin Persona
+        public Usuario(string nombreUsuario, string clave, DateTime fechaAlta)
+        {
+            SetNombreUsuario(nombreUsuario);
+            SetClave(clave);
+            Habilitado = true;
+            SetFechaAlta(fechaAlta);
+            _idPersona = null;
+        }
+
+        // Constructor completo con Persona
+        public Usuario(int id, string nombreUsuario, string clave, bool habilitado, DateTime fechaAlta, int idPersona)
         {
             Id = id;
-            SetNombre(nombre);
+            SetNombreUsuario(nombreUsuario);
             SetClave(clave);
             SetHabilitado(habilitado);
             SetFechaAlta(fechaAlta);
+            SetIdPersona(idPersona);
         }
-        public void SetNombre(string nombre)
+
+        // Constructor completo sin Persona
+        public Usuario(int id, string nombreUsuario, string clave, bool habilitado, DateTime fechaAlta)
         {
-            if (string.IsNullOrWhiteSpace(nombre))
-                throw new ArgumentException("El nombre no puede ser nulo o vacío.", nameof(nombre));
-            Nombre = nombre;
+            Id = id;
+            SetNombreUsuario(nombreUsuario);
+            SetClave(clave);
+            SetHabilitado(habilitado);
+            SetFechaAlta(fechaAlta);
+            _idPersona = null;
+        }
+
+        public void SetNombreUsuario(string nombreUsuario)
+        {
+            if (string.IsNullOrWhiteSpace(nombreUsuario))
+                throw new ArgumentException("El nombre de usuario no puede ser nulo o vacío.", nameof(nombreUsuario));
+            NombreUsuario = nombreUsuario;
         }
         public void SetClave(string clave)
         {
@@ -48,6 +93,12 @@
             if (fechaAlta == default)
                 throw new ArgumentException("La fecha de alta no puede ser nula.", nameof(fechaAlta));
             FechaAlta = fechaAlta;
+        }
+        public void SetIdPersona(int? idPersona)
+        {
+            if (idPersona <= 0)
+                throw new ArgumentException("El ID de la persona debe ser mayor que cero.", nameof(idPersona));
+            IdPersona = idPersona;
         }
     }
 }

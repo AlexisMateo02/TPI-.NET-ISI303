@@ -36,5 +36,16 @@
             }
             this.Show();
         }
+
+        private void buttonPersona_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            using (PersonasForm form = new PersonasForm())
+            {
+                form.ShowDialog();
+            }
+            this.Show();
+
+        }
     }
 }

@@ -53,6 +53,20 @@ namespace Services
         public bool Delete(int id)
         {
             var especialidadRepository = new EspecialidadRepository();
+            var cantidadPlanes = especialidadRepository.CountPlanesByEspecialidad(id);
+            if (cantidadPlanes > 0)
+            {
+                string mensaje = $"No se puede eliminar la especialidad. ";
+                if (cantidadPlanes == 1)
+                {
+                    mensaje += $"Tiene un plan asociado.";
+                }
+                else
+                {
+                    mensaje += $"Tiene {cantidadPlanes} planes asociados.";
+                }
+                throw new InvalidOperationException(mensaje);
+            }
             return especialidadRepository.Delete(id);
         }
     }

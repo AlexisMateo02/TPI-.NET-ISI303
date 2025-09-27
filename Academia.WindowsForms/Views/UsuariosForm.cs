@@ -26,9 +26,9 @@ namespace Academia.WindowsForms.Views
 
             this.dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
             {
-                Name = "Nombre",
-                HeaderText = "Nombre",
-                DataPropertyName = "Nombre",
+                Name = "NombreUsuario",
+                HeaderText = "Usuario",
+                DataPropertyName = "NombreUsuario",
                 Width = 200
             });
 
@@ -60,6 +60,22 @@ namespace Academia.WindowsForms.Views
                     Format = "dd/MM/yyyy HH:mm:ss"
                 }
             });
+
+            this.dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Legajo",
+                HeaderText = "Legajo",
+                DataPropertyName = "Legajo",
+                Width = 100
+            });
+
+            this.dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Persona",
+                HeaderText = "Persona",
+                DataPropertyName = "NombreCompletoPersona",
+                Width = 300
+            });
         }
 
         private void buttonListar_Click(object sender, EventArgs e)
@@ -85,7 +101,7 @@ namespace Academia.WindowsForms.Views
 
             try
             {
-                string nombreUsuario = usuarioExistente.Nombre;
+                string nombreUsuario = usuarioExistente.NombreUsuario;
 
                 DialogResult result = MessageBox.Show(
                     $"¿Está seguro que desea eliminar el usuario '{nombreUsuario}'?",

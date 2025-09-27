@@ -90,28 +90,6 @@ namespace APIClients
             }
         }
 
-        public static async Task DeleteAsync(int id)
-        {
-            try
-            {
-                HttpResponseMessage response = await client.DeleteAsync("usuarios/" + id);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    string errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Error al eliminar usuario con Id {id}. Status: {response.StatusCode}, Detalle: {errorContent}");
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                throw new Exception($"Error de conexión al eliminar usuario con Id {id}: {ex.Message}", ex);
-            }
-            catch (TaskCanceledException ex)
-            {
-                throw new Exception($"Timeout al eliminar usuario con Id {id}: {ex.Message}", ex);
-            }
-        }
-
         public static async Task UpdateAsync(UsuarioDTO usuario)
         {
             try
@@ -134,11 +112,33 @@ namespace APIClients
             }
         }
 
-        public static async Task<bool> ExistsNombreAsync(string nombre, int? excludeId = null)
+        public static async Task DeleteAsync(int id)
         {
             try
             {
-                string url = $"usuarios/existsNombre?nombre={Uri.EscapeDataString(nombre)}";
+                HttpResponseMessage response = await client.DeleteAsync("usuarios/" + id);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Error al eliminar usuario con Id {id}. Status: {response.StatusCode}, Detalle: {errorContent}");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"Error de conexión al eliminar usuario con Id {id}: {ex.Message}", ex);
+            }
+            catch (TaskCanceledException ex)
+            {
+                throw new Exception($"Timeout al eliminar usuario con Id {id}: {ex.Message}", ex);
+            }
+        }
+
+        public static async Task<bool> ExistsNombreUsuarioAsync(string nombreUsuario, int? excludeId = null)
+        {
+            try
+            {
+                string url = $"usuarios/existsNombreUsuario?nombreUsuario={Uri.EscapeDataString(nombreUsuario)}";
                 if (excludeId.HasValue)
                 {
                     url += $"&excludeId={excludeId.Value}";
@@ -153,16 +153,16 @@ namespace APIClients
                 else
                 {
                     string errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Error al verificar nombre duplicado. Status: {response.StatusCode}, Detalle: {errorContent}");
+                    throw new Exception($"Error al verificar nombre de usuario duplicado. Status: {response.StatusCode}, Detalle: {errorContent}");
                 }
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Error de conexión al verificar nombre duplicado: {ex.Message}", ex);
+                throw new Exception($"Error de conexión al verificar nombre de usuario duplicado: {ex.Message}", ex);
             }
             catch (TaskCanceledException ex)
             {
-                throw new Exception($"Timeout al verificar nombre duplicado: {ex.Message}", ex);
+                throw new Exception($"Timeout al verificar nombre de usuario duplicado: {ex.Message}", ex);
             }
         }
 

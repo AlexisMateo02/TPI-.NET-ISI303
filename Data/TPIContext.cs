@@ -9,6 +9,7 @@ namespace Data
         public DbSet<Especialidad> Especialidades { get; set; }
         public DbSet<Plan> Planes { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Persona> Personas { get; set; }
 
         internal TPIContext()
         {
@@ -39,10 +40,10 @@ namespace Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id)
                     .ValueGeneratedOnAdd();
-                entity.Property(e => e.Nombre)
+                entity.Property(e => e.NombreUsuario)
                     .IsRequired()
                     .HasMaxLength(100);
-                entity.HasIndex(e => e.Nombre)
+                entity.HasIndex(e => e.NombreUsuario)
                     .IsUnique();
                 entity.Property(e => e.Clave)
                     .IsRequired()
@@ -52,6 +53,12 @@ namespace Data
                     .HasDefaultValue(true);
                 entity.Property(e => e.FechaAlta)
                     .IsRequired();
+                entity.HasOne(e => e.Persona)
+                    .WithMany()
+                    .HasForeignKey(e => e.IdPersona)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.SetNull);
+
             });
 
             modelBuilder.Entity<Especialidad>(entity =>
@@ -80,7 +87,45 @@ namespace Data
                     .HasForeignKey(e => e.IdEspecialidad)
                     .OnDelete(DeleteBehavior.Restrict);
             });
-        }
 
+
+            modelBuilder.Entity<Persona>(entity =>
+            {
+                entity.HasKey(e => e.IdPersona);
+                entity.Property(e => e.IdPersona)
+                    .ValueGeneratedOnAdd();
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(100);
+                entity.Property(e => e.Apellido)
+                    .IsRequired()
+                    .HasMaxLength(100);
+                entity.Property(e => e.Direccion)
+                    .IsRequired()
+                    .HasMaxLength(200);
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasMaxLength(200);
+                entity.HasIndex(e => e.Email)
+                    .IsUnique();
+                entity.Property(e => e.Telefono)
+                    .IsRequired()
+                    .HasMaxLength(20);
+                entity.Property(e => e.FechaNacimiento)
+                    .IsRequired();
+                entity.Property(e => e.Legajo)
+                    .IsRequired();
+                entity.HasIndex(e => e.Legajo)
+                    .IsUnique();
+                entity.Property(e => e.TipoPersona)
+                    .IsRequired();
+                entity.Property(e => e.IdPlan)
+                    .IsRequired();
+                entity.HasOne(e => e.Plan)
+                    .WithMany()
+                    .HasForeignKey(e => e.IdPlan)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+        }
     }
 }

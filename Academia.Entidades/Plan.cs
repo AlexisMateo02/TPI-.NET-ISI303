@@ -20,7 +20,7 @@
                 _especialidad = value;
                 if (value != null && _idEspecialidad != value.Id)
                 {
-                    _idEspecialidad = value.Id; // Sincronizar automáticamente
+                    _idEspecialidad = value.Id;
                 }
             }
         }
@@ -32,6 +32,7 @@
             SetIdEspecialidad(idEspecialidad);
         }
 
+        // Constructor completo
         public Plan(int idPlan, string descripcion, int idEspecialidad)
         {
             IdPlan = idPlan;

@@ -1,6 +1,5 @@
 ﻿using APIClients;
 using DTOs;
-using System.Windows.Forms;
 
 namespace Academia.WindowsForms.Views
 {
@@ -105,7 +104,7 @@ namespace Academia.WindowsForms.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al eliminar especialidad: {ex.Message}", "Error",
+                MessageBox.Show($"{ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

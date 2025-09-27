@@ -8,11 +8,33 @@ namespace Data
         {
             return new TPIContext();
         }
+        public Especialidad? Get(int id)
+        {
+            using var context = CreateContext();
+            return context.Especialidades.FirstOrDefault(e => e.Id == id);
+        }
+        public IEnumerable<Especialidad> GetAll()
+        {
+            using var context = CreateContext();
+            return context.Especialidades.ToList();
+        }
         public void Add(Especialidad especialidad)
         {
             using var context = CreateContext();
             context.Especialidades.Add(especialidad);
             context.SaveChanges();
+        }
+        public bool Update(Especialidad especialidad)
+        {
+            using var context = CreateContext();
+            var existingEspecialidad = context.Especialidades.Find(especialidad.Id);
+            if (existingEspecialidad != null)
+            {
+                existingEspecialidad.SetDescripcion(especialidad.Descripcion);
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
         public bool Delete(int id)
         {
@@ -26,29 +48,10 @@ namespace Data
             }
             return false;
         }
-        public Especialidad? Get(int id)
+        public int CountPlanesByEspecialidad(int idEspecialidad)
         {
             using var context = CreateContext();
-            return context.Especialidades
-                .FirstOrDefault(e => e.Id == id);
-        }
-        public IEnumerable<Especialidad> GetAll()
-        {
-            using var context = CreateContext();
-            return context.Especialidades
-                .ToList();
-        }
-        public bool Update(Especialidad especialidad)
-        {
-            using var context = CreateContext();
-            var existingEspecialidad = context.Especialidades.Find(especialidad.Id);
-            if (existingEspecialidad != null)
-            {
-                existingEspecialidad.SetDescripcion(especialidad.Descripcion);
-                context.SaveChanges();
-                return true;
-            }
-            return false;
+            return context.Planes.Count(p => p.IdEspecialidad == idEspecialidad);
         }
     }
 }

@@ -32,6 +32,7 @@
             menu = new Label();
             buttonEspecialidad = new Button();
             buttonPlan = new Button();
+            buttonPersona = new Button();
             SuspendLayout();
             // 
             // buttonUsuario
@@ -62,7 +63,7 @@
             // 
             buttonEspecialidad.BackColor = SystemColors.ButtonFace;
             buttonEspecialidad.Font = new Font("Segoe UI", 12F);
-            buttonEspecialidad.Location = new Point(41, 125);
+            buttonEspecialidad.Location = new Point(41, 173);
             buttonEspecialidad.Name = "buttonEspecialidad";
             buttonEspecialidad.Size = new Size(163, 35);
             buttonEspecialidad.TabIndex = 2;
@@ -74,7 +75,7 @@
             // 
             buttonPlan.BackColor = SystemColors.ButtonFace;
             buttonPlan.Font = new Font("Segoe UI", 12F);
-            buttonPlan.Location = new Point(41, 175);
+            buttonPlan.Location = new Point(41, 223);
             buttonPlan.Name = "buttonPlan";
             buttonPlan.Size = new Size(163, 35);
             buttonPlan.TabIndex = 3;
@@ -82,12 +83,25 @@
             buttonPlan.UseVisualStyleBackColor = false;
             buttonPlan.Click += buttonPlan_Click;
             // 
+            // buttonPersona
+            // 
+            buttonPersona.BackColor = SystemColors.ButtonFace;
+            buttonPersona.Font = new Font("Segoe UI", 12F);
+            buttonPersona.Location = new Point(41, 123);
+            buttonPersona.Name = "buttonPersona";
+            buttonPersona.Size = new Size(163, 35);
+            buttonPersona.TabIndex = 4;
+            buttonPersona.Text = "Persona";
+            buttonPersona.UseVisualStyleBackColor = false;
+            buttonPersona.Click += buttonPersona_Click;
+            // 
             // MenuForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.GradientActiveCaption;
-            ClientSize = new Size(247, 224);
+            ClientSize = new Size(247, 270);
+            Controls.Add(buttonPersona);
             Controls.Add(buttonPlan);
             Controls.Add(buttonEspecialidad);
             Controls.Add(menu);
@@ -104,5 +118,6 @@
         private Label menu;
         private Button buttonEspecialidad;
         private Button buttonPlan;
+        private Button buttonPersona;
     }
 }

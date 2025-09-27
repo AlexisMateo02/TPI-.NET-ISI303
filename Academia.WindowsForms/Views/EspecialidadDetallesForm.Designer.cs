@@ -74,7 +74,7 @@
             // 
             // buttonAceptar
             // 
-            buttonAceptar.Location = new Point(601, 350);
+            buttonAceptar.Location = new Point(498, 350);
             buttonAceptar.Name = "buttonAceptar";
             buttonAceptar.Size = new Size(93, 36);
             buttonAceptar.TabIndex = 4;
@@ -84,7 +84,7 @@
             // 
             // buttonCancelar
             // 
-            buttonCancelar.Location = new Point(492, 350);
+            buttonCancelar.Location = new Point(597, 350);
             buttonCancelar.Name = "buttonCancelar";
             buttonCancelar.Size = new Size(93, 36);
             buttonCancelar.TabIndex = 5;

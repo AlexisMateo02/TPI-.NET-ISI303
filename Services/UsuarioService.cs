@@ -2,7 +2,6 @@
 using DTOs;
 using Academia.Entidades;
 
-
 namespace Services
 {
     public class UsuarioService
@@ -15,10 +14,14 @@ namespace Services
             return usuarios.Select(usuario => new UsuarioDTO
             {
                 Id = usuario.Id,
-                Nombre = usuario.Nombre,
+                NombreUsuario = usuario.NombreUsuario,
                 Clave = usuario.Clave,
                 Habilitado = usuario.Habilitado,
-                FechaAlta = usuario.FechaAlta
+                FechaAlta = usuario.FechaAlta,
+                IdPersona = usuario.IdPersona,
+                Legajo = usuario.Persona?.Legajo,
+                NombrePersona = usuario.Persona?.Nombre,
+                ApellidoPersona = usuario.Persona?.Apellido
             }).ToList();
         }
 
@@ -33,10 +36,14 @@ namespace Services
             return new UsuarioDTO
             {
                 Id = usuario.Id,
-                Nombre = usuario.Nombre,
+                NombreUsuario = usuario.NombreUsuario,
                 Clave = usuario.Clave,
                 Habilitado = usuario.Habilitado,
-                FechaAlta = usuario.FechaAlta
+                FechaAlta = usuario.FechaAlta,
+                IdPersona = usuario.IdPersona,
+                Legajo = usuario.Persona?.Legajo,
+                NombrePersona = usuario.Persona?.Nombre,
+                ApellidoPersona = usuario.Persona?.Apellido
             };
         }
 
@@ -45,13 +52,27 @@ namespace Services
             var usuarioRepository = new UsuarioRepository();
 
             // Validar que el nombre de usuario no esté duplicado
-            if (usuarioRepository.NombreExists(dto.Nombre))
+            if (usuarioRepository.NombreUsuarioExists(dto.NombreUsuario))
             {
-                throw new ArgumentException($"Ya existe un usuario con el nombre '{dto.Nombre}'.");
+                throw new ArgumentException($"Ya existe un usuario con el nombre '{dto.NombreUsuario}'.");
+            }
+
+            // Validar que existe la persona
+            if (dto.IdPersona.HasValue && !usuarioRepository.PersonaExists(dto.IdPersona.Value))
+            {
+                throw new ArgumentException($"No existe la persona con el ID {dto.IdPersona.Value}");
             }
 
             var fechaAlta = DateTime.Now;
-            Usuario usuario = new Usuario(dto.Nombre, dto.Clave, fechaAlta);
+            Usuario usuario;
+            if (dto.IdPersona.HasValue)
+            {
+                usuario = new Usuario(dto.NombreUsuario, dto.Clave, fechaAlta, dto.IdPersona.Value);
+            }
+            else
+            {
+                usuario = new Usuario(dto.NombreUsuario, dto.Clave, fechaAlta);
+            }
 
             usuarioRepository.Add(usuario);
 
@@ -67,12 +88,23 @@ namespace Services
             var usuarioRepository = new UsuarioRepository();
 
             // Validar que el nombre de usuario no esté duplicado (excluyendo el usuario actual)
-            if (usuarioRepository.NombreExists(dto.Nombre, dto.Id))
+            if (usuarioRepository.NombreUsuarioExists(dto.NombreUsuario, dto.Id))
             {
-                throw new ArgumentException($"Ya existe otro usuario con el nombre '{dto.Nombre}'.");
+                throw new ArgumentException($"Ya existe otro usuario con el nombre '{dto.NombreUsuario}'.");
             }
 
-            Usuario usuario = new Usuario(dto.Id, dto.Nombre, dto.Clave, dto.Habilitado, dto.FechaAlta);
+            // Validar que existe la persona
+            if (dto.IdPersona.HasValue && !usuarioRepository.PersonaExists(dto.IdPersona.Value))
+            {
+                throw new ArgumentException($"No existe la persona con el ID {dto.IdPersona.Value}");
+            }
+
+            Usuario usuario;
+            if (dto.IdPersona.HasValue)
+                usuario = new Usuario(dto.Id, dto.NombreUsuario, dto.Clave, dto.Habilitado, dto.FechaAlta, dto.IdPersona.Value);
+            else
+                usuario = new Usuario(dto.Id, dto.NombreUsuario, dto.Clave, dto.Habilitado, dto.FechaAlta);
+
             return usuarioRepository.Update(usuario);
         }
 
@@ -82,10 +114,10 @@ namespace Services
             return usuarioRepository.Delete(id);
         }
         // Método para validación desde Forms
-        public bool ExistsNombre(string nombre, int? excludeId = null)
+        public bool ExistsNombreUsuario(string nombreUsuario, int? excludeId = null)
         {
             var usuarioRepository = new UsuarioRepository();
-            return usuarioRepository.NombreExists(nombre, excludeId);
+            return usuarioRepository.NombreUsuarioExists(nombreUsuario, excludeId);
         }
 
         public IEnumerable<UsuarioDTO> GetByCriteria(UsuarioCriteriaDTO criteriaDTO)
@@ -102,10 +134,14 @@ namespace Services
             return usuarios.Select(u => new UsuarioDTO
             {
                 Id = u.Id,
-                Nombre = u.Nombre,
+                NombreUsuario = u.NombreUsuario,
                 Clave = u.Clave,
                 Habilitado = u.Habilitado,
-                FechaAlta = u.FechaAlta
+                FechaAlta = u.FechaAlta,
+                IdPersona = u.IdPersona,
+                Legajo = u.Persona?.Legajo,
+                NombrePersona = u.Persona?.Nombre,
+                ApellidoPersona = u.Persona?.Apellido
             });
         }
     }

@@ -10,11 +10,43 @@ namespace Data
         {
             return new TPIContext();
         }
+        public Usuario? Get(int id)
+        {
+            using var context = CreateContext();
+            return context.Usuarios
+                .Include(u => u.Persona)
+                .FirstOrDefault(u => u.Id == id);
+        }
+        public IEnumerable<Usuario> GetAll()
+        {
+            using var context = CreateContext();
+            return context.Usuarios
+                .Include(u => u.Persona)
+                .ToList();
+        }
         public void Add(Usuario usuario)
         {
             using var context = CreateContext();
             context.Usuarios.Add(usuario);
             context.SaveChanges();
+        }
+        public bool Update(Usuario usuario)
+        {
+            using var context = CreateContext();
+            var existingUsuario = context.Usuarios.Find(usuario.Id);
+            if (existingUsuario != null)
+            {
+                existingUsuario.SetNombreUsuario(usuario.NombreUsuario);
+                if (!string.IsNullOrWhiteSpace(usuario.Clave))
+                {
+                    existingUsuario.SetClave(usuario.Clave);
+                }
+                existingUsuario.SetHabilitado(usuario.Habilitado);
+                existingUsuario.SetIdPersona(usuario.IdPersona);
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
         public bool Delete(int id)
         {
@@ -28,49 +60,38 @@ namespace Data
             }
             return false;
         }
-        public Usuario? Get(int id)
+        public bool NombreUsuarioExists(string nombreUsuario, int? excludeId = null)
         {
             using var context = CreateContext();
-            return context.Usuarios
-                .FirstOrDefault(u => u.Id == id);
-        }
-        public IEnumerable<Usuario> GetAll()
-        {
-            using var context = CreateContext();
-            return context.Usuarios
-                .ToList();
-        }
-        public bool Update(Usuario usuario)
-        {
-            using var context = CreateContext();
-            var existingUsuario = context.Usuarios.Find(usuario.Id);
-            if (existingUsuario != null)
-            {
-                existingUsuario.SetNombre(usuario.Nombre);
-                existingUsuario.SetClave(usuario.Clave);
-                existingUsuario.SetHabilitado(usuario.Habilitado);
-                context.SaveChanges();
-                return true;
-            }
-            return false;
-        }
-        public bool NombreExists(string nombre, int? excludeId = null)
-        {
-            using var context = CreateContext();
-            var query = context.Usuarios.Where(u => u.Nombre.ToLower() == nombre.ToLower());
+            var query = context.Usuarios.Where(u => u.NombreUsuario.ToLower() == nombreUsuario.ToLower());
             if (excludeId.HasValue)
             {
                 query = query.Where(u => u.Id != excludeId.Value);
             }
             return query.Any();
         }
+        public bool PersonaExists(int idPersona)
+        {
+            using var context = CreateContext();
+            return context.Personas.Any(p => p.IdPersona == idPersona);
+        }
         public IEnumerable<Usuario> GetByCriteria(UsuarioCriteria criteria)
         {
             const string sql = @"
-                SELECT u.Id, u.Nombre, u.Clave, u.Habilitado, u.FechaAlta
+                SELECT 
+                    u.Id, 
+                    u.NombreUsuario, 
+                    u.Clave, 
+                    u.Habilitado, 
+                    u.FechaAlta,
+                    u.IdPersona,
+                    p.Legajo,
+                    p.Nombre,
+                    p.Apellido
                 FROM Usuarios u
-                WHERE u.Nombre LIKE @SearchTerm
-                ORDER BY u.Nombre";
+                LEFT JOIN Personas p ON u.IdPersona = p.IdPersona
+                WHERE u.NombreUsuario LIKE @SearchTerm
+                ORDER BY u.NombreUsuario";
 
             var usuarios = new List<Usuario>();
             string connectionString = new TPIContext().Database.GetConnectionString();
@@ -86,14 +107,29 @@ namespace Data
 
             while (reader.Read())
             {
-                var usuario = new Usuario(
-                    reader.GetInt32(0),    // Id
-                    reader.GetString(1),   // Nombre
-                    reader.GetString(2),   // Clave
-                    reader.GetBoolean(3),   // Habilitado
-                    reader.GetDateTime(4)  // FechaAlta
-                );
-
+                Usuario usuario;
+                if (!reader.IsDBNull(5)) // IdPersona
+                {
+                    int idPersona = reader.GetInt32(5);
+                    usuario = new Usuario(
+                        reader.GetInt32(0),    // Id
+                        reader.GetString(1),   // NombreUsuario  
+                        reader.GetString(2),   // Clave
+                        reader.GetBoolean(3),  // Habilitado
+                        reader.GetDateTime(4), // FechaAlta
+                        idPersona              // IdPersona
+                    );
+                }
+                else
+                {
+                    usuario = new Usuario(
+                        reader.GetInt32(0),    // Id
+                        reader.GetString(1),   // NombreUsuario
+                        reader.GetString(2),   // Clave
+                        reader.GetBoolean(3),  // Habilitado
+                        reader.GetDateTime(4)  // FechaAlta
+                    );
+                }
                 usuarios.Add(usuario);
             }
 

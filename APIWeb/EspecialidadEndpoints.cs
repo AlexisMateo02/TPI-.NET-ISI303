@@ -83,20 +83,27 @@ namespace APIWeb
 
             app.MapDelete("/especialidades/{id}", (int id) =>
             {
-                EspecialidadService especialidadService = new EspecialidadService();
-
-                var deleted = especialidadService.Delete(id);
-
-                if (!deleted)
+                try
                 {
-                    return Results.NotFound();
-                }
+                    EspecialidadService especialidadService = new EspecialidadService();
+                    var deleted = especialidadService.Delete(id);
 
-                return Results.NoContent();
+                    if (!deleted)
+                    {
+                        return Results.NotFound();
+                    }
+
+                    return Results.NoContent();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
             })
             .WithName("DeleteEspecialidad")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
         }
     }

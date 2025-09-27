@@ -3,7 +3,7 @@ using System.Text;
 
 public static class PasswordHelper
 {
-    private const string SecretSalt = "X7#kL9$mP2@qR5!tZ8&vW1*yC4"; // Salt secreto
+    private const string SecretSalt = "X7#kL9$mP2@qR5!tZ8&vW1*yC4";
 
     public static string HashPassword(string password)
     {

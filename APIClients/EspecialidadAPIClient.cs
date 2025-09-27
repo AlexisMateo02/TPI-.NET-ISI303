@@ -86,27 +86,6 @@ namespace APIClients
                 throw new Exception($"Timeout al crear especialidad: {ex.Message}", ex);
             }
         }
-        public static async Task DeleteAsync(int id)
-        {
-            try
-            {
-                HttpResponseMessage response = await client.DeleteAsync("especialidades/" + id);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    string errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Error al eliminar especialidad con Id {id}. Status: {response.StatusCode}, Detalle: {errorContent}");
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                throw new Exception($"Error de conexión al eliminar especialidad con Id {id}: {ex.Message}", ex);
-            }
-            catch (TaskCanceledException ex)
-            {
-                throw new Exception($"Timeout al eliminar especialidad con Id {id}: {ex.Message}", ex);
-            }
-        }
 
         public static async Task UpdateAsync(EspecialidadDTO especialidad)
         {
@@ -127,6 +106,28 @@ namespace APIClients
             catch (TaskCanceledException ex)
             {
                 throw new Exception($"Timeout al actualizar especialidad con Id {especialidad.Id}: {ex.Message}", ex);
+            }
+        }
+
+        public static async Task DeleteAsync(int id)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.DeleteAsync("especialidades/" + id);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Error al eliminar especialidad con Id {id}. Status: {response.StatusCode}, Detalle: {errorContent}");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"Error de conexión al eliminar especialidad con Id {id}: {ex.Message}", ex);
+            }
+            catch (TaskCanceledException ex)
+            {
+                throw new Exception($"Timeout al eliminar especialidad con Id {id}: {ex.Message}", ex);
             }
         }
     }
