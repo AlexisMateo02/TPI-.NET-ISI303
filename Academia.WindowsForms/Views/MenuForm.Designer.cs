@@ -33,6 +33,7 @@
             buttonEspecialidad = new Button();
             buttonPlan = new Button();
             buttonPersona = new Button();
+            buttonComision = new Button();
             SuspendLayout();
             // 
             // buttonUsuario
@@ -95,12 +96,25 @@
             buttonPersona.UseVisualStyleBackColor = false;
             buttonPersona.Click += buttonPersona_Click;
             // 
+            // buttonComision
+            // 
+            buttonComision.BackColor = SystemColors.ButtonFace;
+            buttonComision.Font = new Font("Segoe UI", 12F);
+            buttonComision.Location = new Point(41, 273);
+            buttonComision.Name = "buttonComision";
+            buttonComision.Size = new Size(163, 35);
+            buttonComision.TabIndex = 5;
+            buttonComision.Text = "Comisión";
+            buttonComision.UseVisualStyleBackColor = false;
+            buttonComision.Click += buttonComision_Click;
+            // 
             // MenuForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.GradientActiveCaption;
-            ClientSize = new Size(247, 270);
+            ClientSize = new Size(247, 323);
+            Controls.Add(buttonComision);
             Controls.Add(buttonPersona);
             Controls.Add(buttonPlan);
             Controls.Add(buttonEspecialidad);
@@ -119,5 +133,6 @@
         private Button buttonEspecialidad;
         private Button buttonPlan;
         private Button buttonPersona;
+        private Button buttonComision;
     }
 }

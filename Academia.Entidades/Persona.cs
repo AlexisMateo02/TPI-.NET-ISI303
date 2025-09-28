@@ -64,6 +64,8 @@ namespace Academia.Entidades
             SetIdPlan(idPlan);
         }
 
+        protected Persona() { } // Constructor sin parámetros para Entity Framework
+
         public void SetNombre(string nombre)
         {
             if (string.IsNullOrWhiteSpace(nombre))

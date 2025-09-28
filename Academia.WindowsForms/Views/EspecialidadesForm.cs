@@ -112,7 +112,6 @@ namespace Academia.WindowsForms.Views
         private void buttonEliminar_Click(object sender, EventArgs e)
         {
             EliminarEspecialidadSeleccionada();
-
         }
 
         private void CreateEspecialidad()

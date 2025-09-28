@@ -173,35 +173,32 @@ namespace Academia.WindowsForms.Views
                 textClave.Focus();
                 isValid = false;
             }
-            if (this.Mode == FormMode.Add || textNombreUsuario.Text != this.Usuario.NombreUsuario)
+            try
             {
-                try
-                {
-                    this.Enabled = false;
-                    this.Cursor = Cursors.WaitCursor;
+                this.Enabled = false;
+                this.Cursor = Cursors.WaitCursor;
 
-                    int? excludeId = this.Mode == FormMode.Update ? this.Usuario.Id : null;
-                    bool nombreUsuarioExiste = await UsuarioAPIClient.ExistsNombreUsuarioAsync(textNombreUsuario.Text, excludeId);
+                int? excludeId = this.Mode == FormMode.Update ? this.Usuario.Id : null;
 
-                    if (nombreUsuarioExiste)
-                    {
-                        MessageBox.Show($"Ya existe un usuario con el nombre '{textNombreUsuario.Text}'.",
-                            "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        textNombreUsuario.Focus();
-                        return false;
-                    }
-                }
-                catch (Exception ex)
+                bool nombreUsuarioExiste = await UsuarioAPIClient.ExistsNombreUsuarioAsync(textNombreUsuario.Text, excludeId);
+                if (nombreUsuarioExiste)
                 {
-                    MessageBox.Show($"Error al validar nombre de usuario: {ex.Message}",
-                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Ya existe un usuario con el nombre '{textNombreUsuario.Text}'.",
+                        "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    textNombreUsuario.Focus();
                     return false;
                 }
-                finally
-                {
-                    this.Enabled = true;
-                    this.Cursor = Cursors.Default;
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al validar nombre de usuario: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            finally
+            {
+                this.Enabled = true;
+                this.Cursor = Cursors.Default;
             }
             return isValid;
         }

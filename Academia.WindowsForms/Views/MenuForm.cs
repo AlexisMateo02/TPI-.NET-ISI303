@@ -47,5 +47,15 @@
             this.Show();
 
         }
+
+        private void buttonComision_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            using (ComisionesForm form = new ComisionesForm())
+            {
+                form.ShowDialog();
+            }
+            this.Show();
+        }
     }
 }

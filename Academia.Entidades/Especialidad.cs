@@ -15,6 +15,7 @@
             Id = id;
             SetDescripcion(descripcion);
         }
+        protected Especialidad() { } // Constructor sin parámetros para Entity Framework
         public void SetDescripcion(string descripcion)
         {
             if (string.IsNullOrWhiteSpace(descripcion))

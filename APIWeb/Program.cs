@@ -40,5 +40,6 @@ app.MapUsuarioEndpoints();
 app.MapEspecialidadEndpoints();
 app.MapPlanEndpoints();
 app.MapPersonaEndpoints();
+app.MapComisionEndpoints();
 
 app.Run();

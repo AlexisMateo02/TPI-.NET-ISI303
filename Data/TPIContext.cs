@@ -10,6 +10,7 @@ namespace Data
         public DbSet<Plan> Planes { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Persona> Personas { get; set; }
+        public DbSet<Comision> Comisiones { get; set; }
 
         internal TPIContext()
         {
@@ -121,6 +122,26 @@ namespace Data
                     .IsRequired();
                 entity.Property(e => e.IdPlan)
                     .IsRequired();
+                entity.HasOne(e => e.Plan)
+                    .WithMany()
+                    .HasForeignKey(e => e.IdPlan)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Comision>(entity =>
+            {
+                entity.HasKey(e => e.IdComision);
+                entity.Property(e => e.IdComision)
+                    .ValueGeneratedOnAdd();
+                entity.Property(e => e.DescripcionComision)
+                    .IsRequired()
+                    .HasMaxLength(500);
+                entity.Property(e => e.AnioEspecialidad)
+                    .IsRequired();
+                entity.Property(e => e.IdPlan)
+                    .IsRequired();
+                entity.HasIndex(e => new { e.AnioEspecialidad, e.IdPlan })
+                    .IsUnique();
                 entity.HasOne(e => e.Plan)
                     .WithMany()
                     .HasForeignKey(e => e.IdPlan)

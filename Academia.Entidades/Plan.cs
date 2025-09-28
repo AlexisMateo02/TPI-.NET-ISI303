@@ -40,6 +40,8 @@
             SetIdEspecialidad(idEspecialidad);
         }
 
+        protected Plan() { } // Constructor sin parámetros para Entity Framework
+
         public void SetDescripcion(string descripcion)
         {
             if (string.IsNullOrWhiteSpace(descripcion))

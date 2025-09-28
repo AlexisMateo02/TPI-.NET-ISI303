@@ -1,6 +1,5 @@
 ﻿using Academia.Entidades;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
 
 namespace Data
 {
@@ -13,12 +12,27 @@ namespace Data
         public Persona? Get(int id)
         {
             using var context = CreateContext();
-            return context.Personas.FirstOrDefault(u => u.IdPersona == id);
+            return context.Personas
+                .Include(p => p.Plan)
+                .ThenInclude(p => p.Especialidad)
+                .FirstOrDefault(p => p.IdPersona == id);
+        }
+        public IEnumerable<Persona> GetByTipoPersona(int tipoPersona)
+        {
+            using var context = CreateContext();
+            return context.Personas
+                .Include(p => p.Plan)
+                .ThenInclude(p => p.Especialidad)
+                .Where(p => p.TipoPersona == tipoPersona)
+                .ToList();
         }
         public IEnumerable<Persona> GetAll()
         {
             using var context = CreateContext();
-            return context.Personas.ToList();
+            return context.Personas
+                .Include(p => p.Plan)
+                .ThenInclude(p => p.Especialidad)
+                .ToList();
         }
         public void Add(Persona persona)
         {
@@ -87,15 +101,6 @@ namespace Data
         {
             using var context = CreateContext();
             return context.Planes.Any(p => p.IdPlan == idPlan);
-        }
-        public IEnumerable<Persona> GetByTipoPersona(int tipoPersona)
-        {
-            using var context = CreateContext();
-            return context.Personas
-                .Include(p => p.Plan)
-                .ThenInclude(plan => plan.Especialidad)
-                .Where(p => p.TipoPersona == tipoPersona)
-                .ToList();
         }
     }
 }

@@ -141,7 +141,9 @@ namespace Academia.WindowsForms.Views
                         persona.DescripcionPlan = plan.Descripcion;
                         var esp = especialidades.FirstOrDefault(e => e.Id == plan.IdEspecialidad);
                         if (esp != null)
+                        {
                             persona.DescripcionEspecialidad = esp.Descripcion;
+                        }
                     }
                 }
 

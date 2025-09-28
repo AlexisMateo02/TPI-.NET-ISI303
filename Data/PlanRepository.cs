@@ -59,6 +59,11 @@ namespace Data
             using var context = CreateContext();
             return context.Personas.Count(p => p.IdPlan == idPlan);
         }
+        public int CountComisionesByPlan(int idPlan)
+        {
+            using var context = CreateContext();
+            return context.Comisiones.Count(c => c.IdPlan == idPlan);
+        }
         public bool DescripcionExistsInEspecialidad(string descripcion, int idEspecialidad, int? excludeId = null)
         {
             using var context = CreateContext();

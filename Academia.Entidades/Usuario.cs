@@ -68,6 +68,7 @@
             _idPersona = null;
         }
 
+        protected Usuario() { } // Constructor sin parámetros para Entity Framework
         public void SetNombreUsuario(string nombreUsuario)
         {
             if (string.IsNullOrWhiteSpace(nombreUsuario))
