@@ -11,5 +11,18 @@
         "Action": "Start"
       }
     ]
+  },
+  {
+    "Name": "APIWeb+BlazorServer",
+    "Projects": [
+      {
+        "Path": "APIWeb\\APIWeb.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "BlazorServer\\BlazorServer.csproj",
+        "Action": "Start"
+      }
+    ]
   }
 ]

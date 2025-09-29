@@ -9,7 +9,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpLogging(o => { });
 
 // Add CORS for Blazor WebAssembly
-/*builder.Services.AddCors(options =>
+builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorWasm",
         policy =>
@@ -18,7 +18,7 @@ builder.Services.AddHttpLogging(o => { });
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
-});*/
+});
 
 var app = builder.Build();
 
@@ -33,7 +33,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Use CORS
-//app.UseCors("AllowBlazorWasm");
+app.UseCors("AllowBlazorWasm");
 
 // Map endpoints
 app.MapUsuarioEndpoints();
