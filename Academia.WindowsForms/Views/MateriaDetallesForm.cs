@@ -3,20 +3,19 @@ using DTOs;
 
 namespace Academia.WindowsForms.Views
 {
-    public partial class PersonaDetallesForm : Form
+    public partial class MateriaDetallesForm : Form
     {
-        private PersonaDTO persona;
+        private MateriaDTO materia;
         private FormMode mode;
         private List<EspecialidadDTO> especialidades;
         private List<PlanDTO> planes;
-
-        public PersonaDTO Persona
+        public MateriaDTO Materia
         {
-            get { return persona; }
+            get { return materia; }
             set
             {
-                persona = value;
-                this.SetPersona();
+                materia = value;
+                this.SetMateria();
             }
         }
         public FormMode Mode
@@ -24,28 +23,12 @@ namespace Academia.WindowsForms.Views
             get { return mode; }
             set { SetFormMode(value); }
         }
-        public PersonaDetallesForm()
+        public MateriaDetallesForm()
         {
             InitializeComponent();
-            LoadTiposPersona();
             LoadEspecialidades();
             Mode = FormMode.Add;
         }
-
-        private void LoadTiposPersona()
-        {
-            var tipos = new List<object>
-            {
-                new { Id = 1, Descripcion = "Estudiante" },
-                new { Id = 2, Descripcion = "Docente" }
-            };
-
-            comboBoxTipoPersona.DataSource = tipos;
-            comboBoxTipoPersona.DisplayMember = "Descripcion";
-            comboBoxTipoPersona.ValueMember = "Id";
-            comboBoxTipoPersona.SelectedIndex = -1;
-        }
-
         private async void LoadEspecialidades()
         {
             try
@@ -57,7 +40,7 @@ namespace Academia.WindowsForms.Views
                 comboBoxEspecialidad.ValueMember = "Id";
                 comboBoxEspecialidad.SelectedIndex = -1;
 
-                
+
                 planes = (await PlanAPIClient.GetAllAsync()).ToList();
 
                 comboBoxPlan.DataSource = null;
@@ -69,7 +52,6 @@ namespace Academia.WindowsForms.Views
                               MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void comboBoxEspecialidad_SelectedValueChanged(object sender, EventArgs e)
         {
             if (comboBoxEspecialidad.SelectedValue != null && comboBoxEspecialidad.SelectedValue is int idEspecialidad)
@@ -81,12 +63,12 @@ namespace Academia.WindowsForms.Views
                 comboBoxPlan.DisplayMember = "Descripcion";
                 comboBoxPlan.ValueMember = "IdPlan";
 
-                if (Mode == FormMode.Update && Persona != null)
+                if (Mode == FormMode.Update && Materia != null)
                 {
-                    var planActual = planesFiltrados.FirstOrDefault(p => p.IdPlan == Persona.IdPlan);
+                    var planActual = planesFiltrados.FirstOrDefault(p => p.IdPlan == Materia.IdPlan);
                     if (planActual != null)
                     {
-                        comboBoxPlan.SelectedValue = Persona.IdPlan;
+                        comboBoxPlan.SelectedValue = Materia.IdPlan;
                     }
                     else
                     {
@@ -104,30 +86,24 @@ namespace Academia.WindowsForms.Views
                 comboBoxPlan.SelectedIndex = -1;
             }
         }
-
         private async void buttonAceptar_Click(object sender, EventArgs e)
         {
-            if (await this.ValidatePersona())
+            if (await this.ValidateMateria())
             {
                 try
                 {
-                    this.Persona.Legajo = int.Parse(textLegajo.Text);
-                    this.Persona.Nombre = textNombre.Text;
-                    this.Persona.Apellido = textApellido.Text;
-                    this.Persona.Direccion = textDireccion.Text;
-                    this.Persona.Email = textEmail.Text;
-                    this.Persona.Telefono = textTelefono.Text;
-                    this.Persona.FechaNacimiento = pickerFechaNac.Value;
-                    this.Persona.TipoPersona = (int)comboBoxTipoPersona.SelectedValue;
-                    this.Persona.IdPlan = (int)comboBoxPlan.SelectedValue;
+                    this.Materia.DescripcionMateria = textDescripcion.Text;
+                    this.Materia.HorasSemanales = int.Parse(textHorasSemanales.Text);
+                    this.Materia.HorasTotales = int.Parse(textHorasTotales.Text);
+                    this.Materia.IdPlan = (int)comboBoxPlan.SelectedValue;
 
                     if (this.Mode == FormMode.Update)
                     {
-                        await PersonaAPIClient.UpdateAsync(this.Persona);
+                        await MateriaAPIClient.UpdateAsync(this.Materia);
                     }
                     else
                     {
-                        await PersonaAPIClient.AddAsync(this.Persona);
+                        await MateriaAPIClient.AddAsync(this.Materia);
                     }
 
                     this.DialogResult = DialogResult.OK;
@@ -139,7 +115,6 @@ namespace Academia.WindowsForms.Views
                 }
             }
         }
-
         private void buttonCancelar_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
@@ -149,7 +124,7 @@ namespace Academia.WindowsForms.Views
         {
             try
             {
-                var plan = planes?.FirstOrDefault(p => p.IdPlan == Persona.IdPlan);
+                var plan = planes?.FirstOrDefault(p => p.IdPlan == Materia.IdPlan);
 
                 if (plan != null)
                 {
@@ -158,7 +133,7 @@ namespace Academia.WindowsForms.Views
                     // Esperar a que se actualice el combo de planes
                     Application.DoEvents();
 
-                    comboBoxPlan.SelectedValue = Persona.IdPlan;
+                    comboBoxPlan.SelectedValue = Materia.IdPlan;
                 }
             }
             catch (Exception ex)
@@ -167,19 +142,14 @@ namespace Academia.WindowsForms.Views
                               "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-        private void SetPersona()
+        private void SetMateria()
         {
-            this.textId.Text = this.Persona.IdPersona.ToString();
-            this.textNombre.Text = this.Persona.Nombre;
-            this.textApellido.Text = this.Persona.Apellido;
-            this.textDireccion.Text = this.Persona.Direccion;
-            this.textEmail.Text = this.Persona.Email;
-            this.textTelefono.Text = this.Persona.Telefono;
-            this.pickerFechaNac.Value = this.Persona.FechaNacimiento == default ? DateTime.Today : this.Persona.FechaNacimiento;
-            this.textLegajo.Text = this.Persona.Legajo > 0 ? this.Persona.Legajo.ToString() : "";
-            this.comboBoxTipoPersona.SelectedValue = this.Persona.TipoPersona;
+            this.textId.Text = this.Materia.IdMateria.ToString();
+            this.textDescripcion.Text = this.Materia.DescripcionMateria;
+            this.textHorasSemanales.Text = this.Materia.HorasSemanales > 0 ? this.Materia.HorasSemanales.ToString() : "";
+            this.textHorasTotales.Text = this.Materia.HorasTotales > 0 ? this.Materia.HorasTotales.ToString() : "";
 
-            if (this.Persona.IdPlan > 0)
+            if (this.Materia.IdPlan > 0)
             {
                 SetEspecialidadYPlan();
             }
@@ -201,29 +171,29 @@ namespace Academia.WindowsForms.Views
                 textId.ReadOnly = true;
             }
         }
-        private async Task<bool> ValidatePersona()
+        private async Task<bool> ValidateMateria()
         {
-            if (string.IsNullOrWhiteSpace(textNombre.Text))
+            if (string.IsNullOrWhiteSpace(textDescripcion.Text))
             {
-                MessageBox.Show("El nombre es obligatorio.", "Error de validación",
+                MessageBox.Show("La descripción es obligatoria.", "Error de validación",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                textNombre.Focus();
+                textDescripcion.Focus();
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(textApellido.Text))
+            if (string.IsNullOrWhiteSpace(textHorasSemanales.Text))
             {
-                MessageBox.Show("El apellido es obligatorio.", "Error de validación",
+                MessageBox.Show("Las horas semanales son obligatorias.", "Error de validación",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                textApellido.Focus();
+                textHorasSemanales.Focus();
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(textEmail.Text))
+            if (string.IsNullOrWhiteSpace(textHorasTotales.Text))
             {
-                MessageBox.Show("El email es obligatorio.", "Error de validación",
+                MessageBox.Show("Las horas totales son obligatorias.", "Error de validación",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                textEmail.Focus();
+                textHorasTotales.Focus();
                 return false;
             }
 
@@ -240,24 +210,16 @@ namespace Academia.WindowsForms.Views
                 this.Enabled = false;
                 this.Cursor = Cursors.WaitCursor;
 
-                int? excludeId = this.Mode == FormMode.Update ? this.Persona.IdPersona : null;
+                string descripcionMateria = textDescripcion.Text;
+                int idPlan = (int)comboBoxPlan.SelectedValue;
+                int? excludeId = this.Mode == FormMode.Update ? this.Materia.IdMateria : null;
 
-                bool emailExiste = await PersonaAPIClient.ExistsEmailAsync(textEmail.Text, excludeId);
-                if (emailExiste)
+                bool materiaExiste = await MateriaAPIClient.ExistPlanAndDescripcionMateriaAsync(idPlan, descripcionMateria, excludeId);
+                if (materiaExiste)
                 {
-                    MessageBox.Show($"Ya existe una persona con el email '{textEmail.Text}'.",
+                    MessageBox.Show($"Ya existe una materia con esa descripción para el plan seleccionado.",
                         "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    textEmail.Focus();
-                    return false;
-                }
-
-                int legajo = int.Parse(textLegajo.Text);
-                bool legajoExiste = await PersonaAPIClient.ExistsLegajoAsync(legajo ,excludeId);
-                if (legajoExiste)
-                {
-                    MessageBox.Show($"Ya existe una persona con el legajo '{legajo}'.",
-                        "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    textLegajo.Focus();
+                    textDescripcion.Focus();
                     return false;
                 }
             }

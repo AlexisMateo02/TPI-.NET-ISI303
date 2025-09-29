@@ -1,5 +1,4 @@
-﻿using Academia.Entidades;
-using APIClients;
+﻿using APIClients;
 using DTOs;
 
 namespace Academia.WindowsForms.Views
@@ -184,7 +183,7 @@ namespace Academia.WindowsForms.Views
 
             if (string.IsNullOrWhiteSpace(textAnioEspecialidad.Text))
             {
-                MessageBox.Show("El apellido es obligatorio.", "Error de validación",
+                MessageBox.Show("El año de la especialidad es obligatorio.", "Error de validación",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 textAnioEspecialidad.Focus();
                 return false;

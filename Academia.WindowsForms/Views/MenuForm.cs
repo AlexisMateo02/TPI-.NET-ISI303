@@ -57,5 +57,25 @@
             }
             this.Show();
         }
+
+        private void buttonMateria_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            using (MateriasForm form = new MateriasForm())
+            {
+                form.ShowDialog();
+            }
+            this.Show();
+        }
+
+        private void buttonCurso_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            using (CursosForm form = new CursosForm())
+            {
+                form.ShowDialog();
+            }
+            this.Show();
+        }
     }
 }

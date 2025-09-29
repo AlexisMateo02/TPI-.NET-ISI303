@@ -3,14 +3,14 @@ using DTOs;
 
 namespace APIWeb
 {
-    public static class ComisionEndpoints
+    public static class MateriaEndpoints
     {
-        public static void MapComisionEndpoints(this WebApplication app)
+        public static void MapMateriaEndpoints(this WebApplication app)
         {
-            app.MapGet("/comisiones/{id}", (int id) =>
+            app.MapGet("/materias/{id}", (int id) =>
             {
-                ComisionService comisionService = new ComisionService();
-                ComisionDTO dto = comisionService.Get(id);
+                MateriaService materiaService = new MateriaService();
+                MateriaDTO dto = materiaService.Get(id);
 
                 if (dto == null)
                 {
@@ -19,45 +19,45 @@ namespace APIWeb
 
                 return Results.Ok(dto);
             })
-            .WithName("GetComision")
-            .Produces<ComisionDTO>(StatusCodes.Status200OK)
+            .WithName("GetMateria")
+            .Produces<MateriaDTO>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/comisiones", () =>
+            app.MapGet("/materias", () =>
             {
-                ComisionService comisionService = new ComisionService();
-                var dtos = comisionService.GetAll();
+                MateriaService materiaService = new MateriaService();
+                var dtos = materiaService.GetAll();
                 return Results.Ok(dtos);
             })
-            .WithName("GetAllComisiones")
-            .Produces<List<ComisionDTO>>(StatusCodes.Status200OK)
+            .WithName("GetAllMaterias")
+            .Produces<List<MateriaDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
 
-            app.MapPost("/comisiones", (ComisionDTO dto) =>
+            app.MapPost("/materias", (MateriaDTO dto) =>
             {
                 try
                 {
-                    ComisionService comisionService = new ComisionService();
-                    ComisionDTO comisionDTO = comisionService.Add(dto);
-                    return Results.Created($"/comisiones/{comisionDTO.IdComision}", comisionDTO);
+                    MateriaService materiaService = new MateriaService();
+                    MateriaDTO materiaDTO = materiaService.Add(dto);
+                    return Results.Created($"/materias/{materiaDTO.IdMateria}", materiaDTO);
                 }
                 catch (ArgumentException ex)
                 {
                     return Results.BadRequest(new { error = ex.Message });
                 }
             })
-            .WithName("AddComision")
-            .Produces<ComisionDTO>(StatusCodes.Status201Created)
+            .WithName("AddMateria")
+            .Produces<MateriaDTO>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPut("/comisiones", (ComisionDTO dto) =>
+            app.MapPut("/materias", (MateriaDTO dto) =>
             {
                 try
                 {
-                    ComisionService comisionService = new ComisionService();
-                    var found = comisionService.Update(dto);
+                    MateriaService materiaService = new MateriaService();
+                    var found = materiaService.Update(dto);
 
                     if (!found)
                     {
@@ -71,18 +71,18 @@ namespace APIWeb
                     return Results.BadRequest(new { error = ex.Message });
                 }
             })
-            .WithName("UpdateComision")
+            .WithName("UpdateMateria")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapDelete("/comisiones/{id}", (int id) =>
+            app.MapDelete("/materias/{id}", (int id) =>
             {
                 try
                 {
-                    ComisionService comisionService = new ComisionService();
-                    var deleted = comisionService.Delete(id);
+                    MateriaService materiaService = new MateriaService();
+                    var deleted = materiaService.Delete(id);
 
                     if (!deleted)
                     {
@@ -96,18 +96,18 @@ namespace APIWeb
                     return Results.BadRequest(new { error = ex.Message });
                 }
             })
-            .WithName("DeleteComision")
+            .WithName("DeleteMateria")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapGet("/comisiones/existsAnioEspecialidadAndPlan", (int anioEspecialidad, int idPlan, int? excludeId) =>
+            app.MapGet("/materias/existPlanAndDescripcionMateria", (int idPlan, string descripcionMateria, int? excludeId) =>
             {
                 try
                 {
-                    ComisionService comisionService = new ComisionService();
-                    bool exists = comisionService.ExistPlanAndAnioEspecialidad(anioEspecialidad, idPlan, excludeId);
+                    MateriaService materiaService = new MateriaService();
+                    bool exists = materiaService.ExistPlanAndDescripcionMateria(idPlan, descripcionMateria, excludeId);
                     return Results.Ok(exists);
                 }
                 catch (Exception ex)
@@ -115,7 +115,7 @@ namespace APIWeb
                     return Results.BadRequest(new { error = ex.Message });
                 }
             })
-            .WithName("ExistsAnioEspecialidadAndPlanInComision")
+            .WithName("ExistsPlanAndDescripcionMateriaInMateria")
             .Produces<bool>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();

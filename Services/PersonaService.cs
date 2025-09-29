@@ -131,7 +131,6 @@ namespace Services
             return personaRepository.Delete(id);
         }
 
-        // Métodos para validación desde formularios
         public bool ExistsEmail(string email, int? excludeId = null)
         {
             var personaRepository = new PersonaRepository();

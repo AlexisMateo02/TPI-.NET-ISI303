@@ -88,6 +88,20 @@ namespace Services
         public bool Delete(int id)
         {
             var comisionRepository = new ComisionRepository();
+            var cantidadCursos = comisionRepository.CountCursosByComision(id);
+            if (cantidadCursos > 0)
+            {
+                string mensaje = $"No se puede eliminar la comisión. ";
+                if (cantidadCursos == 1)
+                {
+                    mensaje += $"Tiene un curso asignado.";
+                }
+                else
+                {
+                    mensaje += $"Tiene {cantidadCursos} cursos asignados.";
+                }
+                throw new InvalidOperationException(mensaje);
+            }
             return comisionRepository.Delete(id);
         }
         public bool ExistPlanAndAnioEspecialidad(int anioEspecialidad, int idPlan, int? excludeId = null)

@@ -57,10 +57,16 @@ namespace Data
             }
             return false;
         }
+        public int CountCursosByComision(int idComision)
+        {
+            using var context = CreateContext();
+            return context.Cursos.Count(c => c.IdComision == idComision);
+        }
         public bool PlanAndAnioEspecialidadExist(int anioEspecialidad, int idPlan, int? excludeId = null)
         {
             using var context = CreateContext();
-            var query = context.Comisiones.Where(c => c.AnioEspecialidad == anioEspecialidad && c.IdPlan == idPlan);
+            var query = context.Comisiones
+                .Where(c => c.AnioEspecialidad == anioEspecialidad && c.IdPlan == idPlan);
             if (excludeId.HasValue)
             {
                 query = query.Where(c => c.IdComision != excludeId.Value);

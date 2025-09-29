@@ -64,16 +64,21 @@ namespace Data
             using var context = CreateContext();
             return context.Comisiones.Count(c => c.IdPlan == idPlan);
         }
+        public int CountMateriasByPlan(int idPlan)
+        {
+            using var context = CreateContext();
+            return context.Materias.Count(m => m.IdPlan == idPlan);
+        }
         public bool DescripcionExistsInEspecialidad(string descripcion, int idEspecialidad, int? excludeId = null)
         {
             using var context = CreateContext();
             var query = context.Planes
                 .Where(p => p.Descripcion.ToLower() == descripcion.ToLower()
                             && p.IdEspecialidad == idEspecialidad);
-
             if (excludeId.HasValue)
+            {
                 query = query.Where(p => p.IdPlan != excludeId.Value);
-
+            }
             return query.Any();
         }
         public bool EspecialidadExists(int idEspecialidad)

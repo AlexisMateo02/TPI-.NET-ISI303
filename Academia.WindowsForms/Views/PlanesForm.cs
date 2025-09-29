@@ -160,7 +160,7 @@ namespace Academia.WindowsForms.Views
 
             if (planExistente == null)
             {
-                MessageBox.Show("Debe seleccionar una Plan de la lista.", "Selección requerida",
+                MessageBox.Show("Debe seleccionar una plan de la lista.", "Selección requerida",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }

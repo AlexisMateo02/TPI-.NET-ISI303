@@ -34,6 +34,8 @@
             buttonPlan = new Button();
             buttonPersona = new Button();
             buttonComision = new Button();
+            buttonMateria = new Button();
+            buttonCurso = new Button();
             SuspendLayout();
             // 
             // buttonUsuario
@@ -108,12 +110,38 @@
             buttonComision.UseVisualStyleBackColor = false;
             buttonComision.Click += buttonComision_Click;
             // 
+            // buttonMateria
+            // 
+            buttonMateria.BackColor = SystemColors.ButtonFace;
+            buttonMateria.Font = new Font("Segoe UI", 12F);
+            buttonMateria.Location = new Point(41, 324);
+            buttonMateria.Name = "buttonMateria";
+            buttonMateria.Size = new Size(163, 35);
+            buttonMateria.TabIndex = 6;
+            buttonMateria.Text = "Materia";
+            buttonMateria.UseVisualStyleBackColor = false;
+            buttonMateria.Click += buttonMateria_Click;
+            // 
+            // buttonCurso
+            // 
+            buttonCurso.BackColor = SystemColors.ButtonFace;
+            buttonCurso.Font = new Font("Segoe UI", 12F);
+            buttonCurso.Location = new Point(41, 378);
+            buttonCurso.Name = "buttonCurso";
+            buttonCurso.Size = new Size(163, 35);
+            buttonCurso.TabIndex = 7;
+            buttonCurso.Text = "Curso";
+            buttonCurso.UseVisualStyleBackColor = false;
+            buttonCurso.Click += buttonCurso_Click;
+            // 
             // MenuForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.GradientActiveCaption;
-            ClientSize = new Size(247, 323);
+            ClientSize = new Size(247, 432);
+            Controls.Add(buttonCurso);
+            Controls.Add(buttonMateria);
             Controls.Add(buttonComision);
             Controls.Add(buttonPersona);
             Controls.Add(buttonPlan);
@@ -134,5 +162,7 @@
         private Button buttonPlan;
         private Button buttonPersona;
         private Button buttonComision;
+        private Button buttonMateria;
+        private Button buttonCurso;
     }
 }

@@ -1,16 +1,16 @@
-﻿using Services;
-using DTOs;
+﻿using DTOs;
+using Services;
 
 namespace APIWeb
 {
-    public static class ComisionEndpoints
+    public static class CursoEndpoints
     {
-        public static void MapComisionEndpoints(this WebApplication app)
+        public static void MapCursoEndpoints(this WebApplication app)
         {
-            app.MapGet("/comisiones/{id}", (int id) =>
+            app.MapGet("/cursos/{id}", (int id) =>
             {
-                ComisionService comisionService = new ComisionService();
-                ComisionDTO dto = comisionService.Get(id);
+                CursoService cursoService = new CursoService();
+                CursoDTO dto = cursoService.Get(id);
 
                 if (dto == null)
                 {
@@ -19,45 +19,45 @@ namespace APIWeb
 
                 return Results.Ok(dto);
             })
-            .WithName("GetComision")
-            .Produces<ComisionDTO>(StatusCodes.Status200OK)
+            .WithName("GetCurso")
+            .Produces<CursoDTO>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/comisiones", () =>
+            app.MapGet("/cursos", () =>
             {
-                ComisionService comisionService = new ComisionService();
-                var dtos = comisionService.GetAll();
+                CursoService cursoService = new CursoService();
+                var dtos = cursoService.GetAll();
                 return Results.Ok(dtos);
             })
-            .WithName("GetAllComisiones")
-            .Produces<List<ComisionDTO>>(StatusCodes.Status200OK)
+            .WithName("GetAllCursos")
+            .Produces<List<CursoDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
 
-            app.MapPost("/comisiones", (ComisionDTO dto) =>
+            app.MapPost("/cursos", (CursoDTO dto) =>
             {
                 try
                 {
-                    ComisionService comisionService = new ComisionService();
-                    ComisionDTO comisionDTO = comisionService.Add(dto);
-                    return Results.Created($"/comisiones/{comisionDTO.IdComision}", comisionDTO);
+                    CursoService cursoService = new CursoService();
+                    CursoDTO cursoDTO = cursoService.Add(dto);
+                    return Results.Created($"/cursos/{cursoDTO.IdCurso}", cursoDTO);
                 }
                 catch (ArgumentException ex)
                 {
                     return Results.BadRequest(new { error = ex.Message });
                 }
             })
-            .WithName("AddComision")
-            .Produces<ComisionDTO>(StatusCodes.Status201Created)
+            .WithName("AddCurso")
+            .Produces<CursoDTO>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPut("/comisiones", (ComisionDTO dto) =>
+            app.MapPut("/cursos", (CursoDTO dto) =>
             {
                 try
                 {
-                    ComisionService comisionService = new ComisionService();
-                    var found = comisionService.Update(dto);
+                    CursoService cursoService = new CursoService();
+                    var found = cursoService.Update(dto);
 
                     if (!found)
                     {
@@ -71,18 +71,18 @@ namespace APIWeb
                     return Results.BadRequest(new { error = ex.Message });
                 }
             })
-            .WithName("UpdateComision")
+            .WithName("UpdateCurso")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapDelete("/comisiones/{id}", (int id) =>
+            app.MapDelete("/cursos/{id}", (int id) =>
             {
                 try
                 {
-                    ComisionService comisionService = new ComisionService();
-                    var deleted = comisionService.Delete(id);
+                    CursoService cursoService = new CursoService();
+                    var deleted = cursoService.Delete(id);
 
                     if (!deleted)
                     {
@@ -96,18 +96,18 @@ namespace APIWeb
                     return Results.BadRequest(new { error = ex.Message });
                 }
             })
-            .WithName("DeleteComision")
+            .WithName("DeleteCurso")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapGet("/comisiones/existsAnioEspecialidadAndPlan", (int anioEspecialidad, int idPlan, int? excludeId) =>
+            app.MapGet("/cursos/existComisionMateriaAndAnioCalendario", (int idComision, int idMateria, int anioCalendario, int? excludeId) =>
             {
                 try
                 {
-                    ComisionService comisionService = new ComisionService();
-                    bool exists = comisionService.ExistPlanAndAnioEspecialidad(anioEspecialidad, idPlan, excludeId);
+                    CursoService cursoService = new CursoService();
+                    bool exists = cursoService.ExistComisionMateriaAndAnioCalendario(idComision, idMateria, anioCalendario, excludeId);
                     return Results.Ok(exists);
                 }
                 catch (Exception ex)
@@ -115,10 +115,11 @@ namespace APIWeb
                     return Results.BadRequest(new { error = ex.Message });
                 }
             })
-            .WithName("ExistsAnioEspecialidadAndPlanInComision")
+            .WithName("ExistComisionMateriaAndAnioCalendarioInCurso")
             .Produces<bool>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
         }
+
     }
 }

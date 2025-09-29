@@ -1,6 +1,4 @@
-﻿using Academia.Entidades;
-
-namespace DTOs
+﻿namespace DTOs
 {
     public class PlanDTO
     {

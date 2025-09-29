@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace Academia.Entidades
+﻿namespace Academia.Entidades
 {
     public class Comision
     {

@@ -28,16 +28,16 @@ namespace APIClients
                 else
                 {
                     string errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Error al obtener comision con Id {id}. Status: {response.StatusCode}, Detalle: {errorContent}");
+                    throw new Exception($"Error al obtener comisión con Id {id}. Status: {response.StatusCode}, Detalle: {errorContent}");
                 }
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Error de conexión al obtener comision con Id {id}: {ex.Message}", ex);
+                throw new Exception($"Error de conexión al obtener comisión con Id {id}: {ex.Message}", ex);
             }
             catch (TaskCanceledException ex)
             {
-                throw new Exception($"Timeout al obtener comision con Id {id}: {ex.Message}", ex);
+                throw new Exception($"Timeout al obtener comisión con Id {id}: {ex.Message}", ex);
             }
         }
         public static async Task<IEnumerable<ComisionDTO>> GetAllAsync()
@@ -74,16 +74,16 @@ namespace APIClients
                 if (!response.IsSuccessStatusCode)
                 {
                     string errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Error al crear comision. Status: {response.StatusCode}, Detalle: {errorContent}");
+                    throw new Exception($"Error al crear comisión. Status: {response.StatusCode}, Detalle: {errorContent}");
                 }
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Error de conexión al crear comision: {ex.Message}", ex);
+                throw new Exception($"Error de conexión al crear comisión: {ex.Message}", ex);
             }
             catch (TaskCanceledException ex)
             {
-                throw new Exception($"Timeout al crear comision: {ex.Message}", ex);
+                throw new Exception($"Timeout al crear comisión: {ex.Message}", ex);
             }
         }
         public static async Task UpdateAsync(ComisionDTO comision)
@@ -95,16 +95,16 @@ namespace APIClients
                 if (!response.IsSuccessStatusCode)
                 {
                     string errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Error al actualizar comision con Id {comision.IdComision}. Status: {response.StatusCode}, Detalle: {errorContent}");
+                    throw new Exception($"Error al actualizar comisión con Id {comision.IdComision}. Status: {response.StatusCode}, Detalle: {errorContent}");
                 }
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Error de conexión al actualizar comision con Id {comision.IdComision}: {ex.Message}", ex);
+                throw new Exception($"Error de conexión al actualizar comisión con Id {comision.IdComision}: {ex.Message}", ex);
             }
             catch (TaskCanceledException ex)
             {
-                throw new Exception($"Timeout al actualizar comision con Id {comision.IdComision}: {ex.Message}", ex);
+                throw new Exception($"Timeout al actualizar comisión con Id {comision.IdComision}: {ex.Message}", ex);
             }
         }
         public static async Task DeleteAsync(int id)
@@ -116,16 +116,16 @@ namespace APIClients
                 if (!response.IsSuccessStatusCode)
                 {
                     string errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Error al eliminar comision con Id {id}. Status: {response.StatusCode}, Detalle: {errorContent}");
+                    throw new Exception($"Error al eliminar comisión con Id {id}. Status: {response.StatusCode}, Detalle: {errorContent}");
                 }
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Error de conexión al eliminar comision con Id {id}: {ex.Message}", ex);
+                throw new Exception($"Error de conexión al eliminar comisión con Id {id}: {ex.Message}", ex);
             }
             catch (TaskCanceledException ex)
             {
-                throw new Exception($"Timeout al eliminar comision con Id {id}: {ex.Message}", ex);
+                throw new Exception($"Timeout al eliminar comisión con Id {id}: {ex.Message}", ex);
             }
         }
         public static async Task<bool> ExistPlanAndAnioEspecialidadAsync(int anioEspecialidad, int idPlan, int? excludeId = null)

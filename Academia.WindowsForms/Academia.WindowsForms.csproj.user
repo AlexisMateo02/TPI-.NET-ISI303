@@ -7,10 +7,22 @@
     <Compile Update="Views\ComisionesForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Views\CursoDetallesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Views\CursosForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Views\EspecialidadDetallesForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Views\EspecialidadesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Views\MateriaDetallesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Views\MateriasForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Views\MenuForm.cs">

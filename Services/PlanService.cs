@@ -89,10 +89,37 @@ namespace Services
                 }
                 throw new InvalidOperationException(mensaje);
             }
+            var cantidadComisiones = planRepository.CountComisionesByPlan(id);
+            if (cantidadComisiones > 0)
+            {
+                string mensaje = $"No se puede eliminar el plan. ";
+                if (cantidadComisiones == 1)
+                {
+                    mensaje += $"Tiene una comisión asignada.";
+                }
+                else
+                {
+                    mensaje += $"Tiene {cantidadComisiones} comisiones asignadas.";
+                }
+                throw new InvalidOperationException(mensaje);
+            }
+            var cantidadMaterias = planRepository.CountMateriasByPlan(id);
+            if (cantidadMaterias > 0)
+            {
+                string mensaje = $"No se puede eliminar el plan. ";
+                if (cantidadMaterias == 1)
+                {
+                    mensaje += $"Tiene una materia asignada.";
+                }
+                else
+                {
+                    mensaje += $"Tiene {cantidadMaterias} materias asignadas.";
+                }
+                throw new InvalidOperationException(mensaje);
+            }
             return planRepository.Delete(id);
 
         }
-        // Método para validación desde Forms
         public bool ExistsDescripcionInEspecialidad(string descripcion, int idEspecialidad, int? excludeId = null)
         {
             var planRepository = new PlanRepository();

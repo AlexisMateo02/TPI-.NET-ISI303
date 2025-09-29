@@ -72,7 +72,6 @@ namespace Academia.WindowsForms.Views
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-
         }
 
         private void buttonCancelar_Click(object sender, EventArgs e)

@@ -41,5 +41,7 @@ app.MapEspecialidadEndpoints();
 app.MapPlanEndpoints();
 app.MapPersonaEndpoints();
 app.MapComisionEndpoints();
+app.MapCursoEndpoints();
+app.MapMateriaEndpoints();
 
 app.Run();

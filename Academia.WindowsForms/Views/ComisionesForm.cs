@@ -42,7 +42,7 @@ namespace Academia.WindowsForms.Views
                 Name = "AnioEspecialidad",
                 HeaderText = "Año de Especialidad",
                 DataPropertyName = "AnioEspecialidad",
-                Width = 137
+                Width = 140
             });
 
             this.dgvComisiones.Columns.Add(new DataGridViewTextBoxColumn
@@ -218,7 +218,7 @@ namespace Academia.WindowsForms.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al eliminar comisión: {ex.Message}", "Error",
+                MessageBox.Show($"{ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
