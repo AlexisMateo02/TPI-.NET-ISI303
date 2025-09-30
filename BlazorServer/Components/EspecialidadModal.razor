@@ -82,16 +82,17 @@
         Update
     }
 
-    public async Task ShowAddModal()
+    public Task ShowAddModal()
     {
         mode = FormMode.Add;
         currentEspecialidad = new EspecialidadDTO();
         ClearValidationErrors();
         showModal = true;
         StateHasChanged();
+        return Task.CompletedTask;
     }
 
-    public async Task ShowEditModal(EspecialidadDTO especialidad)
+    public Task ShowEditModal(EspecialidadDTO especialidad)
     {
         mode = FormMode.Update;
         currentEspecialidad = new EspecialidadDTO
@@ -102,6 +103,7 @@
         ClearValidationErrors();
         showModal = true;
         StateHasChanged();
+        return Task.CompletedTask;
     }
 
     private async Task HandleValidSubmit()
@@ -157,7 +159,7 @@
         errorMessage = string.Empty;
     }
 
-    private async void Close()
+    private void Close()
     {
         showModal = false;
         ClearValidationErrors();
