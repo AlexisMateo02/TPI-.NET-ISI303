@@ -1,0 +1,98 @@
+﻿@page "/login"
+@using DTOs
+@using APIClients
+@inject NavigationManager NavigationManager
+@inject IAuthService AuthService
+
+<PageTitle>Iniciar Sesión</PageTitle>
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Iniciar Sesión</h3>
+
+                    <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+                        <DataAnnotationsValidator />
+
+                        <div class="mb-3">
+                            <label class="form-label">Usuario</label>
+                            <InputText @bind-Value="loginModel.Username"
+                                       class="form-control"
+                                       placeholder="Ingrese su usuario" />
+                            <ValidationMessage For="@(() => loginModel.Username)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña</label>
+                            <InputText @bind-Value="loginModel.Password"
+                                       type="password"
+                                       class="form-control"
+                                       placeholder="Ingrese su contraseña" />
+                            <ValidationMessage For="@(() => loginModel.Password)" />
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                @errorMessage
+                            </div>
+                        }
+
+                        <button type="submit" class="btn btn-primary w-100" disabled="@isLoggingIn">
+                            @if (isLoggingIn)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                            }
+                            Ingresar
+                        </button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private string errorMessage = string.Empty;
+    private bool isLoggingIn = false;
+
+    private class LoginModel
+    {
+        [Required(ErrorMessage = "El usuario es requerido")]
+        public string Username { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "La contraseña es requerida")]
+        public string Password { get; set; } = string.Empty;
+    }
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            isLoggingIn = true;
+            errorMessage = string.Empty;
+
+            bool success = await AuthService.LoginAsync(loginModel.Username, loginModel.Password);
+
+            if (success)
+            {
+                NavigationManager.NavigateTo("/", forceLoad: true);
+            }
+            else
+            {
+                errorMessage = "Usuario o contraseña incorrectos";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al iniciar sesión: {ex.Message}";
+        }
+        finally
+        {
+            isLoggingIn = false;
+        }
+    }
+}

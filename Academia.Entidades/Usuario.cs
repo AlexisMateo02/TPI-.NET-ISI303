@@ -1,4 +1,8 @@
-﻿namespace Academia.Entidades
+﻿using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace Academia.Entidades
 {
     public class Usuario
     {
@@ -6,9 +10,12 @@
         private Persona? _persona;
         public int Id { get; private set; }
         public string NombreUsuario { get; private set; }
-        public string Clave { get; private set; }
+        public string Clave { get; private set; } //PasswordHash
+        public string Salt { get; private set; }
         public bool Habilitado { get; private set; }
         public DateTime FechaAlta { get; private set; }
+        public int? GrupoPermisoId { get; private set; }
+        public virtual GrupoPermiso? Grupo { get; private set; }
 
         public int? IdPersona
         {
@@ -78,12 +85,13 @@
         public void SetClave(string clave)
         {
             if (string.IsNullOrWhiteSpace(clave))
-                throw new ArgumentException("La clave no puede ser nula o vacía.", nameof(clave));
+                throw new ArgumentException("La contraseña no puede ser nula o vacía.", nameof(clave));
 
             if (clave.Length < 6)
-                throw new ArgumentException("La clave debe tener al menos 6 caracteres.", nameof(clave));
+                throw new ArgumentException("La contraseña debe tener al menos 6 caracteres.", nameof(clave));
 
-            Clave = PasswordHelper.HashPassword(clave);
+            Salt = GenerateSalt();
+            Clave = HashPassword(clave, Salt);
         }
         public void SetHabilitado(bool habilitado)
         {
@@ -100,6 +108,54 @@
             if (idPersona <= 0)
                 throw new ArgumentException("El ID de la persona debe ser mayor que cero.", nameof(idPersona));
             IdPersona = idPersona;
+        }
+        public bool ValidateClave(string clave)
+        {
+            if (string.IsNullOrWhiteSpace(clave))
+                return false;
+
+            string hashedInput = HashPassword(clave, Salt);
+            return Clave == hashedInput;
+        }
+        private static string GenerateSalt()
+        {
+            byte[] saltBytes = new byte[32];
+            RandomNumberGenerator.Fill(saltBytes);
+            return Convert.ToBase64String(saltBytes);
+        }
+
+        private static string HashPassword(string clave, string salt)
+        {
+            using var pbkdf2 = new Rfc2898DeriveBytes(clave, Convert.FromBase64String(salt), 10000, HashAlgorithmName.SHA256);
+            byte[] hashBytes = pbkdf2.GetBytes(32);
+            return Convert.ToBase64String(hashBytes);
+        }
+
+        public void SetGrupo(GrupoPermiso? grupo)
+        {
+            Grupo = grupo;
+            GrupoPermisoId = grupo?.Id;
+        }
+
+        public bool TienePermiso(string nombrePermiso)
+        {
+            if (!Habilitado || Grupo == null || !Grupo.Habilitado)
+                return false;
+
+            return Grupo.TienePermiso(nombrePermiso);
+        }
+
+        public IEnumerable<string> ObtenerTodosLosPermisos()
+        {
+            if (Grupo == null || !Grupo.Habilitado)
+                return new List<string>();
+
+            return Grupo.ObtenerNombresPermisos();
+        }
+
+        public string? ObtenerNombreGrupo()
+        {
+            return Grupo?.Nombre;
         }
     }
 }

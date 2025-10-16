@@ -1,6 +1,6 @@
 ﻿using Academia.Entidades;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
+// using Microsoft.Data.SqlClient;
 
 namespace Data
 {
@@ -15,13 +15,26 @@ namespace Data
             using var context = CreateContext();
             return context.Usuarios
                 .Include(u => u.Persona)
+                .Include(u => u.Grupo)
+                    .ThenInclude(g => g.Permisos.Where(p => p.Habilitado))
                 .FirstOrDefault(u => u.Id == id);
+        }
+        public Usuario? GetByUsername(string username)
+        {
+            using var context = CreateContext();
+            return context.Usuarios
+                .Include(u => u.Persona)
+                .Include(u => u.Grupo)
+                    .ThenInclude(g => g.Permisos.Where(p => p.Habilitado))
+                .FirstOrDefault(u => u.NombreUsuario == username && u.Habilitado);
         }
         public IEnumerable<Usuario> GetAll()
         {
             using var context = CreateContext();
             return context.Usuarios
                 .Include(u => u.Persona)
+                .Include(u => u.Grupo)
+                    .ThenInclude(g => g.Permisos.Where(p => p.Habilitado))
                 .ToList();
         }
         public void Add(Usuario usuario)
@@ -77,63 +90,27 @@ namespace Data
         }
         public IEnumerable<Usuario> GetByCriteria(UsuarioCriteria criteria)
         {
-            const string sql = @"
-                SELECT 
-                    u.Id, 
-                    u.NombreUsuario, 
-                    u.Clave, 
-                    u.Habilitado, 
-                    u.FechaAlta,
-                    u.IdPersona,
-                    p.Legajo,
-                    p.Nombre,
-                    p.Apellido
-                FROM Usuarios u
-                LEFT JOIN Personas p ON u.IdPersona = p.IdPersona
-                WHERE u.NombreUsuario LIKE @SearchTerm
-                ORDER BY u.NombreUsuario";
+            using var context = CreateContext();
 
-            var usuarios = new List<Usuario>();
-            string connectionString = new TPIContext().Database.GetConnectionString();
-            string searchPattern = $"%{criteria.Texto}%";
+            var query = context.Usuarios
+                .Include(u => u.Persona)
+                .Include(u => u.Grupo)
+                    .ThenInclude(g => g.Permisos.Where(p => p.Habilitado))
+                .AsQueryable();
 
-            using var connection = new SqlConnection(connectionString);
-            using var command = new SqlCommand(sql, connection);
-
-            command.Parameters.AddWithValue("@SearchTerm", searchPattern);
-
-            connection.Open();
-            using var reader = command.ExecuteReader();
-
-            while (reader.Read())
+            if (!string.IsNullOrWhiteSpace(criteria.Texto))
             {
-                Usuario usuario;
-                if (!reader.IsDBNull(5)) // IdPersona
-                {
-                    int idPersona = reader.GetInt32(5);
-                    usuario = new Usuario(
-                        reader.GetInt32(0),    // Id
-                        reader.GetString(1),   // NombreUsuario  
-                        reader.GetString(2),   // Clave
-                        reader.GetBoolean(3),  // Habilitado
-                        reader.GetDateTime(4), // FechaAlta
-                        idPersona              // IdPersona
-                    );
-                }
-                else
-                {
-                    usuario = new Usuario(
-                        reader.GetInt32(0),    // Id
-                        reader.GetString(1),   // NombreUsuario
-                        reader.GetString(2),   // Clave
-                        reader.GetBoolean(3),  // Habilitado
-                        reader.GetDateTime(4)  // FechaAlta
-                    );
-                }
-                usuarios.Add(usuario);
+                string searchTerm = criteria.Texto.ToLower();
+                query = query.Where(u =>
+                    u.NombreUsuario.ToLower().Contains(searchTerm) ||
+                    (u.Persona != null &&
+                        (u.Persona.Nombre.ToLower().Contains(searchTerm) ||
+                         u.Persona.Apellido.ToLower().Contains(searchTerm) ||
+                         u.Persona.Legajo.ToString().Contains(searchTerm)))
+                );
             }
 
-            return usuarios;
+            return query.OrderBy(u => u.NombreUsuario).ToList();
         }
     }
 }

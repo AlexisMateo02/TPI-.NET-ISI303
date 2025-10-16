@@ -87,23 +87,40 @@ namespace Services
         {
             var usuarioRepository = new UsuarioRepository();
 
+            // Obtener el usuario existente desde la BD
+            var usuario = usuarioRepository.Get(dto.Id);
+            if (usuario == null)
+                return false;
+
             // Validar que el nombre de usuario no esté duplicado (excluyendo el usuario actual)
             if (usuarioRepository.NombreUsuarioExists(dto.NombreUsuario, dto.Id))
             {
                 throw new ArgumentException($"Ya existe otro usuario con el nombre '{dto.NombreUsuario}'.");
             }
 
-            // Validar que existe la persona
+            // Validar que existe la persona si se proporciona
             if (dto.IdPersona.HasValue && !usuarioRepository.PersonaExists(dto.IdPersona.Value))
             {
                 throw new ArgumentException($"No existe la persona con el ID {dto.IdPersona.Value}");
             }
 
-            Usuario usuario;
+            // Actualizar propiedades básicas
+            usuario.SetNombreUsuario(dto.NombreUsuario);
+            usuario.SetHabilitado(dto.Habilitado);
+
+            // Actualizar IdPersona
             if (dto.IdPersona.HasValue)
-                usuario = new Usuario(dto.Id, dto.NombreUsuario, dto.Clave, dto.Habilitado, dto.FechaAlta, dto.IdPersona.Value);
-            else
-                usuario = new Usuario(dto.Id, dto.NombreUsuario, dto.Clave, dto.Habilitado, dto.FechaAlta);
+            {
+                usuario.SetIdPersona(dto.IdPersona.Value);
+            }
+
+            // SOLO actualizar la contraseña si se proporciona una nueva
+            // Si dto.Clave no es null/empty/whitespace, significa que el usuario quiere cambiarla
+            if (!string.IsNullOrWhiteSpace(dto.Clave))
+            {
+                usuario.SetClave(dto.Clave); // Esto hashea la nueva contraseña
+            }
+            // Si dto.Clave es null/empty, la contraseña existente se mantiene intacta
 
             return usuarioRepository.Update(usuario);
         }

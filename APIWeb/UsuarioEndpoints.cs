@@ -54,7 +54,8 @@ namespace APIWeb
             .WithName("AddUsuario")
             .Produces<UsuarioDTO>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("UsuariosAgregar");
 
             app.MapPut("/usuarios", (UsuarioDTO dto) =>
             {
@@ -77,9 +78,11 @@ namespace APIWeb
                 }
             })
             .WithName("UpdateUsuario")
+            .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("UsuariosActualizar");
 
             app.MapDelete("/usuarios/{id}", (int id) =>
             {
@@ -97,7 +100,8 @@ namespace APIWeb
             .WithName("DeleteUsuario")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization("UsuariosEliminar");
 
             // Endpoint para validación desde Forms
             app.MapGet("/usuarios/existsNombreUsuario", (string nombreUsuario, int? excludeId) =>

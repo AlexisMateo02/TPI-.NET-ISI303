@@ -1,0 +1,62 @@
+﻿@using APIClients
+@inject NavigationManager NavigationManager
+@inject IAuthService AuthService
+
+@if (isChecking)
+{
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Verificando acceso...</span>
+        </div>
+    </div>
+}
+else if (hasAccess)
+{
+    @ChildContent
+}
+else
+{
+    <div class="alert alert-danger m-3">
+        <h4>Acceso Denegado</h4>
+        <p>No tiene permisos para acceder a esta página.</p>
+    </div>
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string RequiredPermission { get; set; } = string.Empty;
+
+    private bool isChecking = true;
+    private bool hasAccess = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckAccess();
+    }
+
+    private async Task CheckAccess()
+    {
+        isChecking = true;
+
+        // Verificar si está autenticado
+        bool isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            NavigationManager.NavigateTo("/login", forceLoad: true);
+            return;
+        }
+
+        // Verificar permiso específico si se requiere
+        if (!string.IsNullOrEmpty(RequiredPermission))
+        {
+            hasAccess = await AuthService.HasPermissionAsync(RequiredPermission);
+        }
+        else
+        {
+            hasAccess = true; // Solo requiere estar autenticado
+        }
+
+        isChecking = false;
+    }
+}
