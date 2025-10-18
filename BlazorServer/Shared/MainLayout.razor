@@ -1,40 +1,83 @@
 ﻿@inherits LayoutComponentBase
-@using BlazorServer.Services
 @using Microsoft.AspNetCore.Components.Authorization
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized Context="authContext">
+            @* Layout completo con menú para usuarios autenticados *@
+            <div class="page">
+                <div class="sidebar">
+                    <NavMenu />
+                </div>
 
-    <main>
-        <div class="top-row px-4 auth">
-            <CascadingAuthenticationState>
-                <AuthorizeView>
-                    <Authorized>
-                        <span>Hola, @context.User.Identity?.Name!</span>
-                        <a href="#" @onclick="Logout">Cerrar Sesión</a>
-                    </Authorized>
-                    <NotAuthorized>
-                        <a href="login">Iniciar Sesión</a>
-                    </NotAuthorized>
-                </AuthorizeView>
-            </CascadingAuthenticationState>
-        </div>
+                <main>
+                    <div class="top-row px-4 auth">
+                        <span class="me-3">Hola, @authContext.User.Identity?.Name!</span>
+                        <a href="logout" class="btn btn-outline-secondary btn-sm">Cerrar Sesión</a>
+                    </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+                    <article class="content px-4">
+                        @Body
+                    </article>
+                </main>
+            </div>
+        </Authorized>
+        <NotAuthorized Context="notAuthContext">
+            @* Solo el contenido sin menú para usuarios no autenticados *@
+            <div class="public-layout">
+                @Body
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
 
-@code {
-    [Inject] private AuthClientService AuthService { get; set; } = default!;
-    [Inject] private NavigationManager Navigation { get; set; } = default!;
-
-    private async Task Logout()
-    {
-        await AuthService.LogoutAsync();
-        Navigation.NavigateTo("/", true);
+<style>
+    .public-layout {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
-}
+
+    .page {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    .sidebar {
+        background-color: #f7f7f7;
+        border-right: 1px solid #d6d5d5;
+    }
+
+    .top-row {
+        background-color: #f7f7f7;
+        border-bottom: 1px solid #d6d5d5;
+        justify-content: flex-end;
+        height: 3.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .content {
+        flex: 1;
+        padding: 1rem;
+    }
+
+    @@media (min-width: 641px) {
+        .page {
+            flex-direction: row;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+
+        .top-row {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+    }
+</style>

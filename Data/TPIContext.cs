@@ -20,6 +20,7 @@ namespace Data
         {
             // this.Database.EnsureDeleted(); // Solo en desarrollo
             // this.Database.EnsureCreated();
+            // DataSeeder.Seed(this);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
