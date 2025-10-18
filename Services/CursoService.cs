@@ -104,6 +104,26 @@ namespace Services
         public bool Delete(int id)
         {
             var cursoRepository = new CursoRepository();
+            var cantidadDocenteCursos = cursoRepository.CountDocenteCursosByCurso(id);
+            if (cantidadDocenteCursos > 0)
+            {
+                string mensaje = $"No se puede eliminar el curso. Está siendo dictado actualmente";
+                throw new InvalidOperationException(mensaje);
+            }
+            var cantidadAlumnoInscripciones = cursoRepository.CountAlumnoInscripcionesByCurso(id);
+            if (cantidadAlumnoInscripciones > 0)
+            {
+                string mensaje = $"No se puede eliminar el curso. Actualmente tiene ";
+                if (cantidadAlumnoInscripciones == 1)
+                {
+                    mensaje += $"un alumno inscripto.";
+                }
+                else
+                {
+                    mensaje += $"{cantidadAlumnoInscripciones} alumnos inscriptos.";
+                }
+                throw new InvalidOperationException(mensaje);
+            }
             return cursoRepository.Delete(id);
         }
         public bool ExistComisionMateriaAndAnioCalendario(int idComision, int idMateria, int anioCalendario, int? excludeId = null)

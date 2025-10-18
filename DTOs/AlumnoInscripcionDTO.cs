@@ -1,14 +1,11 @@
 ﻿namespace DTOs
 {
-    public class UsuarioDTO
+    public class AlumnoInscripcionDTO
     {
-        public int Id { get; set; }
-        public string NombreUsuario { get; set; }
-        public string Clave { get; set; }
-        public bool Habilitado { get; set; }
-        public DateTime FechaAlta { get; set; }
-        public int Rol { get; set; }
-        public int? IdPersona { get; set; }
+        public int IdInscripcion { get; set; }
+        public string Condicion { get; set; }
+        public int? Nota { get; set; }
+        public int IdAlumno { get; set; }
         public int? Legajo { get; set; }
         public string? NombrePersona { get; set; }
         public string? ApellidoPersona { get; set; }
@@ -26,5 +23,11 @@
                 }
             }
         }
+        public int IdCurso { get; set; }
+        public int? AnioCalendario { get; set; }
+        public int? IdComision { get; set; }
+        public string? DescripcionComision { get; set; }
+        public int? IdMateria { get; set; }
+        public string? DescripcionMateria { get; set; }
     }
 }

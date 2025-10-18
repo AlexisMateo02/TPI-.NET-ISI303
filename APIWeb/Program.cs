@@ -1,4 +1,5 @@
 using APIWeb;
+using WebAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,5 +44,7 @@ app.MapPersonaEndpoints();
 app.MapComisionEndpoints();
 app.MapCursoEndpoints();
 app.MapMateriaEndpoints();
+app.MapDocenteCursoEndpoints();
+app.MapAuthEndpoints();
 
 app.Run();

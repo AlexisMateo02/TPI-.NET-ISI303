@@ -132,7 +132,7 @@ namespace APIClients
         {
             try
             {
-                string url = $"materias/existPlanAndDescripcionMateria?idPlan={idPlan}&descripcionMateria={descripcionMateria}";
+                string url = $"materias/existPlanAndDescripcionMateria?idPlan={idPlan}&descripcionMateria={Uri.EscapeDataString(descripcionMateria)}";
                 if (excludeId.HasValue)
                 {
                     url += $"&excludeId={excludeId.Value}";

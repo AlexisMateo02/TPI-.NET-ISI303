@@ -58,6 +58,16 @@ namespace Data
             }
             return false;
         }
+        public int CountDocenteCursosByCurso(int idCurso)
+        {
+            using var context = CreateContext();
+            return context.Dictados.Count(dc => dc.IdCurso == idCurso);
+        }
+        public int CountAlumnoInscripcionesByCurso(int idCurso)
+        {
+            using var context = CreateContext();
+            return context.AlumnoInscripciones.Count(dc => dc.IdCurso == idCurso);
+        }
         public bool ComisionMateriaAndAnioCalendarioExist(int idComision, int idMateria, int anioCalendario, int? excludeId = null)
         {
             using var context = CreateContext();

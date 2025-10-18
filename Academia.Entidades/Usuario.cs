@@ -14,8 +14,7 @@ namespace Academia.Entidades
         public string Salt { get; private set; }
         public bool Habilitado { get; private set; }
         public DateTime FechaAlta { get; private set; }
-        public int? GrupoPermisoId { get; private set; }
-        public virtual GrupoPermiso? Grupo { get; private set; }
+        public int Rol { get; private set; }
 
         public int? IdPersona
         {
@@ -34,44 +33,48 @@ namespace Academia.Entidades
         }
 
         // Constructor para Post con Persona
-        public Usuario(string nombreUsuario, string clave, DateTime fechaAlta, int idPersona)
+        public Usuario(string nombreUsuario, string clave, DateTime fechaAlta, int rolUsuario, int idPersona)
         {
             SetNombreUsuario(nombreUsuario);
             SetClave(clave);
             Habilitado = true;
             SetFechaAlta(fechaAlta);
+            SetRol(rolUsuario);
             SetIdPersona(idPersona);
         }
 
         // Constructor para Post sin Persona
-        public Usuario(string nombreUsuario, string clave, DateTime fechaAlta)
+        public Usuario(string nombreUsuario, string clave, DateTime fechaAlta, int rolUsuario)
         {
             SetNombreUsuario(nombreUsuario);
             SetClave(clave);
             Habilitado = true;
             SetFechaAlta(fechaAlta);
+            SetRol(rolUsuario);
             _idPersona = null;
         }
 
         // Constructor completo con Persona
-        public Usuario(int id, string nombreUsuario, string clave, bool habilitado, DateTime fechaAlta, int idPersona)
+        public Usuario(int id, string nombreUsuario, string clave, bool habilitado, DateTime fechaAlta, int rolUsuario, int idPersona)
         {
             Id = id;
             SetNombreUsuario(nombreUsuario);
             SetClave(clave);
             SetHabilitado(habilitado);
             SetFechaAlta(fechaAlta);
+            SetRol(rolUsuario);
             SetIdPersona(idPersona);
         }
 
         // Constructor completo sin Persona
-        public Usuario(int id, string nombreUsuario, string clave, bool habilitado, DateTime fechaAlta)
+        public Usuario(int id, string nombreUsuario, string clave, bool habilitado, DateTime fechaAlta, int rolUsuario)
         {
             Id = id;
             SetNombreUsuario(nombreUsuario);
             SetClave(clave);
             SetHabilitado(habilitado);
             SetFechaAlta(fechaAlta);
+            SetRol(rolUsuario);
             _idPersona = null;
         }
 
@@ -103,6 +106,14 @@ namespace Academia.Entidades
                 throw new ArgumentException("La fecha de alta no puede ser nula.", nameof(fechaAlta));
             FechaAlta = fechaAlta;
         }
+        public void SetRol(int rol)
+        {
+            if (rol < 1 || rol > 3)
+            {
+                throw new ArgumentException("El rol debe ser 1 (Admin), 2 (Docente) o 3 (Alumno).", nameof(rol));
+            }
+            Rol = rol;
+        }
         public void SetIdPersona(int? idPersona)
         {
             if (idPersona <= 0)
@@ -129,33 +140,6 @@ namespace Academia.Entidades
             using var pbkdf2 = new Rfc2898DeriveBytes(clave, Convert.FromBase64String(salt), 10000, HashAlgorithmName.SHA256);
             byte[] hashBytes = pbkdf2.GetBytes(32);
             return Convert.ToBase64String(hashBytes);
-        }
-
-        public void SetGrupo(GrupoPermiso? grupo)
-        {
-            Grupo = grupo;
-            GrupoPermisoId = grupo?.Id;
-        }
-
-        public bool TienePermiso(string nombrePermiso)
-        {
-            if (!Habilitado || Grupo == null || !Grupo.Habilitado)
-                return false;
-
-            return Grupo.TienePermiso(nombrePermiso);
-        }
-
-        public IEnumerable<string> ObtenerTodosLosPermisos()
-        {
-            if (Grupo == null || !Grupo.Habilitado)
-                return new List<string>();
-
-            return Grupo.ObtenerNombresPermisos();
-        }
-
-        public string? ObtenerNombreGrupo()
-        {
-            return Grupo?.Nombre;
         }
     }
 }

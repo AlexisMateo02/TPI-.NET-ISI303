@@ -18,6 +18,7 @@ namespace Services
                 Clave = usuario.Clave,
                 Habilitado = usuario.Habilitado,
                 FechaAlta = usuario.FechaAlta,
+                Rol = usuario.Rol,
                 IdPersona = usuario.IdPersona,
                 Legajo = usuario.Persona?.Legajo,
                 NombrePersona = usuario.Persona?.Nombre,
@@ -40,6 +41,7 @@ namespace Services
                 Clave = usuario.Clave,
                 Habilitado = usuario.Habilitado,
                 FechaAlta = usuario.FechaAlta,
+                Rol = usuario.Rol,
                 IdPersona = usuario.IdPersona,
                 Legajo = usuario.Persona?.Legajo,
                 NombrePersona = usuario.Persona?.Nombre,
@@ -67,11 +69,11 @@ namespace Services
             Usuario usuario;
             if (dto.IdPersona.HasValue)
             {
-                usuario = new Usuario(dto.NombreUsuario, dto.Clave, fechaAlta, dto.IdPersona.Value);
+                usuario = new Usuario(dto.NombreUsuario, dto.Clave, fechaAlta, dto.Rol, dto.IdPersona.Value);
             }
             else
             {
-                usuario = new Usuario(dto.NombreUsuario, dto.Clave, fechaAlta);
+                usuario = new Usuario(dto.NombreUsuario, dto.Clave, fechaAlta, dto.Rol);
             }
 
             usuarioRepository.Add(usuario);
@@ -155,6 +157,7 @@ namespace Services
                 Clave = u.Clave,
                 Habilitado = u.Habilitado,
                 FechaAlta = u.FechaAlta,
+                Rol = u.Rol,
                 IdPersona = u.IdPersona,
                 Legajo = u.Persona?.Legajo,
                 NombrePersona = u.Persona?.Nombre,

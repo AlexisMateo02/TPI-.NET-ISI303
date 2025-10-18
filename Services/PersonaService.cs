@@ -128,6 +128,34 @@ namespace Services
                 }
                 throw new InvalidOperationException(mensaje);
             }
+            var cantidadDocenteCursos = personaRepository.CountDocenteCursosByPersona(id);
+            if (cantidadDocenteCursos > 0)
+            {
+                string mensaje = $"No se puede eliminar la persona. ";
+                if (cantidadDocenteCursos == 1)
+                {
+                    mensaje += $"Es un docente que dicta clases a un curso.";
+                }
+                else
+                {
+                    mensaje += $"Es un docente que dicta clases a {cantidadDocenteCursos} cursos.";
+                }
+                throw new InvalidOperationException(mensaje);
+            }
+            var cantidadAlumnoInscripciones = personaRepository.CountAlumnoInscripcionesByPersona(id);
+            if (cantidadAlumnoInscripciones > 0)
+            {
+                string mensaje = $"No se puede eliminar la persona. ";
+                if (cantidadAlumnoInscripciones == 1)
+                {
+                    mensaje += $"Es un alumno inscripto a un curso.";
+                }
+                else
+                {
+                    mensaje += $"Es un alumno inscripto a {cantidadAlumnoInscripciones} cursos.";
+                }
+                throw new InvalidOperationException(mensaje);
+            }
             return personaRepository.Delete(id);
         }
 

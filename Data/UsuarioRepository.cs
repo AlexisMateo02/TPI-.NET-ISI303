@@ -15,8 +15,6 @@ namespace Data
             using var context = CreateContext();
             return context.Usuarios
                 .Include(u => u.Persona)
-                .Include(u => u.Grupo)
-                    .ThenInclude(g => g.Permisos.Where(p => p.Habilitado))
                 .FirstOrDefault(u => u.Id == id);
         }
         public Usuario? GetByUsername(string username)
@@ -24,8 +22,6 @@ namespace Data
             using var context = CreateContext();
             return context.Usuarios
                 .Include(u => u.Persona)
-                .Include(u => u.Grupo)
-                    .ThenInclude(g => g.Permisos.Where(p => p.Habilitado))
                 .FirstOrDefault(u => u.NombreUsuario == username && u.Habilitado);
         }
         public IEnumerable<Usuario> GetAll()
@@ -33,8 +29,6 @@ namespace Data
             using var context = CreateContext();
             return context.Usuarios
                 .Include(u => u.Persona)
-                .Include(u => u.Grupo)
-                    .ThenInclude(g => g.Permisos.Where(p => p.Habilitado))
                 .ToList();
         }
         public void Add(Usuario usuario)
@@ -94,8 +88,6 @@ namespace Data
 
             var query = context.Usuarios
                 .Include(u => u.Persona)
-                .Include(u => u.Grupo)
-                    .ThenInclude(g => g.Permisos.Where(p => p.Habilitado))
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(criteria.Texto))
@@ -111,6 +103,19 @@ namespace Data
             }
 
             return query.OrderBy(u => u.NombreUsuario).ToList();
+        }
+        public Usuario? ComprobarUsuarioIngresado(string nombreUsuario, string clave)
+        {
+            using var context = CreateContext();
+            var usuario = context.Usuarios
+                .Include(u => u.Persona)
+                .FirstOrDefault(u => u.NombreUsuario == nombreUsuario && u.Habilitado);
+
+            if (usuario != null && usuario.ValidateClave(clave))
+            {
+                return usuario;
+            }
+            return null;
         }
     }
 }

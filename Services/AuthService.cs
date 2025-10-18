@@ -25,9 +25,9 @@ namespace Services
             if (string.IsNullOrWhiteSpace(request.NombreUsuario) || string.IsNullOrWhiteSpace(request.Clave))
                 return null;
 
-            var usuario = usuarioRepository.GetByUsername(request.NombreUsuario);
+            var usuario = usuarioRepository.ComprobarUsuarioIngresado(request.NombreUsuario, request.Clave);
 
-            if (usuario == null || !usuario.ValidateClave(request.Clave))
+            if (usuario == null)
                 return null;
 
             var token = GenerateJwtToken(usuario);
@@ -55,22 +55,9 @@ namespace Services
             {
                 new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
                 new Claim(ClaimTypes.Name, usuario.NombreUsuario),
+                new Claim("rol", usuario.Rol.ToString()),
                 new Claim("jti", Guid.NewGuid().ToString())
             };
-
-            // Agregar permisos como claims para UI
-            var permisos = usuario.ObtenerTodosLosPermisos();
-            foreach (var permiso in permisos)
-            {
-                claims.Add(new Claim("permission", permiso));
-            }
-
-            // Agregar grupo como claim (para info/debugging)
-            var grupo = usuario.ObtenerNombreGrupo();
-            if (!string.IsNullOrEmpty(grupo))
-            {
-                claims.Add(new Claim("group", grupo));
-            }
 
             var token = new JwtSecurityToken(
                 issuer: issuer,

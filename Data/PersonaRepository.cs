@@ -77,6 +77,16 @@ namespace Data
             using var context = CreateContext();
             return context.Usuarios.Count(u => u.IdPersona == idPersona);
         }
+        public int CountDocenteCursosByPersona(int idPersona)
+        {
+            using var context = CreateContext();
+            return context.Dictados.Count(dc => dc.IdDocente == idPersona);
+        }
+        public int CountAlumnoInscripcionesByPersona(int idPersona)
+        {
+            using var context = CreateContext();
+            return context.AlumnoInscripciones.Count(dc => dc.IdAlumno == idPersona);
+        }
         public bool EmailExists(string email, int? excludeId = null)
         {
             using var context = CreateContext();
