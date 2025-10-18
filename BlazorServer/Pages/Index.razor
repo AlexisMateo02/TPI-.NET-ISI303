@@ -6,225 +6,194 @@
 
 <PageTitle>Academia - Inicio</PageTitle>
 
-<AuthenticationState>
+<CascadingAuthenticationState>
     <AuthorizeView>
         <Authorized Context="authContext">
-            @* Contenido para usuarios autenticados *@
-            <div class="dashboard">
-                <h1>Bienvenido al Sistema de Academia</h1>
-                <p>Hola, @authContext.User.Identity?.Name! Has iniciado sesión correctamente.</p>
-                
-                <div class="row mt-4">
-                    <div class="col-md-4">
-                        <div class="card text-white bg-primary mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Gestión de Usuarios</h5>
-                                <p class="card-text">Administra los usuarios del sistema.</p>
+            @* Tu contenido para usuarios autenticados *@
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 text-center">
+                        <div class="py-4">
+                            <h1 class="display-4 fw-bold text-dark">Sistema de Gestión Universitaria</h1>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="alert alert-light border-0 shadow-sm rounded-3">
+                                    <div class="text-center">
+                                        <h6 class="fw-bold mb-2 text-dark">¡Bienvenido @authContext.User.Identity?.Name!</h6>
+                                        <p class="mb-0 text-muted small">Seleccione una de las opciones para continuar.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card text-white bg-success mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Cursos</h5>
-                                <p class="card-text">Gestiona cursos y materias.</p>
+                        <div class="row justify-content-center g-2 mt-3">
+                            <div class="col-12 col-md-10 col-lg-8">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body p-3">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <h6 class="card-title fw-bold mb-1">Planes</h6>
+                                                <p class="card-text text-muted small mb-0">Gestión de planes académicos</p>
+                                            </div>
+                                            <div class="col-auto">
+                                                <a href="/planes" class="btn btn-gradient btn-sm">Acceder</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card text-white bg-warning mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Reportes</h5>
-                                <p class="card-text">Genera reportes del sistema.</p>
+                        <div class="row justify-content-center g-2 mt-3">
+                            <div class="col-12 col-md-10 col-lg-8">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body p-3">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <h6 class="card-title fw-bold mb-1">Especialidades</h6>
+                                                <p class="card-text text-muted small mb-0">Gestión de especialidades académicas</p>
+                                            </div>
+                                            <div class="col-auto">
+                                                <a href="/especialidades" class="btn btn-gradient btn-sm">Acceder</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </Authorized>
-        <NotAuthorized Context="notAuthContext">
-            @* Mostrar el formulario de login en la página principal *@
-            <div class="login-page">
-                <div class="login-container">
-                    <div class="login-card">
-                        <div class="login-header">
-                            <h2>Iniciar Sesión - Sistema Academia</h2>
-                            <p>Ingresa tus credenciales para acceder al sistema</p>
-                        </div>
-
-                        <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin" class="login-form">
-                            <DataAnnotationsValidator />
-                            <ValidationSummary />
-
-                            <div class="form-group">
-                                <label for="nombreUsuario" class="form-label">Nombre de Usuario</label>
-                                <InputText @bind-Value="loginRequest.NombreUsuario" 
-                                          id="nombreUsuario" 
-                                          class="form-control" 
-                                          placeholder="Ingresa tu nombre de usuario" />
-                                <ValidationMessage For="@(() => loginRequest.NombreUsuario)" />
-                            </div>
-
-                            <div class="form-group">
-                                <label for="clave" class="form-label">Contraseña</label>
-                                <InputText @bind-Value="loginRequest.Clave" 
-                                          type="password" 
-                                          id="clave" 
-                                          class="form-control" 
-                                          placeholder="Ingresa tu contraseña" />
-                                <ValidationMessage For="@(() => loginRequest.Clave)" />
-                            </div>
-
-                            @if (!string.IsNullOrEmpty(errorMessage))
-                            {
-                                <div class="alert alert-danger">
-                                    @errorMessage
+        <NotAuthorized Context="loginContext">
+            @* Solo mostrar login si realmente no está autenticado *@
+            <div class="min-vh-100 d-flex align-items-center justify-content-center bg-primary bg-gradient">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card shadow-lg border-0 rounded-3">
+                                <div class="card-header bg-white border-0 pt-4 pb-2">
+                                    <div class="text-center">
+                                        <i class="bi bi-mortarboard-fill text-primary display-4 mb-3"></i>
+                                        <h2 class="card-title fw-bold text-dark mb-2">Iniciar Sesión</h2>
+                                        <p class="text-muted mb-0">Sistema de Gestión Académica</p>
+                                    </div>
                                 </div>
-                            }
 
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary btn-login" disabled="@isLoading">
-                                    @if (isLoading)
-                                    {
-                                        <span>
-                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                            Iniciando sesión...
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span>Iniciar Sesión</span>
-                                    }
-                                </button>
+                                <div class="card-body p-4">
+                                    <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin" Context="formContext">
+                                        <DataAnnotationsValidator />
+                                        <ValidationSummary class="alert alert-danger" />
+
+                                        <div class="mb-3">
+                                            <label for="nombreUsuario" class="form-label fw-semibold">
+                                                <i class="bi bi-person me-1"></i>Usuario
+                                            </label>
+                                            <InputText @bind-Value="loginRequest.NombreUsuario"
+                                                       id="nombreUsuario"
+                                                       class="form-control"
+                                                       placeholder="Ingresa tu usuario" />
+                                            <ValidationMessage For="@(() => loginRequest.NombreUsuario)" class="text-danger small" />
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label for="clave" class="form-label fw-semibold">
+                                                <i class="bi bi-lock me-1"></i>Contraseña
+                                            </label>
+                                            <InputText @bind-Value="loginRequest.Clave"
+                                                       type="password"
+                                                       id="clave"
+                                                       class="form-control"
+                                                       placeholder="Ingresa tu contraseña" />
+                                            <ValidationMessage For="@(() => loginRequest.Clave)" class="text-danger small" />
+                                        </div>
+
+                                        @if (!string.IsNullOrEmpty(errorMessage))
+                                        {
+                                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                                <div>@errorMessage</div>
+                                            </div>
+                                        }
+
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-primary py-2" disabled="@isLoading">
+                                                @if (isLoading)
+                                                {
+                                                    <span>
+                                                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                        Iniciando sesión...
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span>
+                                                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                                                        Iniciar Sesión
+                                                    </span>
+                                                }
+                                            </button>
+                                        </div>
+                                    </EditForm>
+                                </div>
+
+                                <div class="card-footer bg-transparent border-0 text-center pb-4">
+                                    <small class="text-muted">
+                                        <i class="bi bi-shield-check me-1"></i>
+                                        Acceso seguro al sistema
+                                    </small>
+                                </div>
                             </div>
-                        </EditForm>
+                        </div>
                     </div>
                 </div>
             </div>
         </NotAuthorized>
     </AuthorizeView>
-</AuthenticationState>
+</CascadingAuthenticationState>
 
 <style>
-    .login-page {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
+    .display-4 {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
-    .login-container {
-        width: 100%;
-        max-width: 400px;
-    }
-
-    .login-card {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        padding: 40px;
-    }
-
-    .login-header {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-
-        .login-header h2 {
-            color: #333;
-            margin-bottom: 10px;
-            font-weight: 600;
-            font-size: 1.5rem;
-        }
-
-        .login-header p {
-            color: #666;
-            margin: 0;
-        }
-
-    .login-form {
-        width: 100%;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 500;
-        color: #333;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid #e1e5e9;
-        border-radius: 6px;
-        font-size: 14px;
-        transition: border-color 0.3s ease;
-    }
-
-        .form-control:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-    .btn-login {
-        width: 100%;
-        padding: 12px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .btn-gradient {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
         border: none;
-        border-radius: 6px;
         color: white;
-        font-size: 16px;
         font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.2s ease;
+        transition: all 0.3s ease;
     }
 
-        .btn-login:hover:not(:disabled) {
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
             transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            color: white;
         }
 
-        .btn-login:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .btn-gradient:active {
+            transform: translateY(0);
         }
 
-    .alert {
-        padding: 12px;
-        border-radius: 6px;
-        margin-bottom: 20px;
+    .hover-shadow {
+        transition: all 0.3s ease;
     }
 
-    .alert-danger {
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
-    }
+        .hover-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+        }
 
-    .spinner-border-sm {
-        width: 1rem;
-        height: 1rem;
-        margin-right: 8px;
-    }
-
-    .dashboard {
-        padding: 20px;
+    .bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
     }
 
     .card {
-        transition: transform 0.2s ease;
+        transition: all 0.3s ease;
     }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
 </style>
 
 @code {
@@ -240,7 +209,7 @@
 
         try
         {
-            if (string.IsNullOrWhiteSpace(loginRequest.NombreUsuario) || 
+            if (string.IsNullOrWhiteSpace(loginRequest.NombreUsuario) ||
                 string.IsNullOrWhiteSpace(loginRequest.Clave))
             {
                 errorMessage = "Por favor, completa todos los campos.";
@@ -251,9 +220,8 @@
 
             if (result != null)
             {
-                // La redirección se maneja automáticamente por el cambio de estado de autenticación
-                // Forzar actualización del layout
-                StateHasChanged();
+                // Forzar navegación para refrescar el estado
+                Navigation.NavigateTo("/", true);
             }
             else
             {
