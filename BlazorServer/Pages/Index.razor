@@ -1,155 +1,168 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Components.Authorization
 @using DTOs
+@using System.Security.Claims
+@using System.Text.Json
 @inject BlazorServer.Services.AuthClientService AuthService
 @inject NavigationManager Navigation
 
 <PageTitle>Academia - Inicio</PageTitle>
 
-<CascadingAuthenticationState>
-    <AuthorizeView>
-        <Authorized Context="authContext">
-            @* Tu contenido para usuarios autenticados *@
-            <div class="container-fluid">
-                <div class="row justify-content-center">
-                    <div class="col-md-8 text-center">
-                        <div class="py-4">
-                            <h1 class="display-4 fw-bold text-dark">Sistema de Gestión Universitaria</h1>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <div class="alert alert-light border-0 shadow-sm rounded-3">
-                                    <div class="text-center">
-                                        <h6 class="fw-bold mb-2 text-dark">¡Bienvenido @authContext.User.Identity?.Name!</h6>
-                                        <p class="mb-0 text-muted small">Seleccione una de las opciones para continuar.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row justify-content-center g-2 mt-3">
-                            <div class="col-12 col-md-10 col-lg-8">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body p-3">
-                                        <div class="row align-items-center">
-                                            <div class="col">
-                                                <h6 class="card-title fw-bold mb-1">Planes</h6>
-                                                <p class="card-text text-muted small mb-0">Gestión de planes académicos</p>
-                                            </div>
-                                            <div class="col-auto">
-                                                <a href="/planes" class="btn btn-gradient btn-sm">Acceder</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row justify-content-center g-2 mt-3">
-                            <div class="col-12 col-md-10 col-lg-8">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body p-3">
-                                        <div class="row align-items-center">
-                                            <div class="col">
-                                                <h6 class="card-title fw-bold mb-1">Especialidades</h6>
-                                                <p class="card-text text-muted small mb-0">Gestión de especialidades académicas</p>
-                                            </div>
-                                            <div class="col-auto">
-                                                <a href="/especialidades" class="btn btn-gradient btn-sm">Acceder</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+@if (!isInitialized)
+{
+    <div class="min-vh-100 d-flex align-items-center justify-content-center bg-primary bg-gradient">
+        <div class="text-center text-white">
+            <div class="spinner-border spinner-border-lg mb-3" role="status">
+                <span class="visually-hidden">Cargando...</span>
             </div>
-        </Authorized>
-        <NotAuthorized Context="loginContext">
-            @* Solo mostrar login si realmente no está autenticado *@
-            <div class="min-vh-100 d-flex align-items-center justify-content-center bg-primary bg-gradient">
-                <div class="container">
+            <p>Verificando autenticación...</p>
+        </div>
+    </div>
+}
+else
+{
+    <CascadingAuthenticationState>
+        <AuthorizeView>
+            <Authorized Context="authContext">
+                @{
+                    // Obtener el rol del usuario
+                    var userRole = GetUserRole(authContext.User);
+                    var userFunctions = GetUserFunctions(userRole);
+                }
+
+                @* Contenido para usuarios autenticados *@
+                <div class="container-fluid">
                     <div class="row justify-content-center">
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card shadow-lg border-0 rounded-3">
-                                <div class="card-header bg-white border-0 pt-4 pb-2">
-                                    <div class="text-center">
-                                        <i class="bi bi-mortarboard-fill text-primary display-4 mb-3"></i>
-                                        <h2 class="card-title fw-bold text-dark mb-2">Iniciar Sesión</h2>
-                                        <p class="text-muted mb-0">Sistema de Gestión Académica</p>
+                        <div class="col-md-8 text-center">
+                            <div class="py-4">
+                                <h1 class="display-4 fw-bold text-dark">Sistema de Gestión Universitaria</h1>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="alert alert-light border-0 shadow-sm rounded-3">
+                                        <div class="text-center">
+                                            <h6 class="fw-bold mb-2 text-dark">¡Bienvenido @authContext.User.Identity?.Name!</h6>
+                                            <p class="mb-0 text-muted small">
+                                                Rol: <span class="badge bg-primary">@GetRoleDisplayName(userRole)</span> -
+                                                Seleccione una de las opciones para continuar.
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="card-body p-4">
-                                    <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin" Context="formContext">
-                                        <DataAnnotationsValidator />
-                                        <ValidationSummary class="alert alert-danger" />
-
-                                        <div class="mb-3">
-                                            <label for="nombreUsuario" class="form-label fw-semibold">
-                                                <i class="bi bi-person me-1"></i>Usuario
-                                            </label>
-                                            <InputText @bind-Value="loginRequest.NombreUsuario"
-                                                       id="nombreUsuario"
-                                                       class="form-control"
-                                                       placeholder="Ingresa tu usuario" />
-                                            <ValidationMessage For="@(() => loginRequest.NombreUsuario)" class="text-danger small" />
-                                        </div>
-
-                                        <div class="mb-4">
-                                            <label for="clave" class="form-label fw-semibold">
-                                                <i class="bi bi-lock me-1"></i>Contraseña
-                                            </label>
-                                            <InputText @bind-Value="loginRequest.Clave"
-                                                       type="password"
-                                                       id="clave"
-                                                       class="form-control"
-                                                       placeholder="Ingresa tu contraseña" />
-                                            <ValidationMessage For="@(() => loginRequest.Clave)" class="text-danger small" />
-                                        </div>
-
-                                        @if (!string.IsNullOrEmpty(errorMessage))
-                                        {
-                                            <div class="alert alert-danger d-flex align-items-center" role="alert">
-                                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                                <div>@errorMessage</div>
+                            @* Mostrar funciones según el rol *@
+                            <div class="row justify-content-center g-2 mt-3">
+                                @foreach (var function in userFunctions)
+                                {
+                                    <div class="col-12 col-md-10 col-lg-8">
+                                        <div class="card border-0 shadow-sm hover-shadow">
+                                            <div class="card-body p-3">
+                                                <div class="row align-items-center">
+                                                    <div class="col">
+                                                        <h6 class="card-title fw-bold mb-1">@function.Title</h6>
+                                                        <p class="card-text text-muted small mb-0">@function.Description</p>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <a href="@function.Url" class="btn btn-gradient btn-sm">Acceder</a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        }
-
-                                        <div class="d-grid">
-                                            <button type="submit" class="btn btn-primary py-2" disabled="@isLoading">
-                                                @if (isLoading)
-                                                {
-                                                    <span>
-                                                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                                        Iniciando sesión...
-                                                    </span>
-                                                }
-                                                else
-                                                {
-                                                    <span>
-                                                        <i class="bi bi-box-arrow-in-right me-2"></i>
-                                                        Iniciar Sesión
-                                                    </span>
-                                                }
-                                            </button>
                                         </div>
-                                    </EditForm>
-                                </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Authorized>
+            <NotAuthorized Context="loginContext">
+                @* Solo mostrar login si realmente no está autenticado *@
+                <div class="min-vh-100 d-flex align-items-center justify-content-center bg-primary bg-gradient">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card shadow-lg border-0 rounded-3">
+                                    <div class="card-header bg-white border-0 pt-4 pb-2">
+                                        <div class="text-center">
+                                            <i class="bi bi-mortarboard-fill text-primary display-4 mb-3"></i>
+                                            <h2 class="card-title fw-bold text-dark mb-2">Iniciar Sesión</h2>
+                                            <p class="text-muted mb-0">Sistema de Gestión Académica</p>
+                                        </div>
+                                    </div>
 
-                                <div class="card-footer bg-transparent border-0 text-center pb-4">
-                                    <small class="text-muted">
-                                        <i class="bi bi-shield-check me-1"></i>
-                                        Acceso seguro al sistema
-                                    </small>
+                                    <div class="card-body p-4">
+                                        <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin" Context="formContext">
+                                            <DataAnnotationsValidator />
+                                            <ValidationSummary class="alert alert-danger" />
+
+                                            <div class="mb-3">
+                                                <label for="nombreUsuario" class="form-label fw-semibold">
+                                                    <i class="bi bi-person me-1"></i>Usuario
+                                                </label>
+                                                <InputText @bind-Value="loginRequest.NombreUsuario"
+                                                           id="nombreUsuario"
+                                                           class="form-control"
+                                                           placeholder="Ingresa tu usuario" />
+                                                <ValidationMessage For="@(() => loginRequest.NombreUsuario)" class="text-danger small" />
+                                            </div>
+
+                                            <div class="mb-4">
+                                                <label for="clave" class="form-label fw-semibold">
+                                                    <i class="bi bi-lock me-1"></i>Contraseña
+                                                </label>
+                                                <InputText @bind-Value="loginRequest.Clave"
+                                                           type="password"
+                                                           id="clave"
+                                                           class="form-control"
+                                                           placeholder="Ingresa tu contraseña" />
+                                                <ValidationMessage For="@(() => loginRequest.Clave)" class="text-danger small" />
+                                            </div>
+
+                                            @if (!string.IsNullOrEmpty(errorMessage))
+                                            {
+                                                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                                    <div>@errorMessage</div>
+                                                </div>
+                                            }
+
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn btn-primary py-2" disabled="@isLoading">
+                                                    @if (isLoading)
+                                                    {
+                                                        <span>
+                                                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                            Iniciando sesión...
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>
+                                                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                                                            Iniciar Sesión
+                                                        </span>
+                                                    }
+                                                </button>
+                                            </div>
+                                        </EditForm>
+                                    </div>
+
+                                    <div class="card-footer bg-transparent border-0 text-center pb-4">
+                                        <small class="text-muted">
+                                            <i class="bi bi-shield-check me-1"></i>
+                                            Acceso seguro al sistema
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </NotAuthorized>
-    </AuthorizeView>
-</CascadingAuthenticationState>
+            </NotAuthorized>
+        </AuthorizeView>
+    </CascadingAuthenticationState>
+}
 
 <style>
     .display-4 {
@@ -200,6 +213,241 @@
     private LoginRequest loginRequest = new LoginRequest();
     private string errorMessage = string.Empty;
     private bool isLoading = false;
+    private bool isInitialized = false;
+
+    // Clase para representar las funciones del sistema
+    private class SystemFunction
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+        public List<int> AllowedRoles { get; set; } = new List<int>();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isInitialized)
+        {
+            // Verificar si el token ha expirado
+            await CheckTokenExpiration();
+            isInitialized = true;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CheckTokenExpiration()
+    {
+        try
+        {
+            var token = await AuthService.GetTokenAsync();
+            if (!string.IsNullOrEmpty(token) && IsTokenExpired(token))
+            {
+                await AuthService.LogoutAsync();
+            }
+        }
+        catch
+        {
+        }
+    }
+
+    private bool IsTokenExpired(string jwtToken)
+    {
+        try
+        {
+            var parts = jwtToken.Split('.');
+            if (parts.Length != 3) return true;
+
+            var payload = parts[1];
+            payload = payload.Replace('-', '+').Replace('_', '/');
+            switch (payload.Length % 4)
+            {
+                case 2: payload += "=="; break;
+                case 3: payload += "="; break;
+            }
+
+            var payloadBytes = Convert.FromBase64String(payload);
+            var payloadJson = System.Text.Encoding.UTF8.GetString(payloadBytes);
+
+            using var document = JsonDocument.Parse(payloadJson);
+            if (document.RootElement.TryGetProperty("exp", out var expProperty))
+            {
+                var expTimestamp = expProperty.GetInt64();
+                var expiration = DateTimeOffset.FromUnixTimeSeconds(expTimestamp).UtcDateTime;
+                var now = DateTime.UtcNow;
+                return now >= expiration;
+            }
+
+            return true;
+        }
+        catch
+        {
+            return true;
+        }
+    }
+
+    // Método para obtener el rol del usuario
+    private string GetUserRole(ClaimsPrincipal user)
+    {
+        try
+        {
+            // Buscar el token en los claims
+            var tokenClaim = user.FindFirst("token");
+            if (tokenClaim != null)
+            {
+                var role = DecodeRoleFromJwt(tokenClaim.Value);
+                if (!string.IsNullOrEmpty(role))
+                {
+                    return role;
+                }
+            }
+
+            // Si no se pudo extraer del token, buscar en claims directos
+            var roleClaim = user.FindFirst("rol") ??
+                           user.FindFirst("role") ??
+                           user.FindFirst(ClaimTypes.Role);
+
+            if (roleClaim != null)
+            {
+                return roleClaim.Value;
+            }
+
+            return "3"; // Default a Alumno
+        }
+        catch
+        {
+            return "3";
+        }
+    }
+
+    // Método para decodificar el rol desde el JWT
+    private string? DecodeRoleFromJwt(string jwtToken)
+    {
+        try
+        {
+            // Un JWT tiene 3 partes separadas por puntos: header.payload.signature
+            var parts = jwtToken.Split('.');
+            if (parts.Length != 3)
+            {
+                return null;
+            }
+
+            // La payload es la segunda parte
+            var payload = parts[1];
+
+            // Base64 URL decode
+            payload = payload.Replace('-', '+').Replace('_', '/');
+            switch (payload.Length % 4)
+            {
+                case 2: payload += "=="; break;
+                case 3: payload += "="; break;
+            }
+
+            var payloadBytes = Convert.FromBase64String(payload);
+            var payloadJson = System.Text.Encoding.UTF8.GetString(payloadBytes);
+
+            // Parsear el JSON
+            using var document = JsonDocument.Parse(payloadJson);
+            if (document.RootElement.TryGetProperty("rol", out var rolProperty))
+            {
+                return rolProperty.GetString();
+            }
+
+            return null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    // Método para obtener el nombre display del rol
+    private string GetRoleDisplayName(string role)
+    {
+        return role switch
+        {
+            "1" => "Administrador",
+            "2" => "Docente",
+            "3" => "Alumno",
+            _ => "Usuario"
+        };
+    }
+
+    // Método para obtener las funciones según el rol
+    private List<SystemFunction> GetUserFunctions(string userRole)
+    {
+        // Todas las funciones del sistema
+        var allFunctions = new List<SystemFunction>
+        {
+            new SystemFunction
+            {
+                Title = "Gestión de Usuarios",
+                Description = "Administrar usuarios y permisos del sistema",
+                Url = "/usuarios",
+                AllowedRoles = new List<int> { 1 } // Solo Admin
+            },
+            new SystemFunction
+            {
+                Title = "Planes Académicos",
+                Description = "Gestionar planes de estudio",
+                Url = "/planes",
+                AllowedRoles = new List<int> { 1, 2 } // Admin y Docentes
+            },
+            new SystemFunction
+            {
+                Title = "Especialidades",
+                Description = "Gestionar especialidades académicas",
+                Url = "/especialidades",
+                AllowedRoles = new List<int> { 1, 2 } // Admin y Docentes
+            },
+            new SystemFunction
+            {
+                Title = "Cursos",
+                Description = "Gestionar cursos y materias",
+                Url = "/cursos",
+                AllowedRoles = new List<int> { 1, 2 } // Admin y Docentes
+            },
+            new SystemFunction
+            {
+                Title = "Mis Cursos",
+                Description = "Ver mis cursos asignados",
+                Url = "/mis-cursos",
+                AllowedRoles = new List<int> { 2, 3 } // Docentes y Alumnos
+            },
+            new SystemFunction
+            {
+                Title = "Inscripciones",
+                Description = "Inscribirse a cursos disponibles",
+                Url = "/inscripciones",
+                AllowedRoles = new List<int> { 3 } // Solo Alumnos
+            },
+            new SystemFunction
+            {
+                Title = "Calificaciones",
+                Description = "Consultar calificaciones",
+                Url = "/calificaciones",
+                AllowedRoles = new List<int> { 3 } // Solo Alumnos
+            },
+            new SystemFunction
+            {
+                Title = "Reportes",
+                Description = "Generar reportes del sistema",
+                Url = "/reportes",
+                AllowedRoles = new List<int> { 1 } // Solo Admin
+            },
+            new SystemFunction
+            {
+                Title = "Configuración",
+                Description = "Configurar parámetros del sistema",
+                Url = "/configuracion",
+                AllowedRoles = new List<int> { 1 } // Solo Admin
+            }
+        };
+
+        // Filtrar funciones por rol
+        return allFunctions
+            .Where(f => f.AllowedRoles.Contains(int.Parse(userRole)))
+            .ToList();
+    }
 
     private async Task HandleLogin()
     {
@@ -220,7 +468,6 @@
 
             if (result != null)
             {
-                // Forzar navegación para refrescar el estado
                 Navigation.NavigateTo("/", true);
             }
             else
@@ -231,7 +478,6 @@
         catch (Exception ex)
         {
             errorMessage = $"Error al iniciar sesión: {ex.Message}";
-            Console.WriteLine($"Login error: {ex.Message}");
         }
         finally
         {

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace BlazorServer.Providers
 {
@@ -31,8 +33,8 @@ namespace BlazorServer.Providers
                         new Claim("token", token)
                     };
 
-                    // var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
-                    // claims.AddRange(jwtToken.Claims);
+                    var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
+                    claims.AddRange(jwtToken.Claims);
 
                     var identity = new ClaimsIdentity(claims, "jwt");
                     var user = new ClaimsPrincipal(identity);

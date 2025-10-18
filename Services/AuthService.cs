@@ -56,6 +56,7 @@ namespace Services
                 new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
                 new Claim(ClaimTypes.Name, usuario.NombreUsuario),
                 new Claim("rol", usuario.Rol.ToString()),
+                new Claim(ClaimTypes.Role, usuario.Rol.ToString()),
                 new Claim("jti", Guid.NewGuid().ToString())
             };
 
