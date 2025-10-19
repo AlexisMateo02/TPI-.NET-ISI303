@@ -12,11 +12,11 @@
                     <h5 class="modal-title">
                         @if (mode == FormMode.Add)
                         {
-                            <text>Agregar</text>
+                            <text>Agregar Plan</text>
                         }
                         else
                         {
-                            <text>Modificar</text>
+                            <text>@(IsReadOnly ? "Ver Plan" : "Modificar Plan")</text>
                         }
                     </h5>
                     <button type="button" class="btn-close" @onclick="Close"></button>
@@ -35,7 +35,9 @@
 
                         <div class="mb-3">
                             <label class="form-label">Descripción *</label>
-                            <InputText @bind-Value="currentPlan.Descripcion" class="form-control" />
+                            <InputText @bind-Value="currentPlan.Descripcion"
+                                       class="form-control"
+                                       disabled="@IsReadOnly" />
                             @if (validationErrors.ContainsKey("Descripcion"))
                             {
                                 <div class="text-danger small">@validationErrors["Descripcion"]</div>
@@ -44,7 +46,9 @@
 
                         <div class="mb-3">
                             <label class="form-label">Especialidad *</label>
-                            <InputSelect @bind-Value="currentPlan.IdEspecialidad" class="form-select">
+                            <InputSelect @bind-Value="currentPlan.IdEspecialidad"
+                                         class="form-select"
+                                         disabled="@IsReadOnly">
                                 <option value="0">Seleccionar Especialidad</option>
                                 @if (especialidades != null)
                                 {
@@ -67,15 +71,27 @@
                             </div>
                         }
 
+                        @if (IsReadOnly)
+                        {
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No tienes permisos para modificar esta información.
+                            </div>
+                        }
+
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @onclick="Close">Cancelar</button>
-                            <button type="submit" class="btn btn-primary" disabled="@saving">
-                                @if (saving)
-                                {
-                                    <span class="spinner-border spinner-border-sm me-2"></span>
-                                }
-                                @(mode == FormMode.Add ? "Agregar" : "Modificar")
+                            <button type="button" class="btn btn-secondary" @onclick="Close">
+                                @(IsReadOnly ? "Cerrar" : "Cancelar")
                             </button>
+                            @if (!IsReadOnly)
+                            {
+                                <button type="submit" class="btn btn-primary" disabled="@saving">
+                                    @if (saving)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                    }
+                                    @(mode == FormMode.Add ? "Agregar" : "Modificar")
+                                </button>
+                            }
                         </div>
                     </EditForm>
                 </div>
@@ -86,6 +102,7 @@
 
 @code {
     [Parameter] public EventCallback OnPlanChanged { get; set; }
+    [Parameter] public bool IsReadOnly { get; set; } = false;
 
     private bool showModal = false;
     private FormMode mode = FormMode.Add;
@@ -103,6 +120,12 @@
 
     public async Task ShowAddModal()
     {
+        if (IsReadOnly)
+        {
+            errorMessage = "No tienes permisos para agregar planes.";
+            return;
+        }
+
         mode = FormMode.Add;
         currentPlan = new PlanDTO();
         await LoadEspecialidades();
@@ -129,6 +152,12 @@
 
     private async Task HandleValidSubmit()
     {
+        if (IsReadOnly)
+        {
+            errorMessage = "No tienes permisos para realizar esta acción.";
+            return;
+        }
+
         if (!ValidatePlan())
             return;
 

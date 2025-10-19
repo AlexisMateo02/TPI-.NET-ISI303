@@ -2,86 +2,129 @@
 @using DTOs
 @using APIClients
 @using BlazorServer.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@using System.IdentityModel.Tokens.Jwt
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Planes</PageTitle>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <h3>Planes</h3>
+<AuthorizeView>
+    <Authorized>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <h3>Planes</h3>
 
-            @if (!string.IsNullOrEmpty(errorMessage))
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @errorMessage
-                    <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
-                </div>
-            }
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @errorMessage
+                            <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+                        </div>
+                    }
 
-            @if (!string.IsNullOrEmpty(successMessage))
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    @successMessage
-                    <button type="button" class="btn-close" @onclick="() => successMessage = string.Empty"></button>
-                </div>
-            }
+                    @if (!string.IsNullOrEmpty(successMessage))
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @successMessage
+                            <button type="button" class="btn-close" @onclick="() => successMessage = string.Empty"></button>
+                        </div>
+                    }
 
-            <div class="mb-3">
-                <button class="btn btn-primary" @onclick="OpenAddModal">
-                    <i class="fas fa-plus"></i> Agregar
-                </button>
-            </div>
+                    @* Solo mostrar botón agregar si es Admin *@
+                    @if (isAdmin)
+                    {
+                        <div class="mb-3">
+                            <button class="btn btn-primary" @onclick="OpenAddModal">
+                                <i class="fas fa-plus"></i> Agregar
+                            </button>
+                        </div>
+                    }
 
-            @if (loading)
-            {
-                <div class="d-flex justify-content-center">
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Id</th>
-                                <th>Descripción</th>
-                                <th>Especialidad</th>
-                                <th class="text-end"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (planes != null && planes.Any())
-                            {
-                                @foreach (var plan in planes)
-                                {
+                    @if (loading)
+                    {
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
                                     <tr>
-                                        <td>@plan.IdPlan</td>
-                                        <td>@plan.Descripcion</td>
-                                        <td>@plan.DescripcionEspecialidad</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(plan)">
-                                                <i class="fas fa-edit"></i> Editar
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(plan)">
-                                                <i class="fas fa-trash"></i> Eliminar
-                                            </button>
-                                        </td>
+                                        <th>Id</th>
+                                        <th>Descripción</th>
+                                        <th>Especialidad</th>
+                                        @if (isAdmin)
+                                        {
+                                            <th class="text-end">Acciones</th>
+                                        }
                                     </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-        </div>
-    </div>
-</div>
+                                </thead>
+                                <tbody>
+                                    @if (planes != null && planes.Any())
+                                    {
+                                        @foreach (var plan in planes)
+                                        {
+                                            <tr>
+                                                <td>@plan.IdPlan</td>
+                                                <td>@plan.Descripcion</td>
+                                                <td>@plan.DescripcionEspecialidad</td>
+                                                @if (isAdmin)
+                                                {
+                                                    <td class="text-end">
+                                                        <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(plan)">
+                                                            <i class="fas fa-edit"></i> Editar
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(plan)">
+                                                            <i class="fas fa-trash"></i> Eliminar
+                                                        </button>
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="@(isAdmin ? 4 : 3)" class="text-center">
+                                                No hay planes disponibles
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
 
-<PlanModal @ref="planModal" OnPlanChanged="LoadPlanes" />
+                    @if (!isAdmin)
+                    {
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle"></i> Vista de solo lectura. Solo los administradores pueden modificar planes.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="container-fluid mt-5">
+            <div class="alert alert-warning">
+                <h4 class="alert-heading">Acceso Denegado</h4>
+                <p>Debes iniciar sesión para acceder a esta página.</p>
+                <hr>
+                <a href="/" class="btn btn-primary">Ir a Inicio</a>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+<PlanModal @ref="planModal" OnPlanChanged="LoadPlanes" IsReadOnly="@(!isAdmin)" />
 
 @code {
     private List<PlanDTO>? planes;
@@ -89,10 +132,58 @@
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
     private PlanModal? planModal;
+    private bool isAdmin = false;
+    private string currentUserRole = "3"; // Default Alumno
 
     protected override async Task OnInitializedAsync()
     {
+        await CheckUserRole();
         await LoadPlanes();
+    }
+
+    private async Task CheckUserRole()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                currentUserRole = GetUserRole(user);
+                isAdmin = currentUserRole == "1"; // 1 = Administrador
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error checking user role: {ex.Message}");
+        }
+    }
+
+    private string GetUserRole(ClaimsPrincipal user)
+    {
+        try
+        {
+            // Intentar obtener del token
+            var tokenClaim = user.FindFirst("token");
+            if (tokenClaim != null)
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var token = handler.ReadJwtToken(tokenClaim.Value);
+                var roleClaim = token.Claims.FirstOrDefault(c => c.Type == "rol");
+                if (roleClaim != null) return roleClaim.Value;
+            }
+
+            // Intentar obtener de claims directos
+            var roleClaim2 = user.FindFirst("rol") ?? user.FindFirst(ClaimTypes.Role);
+            if (roleClaim2 != null) return roleClaim2.Value;
+
+            return "3"; // Default: Alumno
+        }
+        catch
+        {
+            return "3";
+        }
     }
 
     private async Task LoadPlanes()
@@ -115,6 +206,12 @@
 
     private async Task OpenAddModal()
     {
+        if (!isAdmin)
+        {
+            errorMessage = "No tienes permisos para realizar esta acción.";
+            return;
+        }
+
         if (planModal != null)
         {
             await planModal.ShowAddModal();
@@ -123,6 +220,12 @@
 
     private async Task OpenEditModal(PlanDTO plan)
     {
+        if (!isAdmin)
+        {
+            errorMessage = "No tienes permisos para realizar esta acción.";
+            return;
+        }
+
         if (planModal != null)
         {
             await planModal.ShowEditModal(plan);
@@ -131,8 +234,14 @@
 
     private async Task ConfirmDelete(PlanDTO plan)
     {
+        if (!isAdmin)
+        {
+            errorMessage = "No tienes permisos para realizar esta acción.";
+            return;
+        }
+
         var confirm = await JSRuntime.InvokeAsync<bool>("confirm",
-            $"¿Está seguro que desea eliminar el plan?");
+            $"¿Está seguro que desea eliminar el plan '{plan.Descripcion}'?");
 
         if (confirm)
         {
