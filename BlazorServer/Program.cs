@@ -13,6 +13,8 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<ProtectedLocalStorage>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthClientService>();
+builder.Services.AddScoped<JwtService>();
+builder.Services.AddSingleton<SystemFunctionsService>();
 
 // HttpClient
 builder.Services.AddScoped(sp =>
