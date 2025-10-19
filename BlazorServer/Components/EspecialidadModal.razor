@@ -16,7 +16,7 @@
                         }
                         else
                         {
-                            <text>Modificar</text>
+                            <text>@(IsReadOnly ? "Ver" : "Modificar")</text>
                         }
                     </h5>
                     <button type="button" class="btn-close" @onclick="Close"></button>
@@ -35,7 +35,9 @@
 
                         <div class="mb-3">
                             <label class="form-label">Descripción *</label>
-                            <InputText @bind-Value="currentEspecialidad.Descripcion" class="form-control" />
+                            <InputText @bind-Value="currentEspecialidad.Descripcion"
+                                       class="form-control"
+                                       disabled="@IsReadOnly" />
                             @if (validationErrors.ContainsKey("Descripcion"))
                             {
                                 <div class="text-danger small">@validationErrors["Descripcion"]</div>
@@ -49,15 +51,27 @@
                             </div>
                         }
 
+                        @if (IsReadOnly)
+                        {
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No tienes permisos para modificar esta información.
+                            </div>
+                        }
+
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @onclick="Close">Cancelar</button>
-                            <button type="submit" class="btn btn-primary" disabled="@saving">
-                                @if (saving)
-                                {
-                                    <span class="spinner-border spinner-border-sm me-2"></span>
-                                }
-                                @(mode == FormMode.Add ? "Agregar" : "Modificar")
+                            <button type="button" class="btn btn-secondary" @onclick="Close">
+                                @(IsReadOnly ? "Cerrar" : "Cancelar")
                             </button>
+                            @if (!IsReadOnly)
+                            {
+                                <button type="submit" class="btn btn-primary" disabled="@saving">
+                                    @if (saving)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                    }
+                                    @(mode == FormMode.Add ? "Agregar" : "Modificar")
+                                </button>
+                            }
                         </div>
                     </EditForm>
                 </div>
@@ -68,6 +82,7 @@
 
 @code {
     [Parameter] public EventCallback OnEspecialidadChanged { get; set; }
+    [Parameter] public bool IsReadOnly { get; set; } = false;
 
     private bool showModal = false;
     private FormMode mode = FormMode.Add;
@@ -82,17 +97,22 @@
         Update
     }
 
-    public Task ShowAddModal()
+    public async Task ShowAddModal()
     {
+        if (IsReadOnly)
+        {
+            errorMessage = "No tienes permisos para agregar especialidades.";
+            return;
+        }
+
         mode = FormMode.Add;
         currentEspecialidad = new EspecialidadDTO();
         ClearValidationErrors();
         showModal = true;
-        StateHasChanged();
-        return Task.CompletedTask;
+        await InvokeAsync(StateHasChanged);
     }
 
-    public Task ShowEditModal(EspecialidadDTO especialidad)
+    public async Task ShowEditModal(EspecialidadDTO especialidad)
     {
         mode = FormMode.Update;
         currentEspecialidad = new EspecialidadDTO
@@ -102,12 +122,17 @@
         };
         ClearValidationErrors();
         showModal = true;
-        StateHasChanged();
-        return Task.CompletedTask;
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task HandleValidSubmit()
     {
+        if (IsReadOnly)
+        {
+            errorMessage = "No tienes permisos para realizar esta acción.";
+            return;
+        }
+
         if (!ValidateEspecialidad())
             return;
 
@@ -145,7 +170,7 @@
 
         if (string.IsNullOrWhiteSpace(currentEspecialidad.Descripcion))
         {
-            validationErrors["Descripcion"] = "El Descripción es requerida";
+            validationErrors["Descripcion"] = "La descripción es requerida";
             isValid = false;
         }
 
