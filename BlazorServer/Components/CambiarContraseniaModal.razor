@@ -1,0 +1,253 @@
+﻿@using DTOs
+@using APIClients
+@inject IJSRuntime JSRuntime
+
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">
+                        <i class="fas fa-key"></i> Cambiar Contraseña
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="cambioContrasenia" OnValidSubmit="HandleValidSubmit" Context="formContext">
+                        <DataAnnotationsValidator />
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Requisitos de contraseña:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Mínimo 6 caracteres</li>
+                                <li>No puede estar vacía</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña Actual *</label>
+                            <div class="input-group">
+                                <input type="@(showCurrentPassword ? "text" : "password")"
+                                       class="form-control"
+                                       @bind="cambioContrasenia.ClaveActual"
+                                       placeholder="Ingresa tu contraseña actual" />
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        @onclick="() => showCurrentPassword = !showCurrentPassword">
+                                    <i class="fas @(showCurrentPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                                </button>
+                            </div>
+                            @if (validationErrors.ContainsKey("ClaveActual"))
+                            {
+                                <div class="text-danger small mt-1">@validationErrors["ClaveActual"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Nueva Contraseña *</label>
+                            <div class="input-group">
+                                <input type="@(showNewPassword ? "text" : "password")"
+                                       class="form-control"
+                                       @bind="cambioContrasenia.NuevaClave"
+                                       placeholder="Ingresa tu nueva contraseña" />
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        @onclick="() => showNewPassword = !showNewPassword">
+                                    <i class="fas @(showNewPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                                </button>
+                            </div>
+                            @if (validationErrors.ContainsKey("NuevaClave"))
+                            {
+                                <div class="text-danger small mt-1">@validationErrors["NuevaClave"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Confirmar Nueva Contraseña *</label>
+                            <div class="input-group">
+                                <input type="@(showConfirmPassword ? "text" : "password")"
+                                       class="form-control"
+                                       @bind="confirmPassword"
+                                       placeholder="Confirma tu nueva contraseña" />
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        @onclick="() => showConfirmPassword = !showConfirmPassword">
+                                    <i class="fas @(showConfirmPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                                </button>
+                            </div>
+                            @if (validationErrors.ContainsKey("ConfirmPassword"))
+                            {
+                                <div class="text-danger small mt-1">@validationErrors["ConfirmPassword"]</div>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle"></i> @errorMessage
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(successMessage))
+                        {
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i> @successMessage
+                            </div>
+                        }
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="Close">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-warning text-dark" disabled="@saving">
+                                @if (saving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                <i class="fas fa-key"></i> Cambiar Contraseña
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback OnContraseniaChanged { get; set; }
+
+    private bool showModal = false;
+    private int usuarioId = 0;
+    private CambioContraseniaDTO cambioContrasenia = new CambioContraseniaDTO();
+    private string confirmPassword = string.Empty;
+    private bool saving = false;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+    private Dictionary<string, string> validationErrors = new Dictionary<string, string>();
+
+    private bool showCurrentPassword = false;
+    private bool showNewPassword = false;
+    private bool showConfirmPassword = false;
+
+    public class CambioContraseniaDTO
+    {
+        public string ClaveActual { get; set; } = string.Empty;
+        public string NuevaClave { get; set; } = string.Empty;
+    }
+
+    public async Task ShowModal(int idUsuario)
+    {
+        usuarioId = idUsuario;
+        cambioContrasenia = new CambioContraseniaDTO();
+        confirmPassword = string.Empty;
+        showCurrentPassword = false;
+        showNewPassword = false;
+        showConfirmPassword = false;
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (!ValidateForm())
+            return;
+
+        try
+        {
+            saving = true;
+            errorMessage = string.Empty;
+            successMessage = string.Empty;
+
+            await UsuarioAPIClient.CambiarContraseniaAsync(
+                usuarioId,
+                cambioContrasenia.ClaveActual,
+                cambioContrasenia.NuevaClave
+            );
+
+            successMessage = "Contraseña cambiada exitosamente";
+            await OnContraseniaChanged.InvokeAsync();
+
+            // Cerrar después de 2 segundos
+            StateHasChanged();
+            await Task.Delay(2000);
+            Close();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private bool ValidateForm()
+    {
+        ClearValidationErrors();
+        bool isValid = true;
+
+        // Validar Contraseña Actual
+        if (string.IsNullOrWhiteSpace(cambioContrasenia.ClaveActual))
+        {
+            validationErrors["ClaveActual"] = "La contraseña actual es requerida";
+            isValid = false;
+        }
+
+        // Validar Nueva Contraseña
+        if (string.IsNullOrWhiteSpace(cambioContrasenia.NuevaClave))
+        {
+            validationErrors["NuevaClave"] = "La nueva contraseña es requerida";
+            isValid = false;
+        }
+        else if (cambioContrasenia.NuevaClave.Length < 6)
+        {
+            validationErrors["NuevaClave"] = "La nueva contraseña debe tener al menos 6 caracteres";
+            isValid = false;
+        }
+
+        // Validar Confirmación de Contraseña
+        if (string.IsNullOrWhiteSpace(confirmPassword))
+        {
+            validationErrors["ConfirmPassword"] = "Debe confirmar la nueva contraseña";
+            isValid = false;
+        }
+        else if (cambioContrasenia.NuevaClave != confirmPassword)
+        {
+            validationErrors["ConfirmPassword"] = "Las contraseñas no coinciden";
+            isValid = false;
+        }
+
+        // Validar que la nueva contraseña sea diferente a la actual
+        if (!string.IsNullOrWhiteSpace(cambioContrasenia.ClaveActual) &&
+            !string.IsNullOrWhiteSpace(cambioContrasenia.NuevaClave) &&
+            cambioContrasenia.ClaveActual == cambioContrasenia.NuevaClave)
+        {
+            validationErrors["NuevaClave"] = "La nueva contraseña debe ser diferente a la actual";
+            isValid = false;
+        }
+
+        StateHasChanged();
+        return isValid;
+    }
+
+    private void ClearValidationErrors()
+    {
+        validationErrors.Clear();
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+    }
+
+    private void Close()
+    {
+        showModal = false;
+        cambioContrasenia = new CambioContraseniaDTO();
+        confirmPassword = string.Empty;
+        ClearValidationErrors();
+        StateHasChanged();
+    }
+}

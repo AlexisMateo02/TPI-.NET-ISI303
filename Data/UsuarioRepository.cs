@@ -117,5 +117,21 @@ namespace Data
             }
             return null;
         }
+
+        public bool CambiarContrasenia(int idUsuario, string nuevaClave)
+        {
+            using var context = CreateContext();
+
+            var existingUsuario = context.Usuarios.Find(idUsuario);
+            if (existingUsuario == null)
+                return false;
+
+            // Actualiza directamente la nueva contraseña (SetClave genera salt + hash)
+            existingUsuario.SetClave(nuevaClave);
+
+            context.SaveChanges();
+            return true;
+        }
+
     }
 }

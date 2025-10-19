@@ -78,6 +78,30 @@ namespace Academia.Entidades
             _idPersona = null;
         }
 
+        // Constructor para cambio de contraseña con persona
+        public void CambioContrasenia(int id, string nombreUsuario, string clave, bool habilitado, DateTime fechaAlta, int rolUsuario, int idPersona)
+        {
+            Id = id;
+            NombreUsuario = nombreUsuario;
+            SetClave(clave);
+            Habilitado = habilitado;
+            FechaAlta = fechaAlta;
+            Rol = rolUsuario;
+            _idPersona = idPersona;
+        }
+
+        // Constructor para cambio de contraseña sin persona
+        public void CambioContrasenia(int id, string nombreUsuario, string clave, bool habilitado, DateTime fechaAlta, int rolUsuario)
+        {
+            Id = id;
+            NombreUsuario = nombreUsuario;
+            SetClave(clave);
+            Habilitado = habilitado;
+            FechaAlta = fechaAlta;
+            Rol = rolUsuario;
+            _idPersona = null;
+        }
+
         protected Usuario() { } // Constructor sin parámetros para Entity Framework
         public void SetNombreUsuario(string nombreUsuario)
         {

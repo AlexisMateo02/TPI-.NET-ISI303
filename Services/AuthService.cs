@@ -40,7 +40,6 @@ namespace Services
                 NombreUsuario = usuario.NombreUsuario
             };
         }
-
         private string GenerateJwtToken(Usuario usuario)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");

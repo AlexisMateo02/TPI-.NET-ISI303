@@ -164,5 +164,19 @@ namespace Services
                 ApellidoPersona = u.Persona?.Apellido
             });
         }
+
+        public bool CambiarContrasenia(int idUsuario, string claveActual, string nuevaClave)
+        {
+            var usuarioRepository = new UsuarioRepository();
+            var usuario = usuarioRepository.Get(idUsuario);
+
+            if (usuario == null)
+                return false;
+
+            if (!usuario.ValidateClave(claveActual))
+                throw new ArgumentException("La contraseña actual es incorrecta.");
+
+            return usuarioRepository.CambiarContrasenia(idUsuario, nuevaClave);
+        }
     }
 }

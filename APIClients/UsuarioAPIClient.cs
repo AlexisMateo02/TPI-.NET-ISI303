@@ -192,5 +192,34 @@ namespace APIClients
                 throw new Exception($"Timeout al buscar usuarios: {ex.Message}", ex);
             }
         }
+
+        public static async Task CambiarContraseniaAsync(int idUsuario, string claveActual, string nuevaClave)
+        {
+            try
+            {
+                var dto = new
+                {
+                    ClaveActual = claveActual,
+                    NuevaClave = nuevaClave
+                };
+
+                HttpResponseMessage response = await client.PutAsJsonAsync($"usuarios/{idUsuario}/contrasenia", dto);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Error al cambiar la contraseña del usuario con Id {idUsuario}. Status: {response.StatusCode}, Detalle: {errorContent}");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"Error de conexión al cambiar la contraseña del usuario con Id {idUsuario}: {ex.Message}", ex);
+            }
+            catch (TaskCanceledException ex)
+            {
+                throw new Exception($"Timeout al cambiar la contraseña del usuario con Id {idUsuario}: {ex.Message}", ex);
+            }
+        }
+
     }
 }

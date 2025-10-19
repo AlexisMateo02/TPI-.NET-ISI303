@@ -1,5 +1,6 @@
-﻿using Services;
-using DTOs;
+﻿using DTOs;
+using Services;
+using static DTOs.UsuarioDTO;
 
 namespace APIWeb
 {
@@ -54,8 +55,7 @@ namespace APIWeb
             .WithName("AddUsuario")
             .Produces<UsuarioDTO>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithOpenApi()
-            .RequireAuthorization("UsuariosAgregar");
+            .WithOpenApi();
 
             app.MapPut("/usuarios", (UsuarioDTO dto) =>
             {
@@ -81,8 +81,7 @@ namespace APIWeb
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
-            .WithOpenApi()
-            .RequireAuthorization("UsuariosActualizar");
+            .WithOpenApi();
 
             app.MapDelete("/usuarios/{id}", (int id) =>
             {
@@ -100,8 +99,7 @@ namespace APIWeb
             .WithName("DeleteUsuario")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
-            .WithOpenApi()
-            .RequireAuthorization("UsuariosEliminar");
+            .WithOpenApi();
 
             // Endpoint para validación desde Forms
             app.MapGet("/usuarios/existsNombreUsuario", (string nombreUsuario, int? excludeId) =>
@@ -138,6 +136,33 @@ namespace APIWeb
             })
             .WithName("GetUsuariosByCriteria")
             .WithOpenApi();
+
+            app.MapPut("/usuarios/{id}/contrasenia", (int id, CambioContraseniaDTO dto) =>
+            {
+                try
+                {
+                    var usuarioService = new UsuarioService();
+
+                    var result = usuarioService.CambiarContrasenia(id, dto.ClaveActual, dto.NuevaClave);
+
+                    if (!result)
+                    {
+                        return Results.NotFound(new { error = $"No se encontró el usuario con ID {id}" });
+                    }
+
+                    return Results.NoContent();
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+            })
+            .WithName("CambiarContraseniaUsuario")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithOpenApi();
+
         }
     }
 }
