@@ -91,7 +91,7 @@ namespace Services
             }
 
             // Validar que un año de calendario, una comisión y una materia no estén duplicados
-            if (cursoRepository.ComisionMateriaAndAnioCalendarioExist(dto.IdComision, dto.IdMateria, dto.AnioCalendario))
+            if (cursoRepository.ComisionMateriaAndAnioCalendarioExist(dto.IdComision, dto.IdMateria, dto.AnioCalendario, dto.IdCurso))
             {
                 throw new ArgumentException($"Ya existe una curso con el año '{dto.AnioCalendario}'," +
                     $" la comisión con ID {dto.IdComision} y la materia con ID {dto.IdMateria}");

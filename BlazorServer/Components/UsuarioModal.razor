@@ -158,10 +158,10 @@
                         }
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @onclick="Close">
+                            <button type="button" class="btn btn-outline-danger" @onclick="Close">
                                 <i class="fas fa-times"></i> Cancelar
                             </button>
-                            <button type="submit" class="btn btn-primary" disabled="@saving">
+                            <button type="submit" class="btn btn-outline-primary" disabled="@saving">
                                 @if (saving)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
@@ -233,6 +233,14 @@
             NombrePersona = usuario.NombrePersona,
             ApellidoPersona = usuario.ApellidoPersona
         };
+        if (currentUsuario.IdPersona.HasValue && !string.IsNullOrEmpty(currentUsuario.NombrePersona) && !string.IsNullOrEmpty(currentUsuario.ApellidoPersona))
+        {
+            personaSeleccionadaText = $"{currentUsuario.ApellidoPersona}, {currentUsuario.NombrePersona} - Legajo: {currentUsuario.Legajo}";
+        }
+        else
+        {
+            personaSeleccionadaText = string.Empty;
+        }
         ClearValidationErrors();
         showModal = true;
         StateHasChanged();

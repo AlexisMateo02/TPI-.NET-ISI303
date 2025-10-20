@@ -1,0 +1,397 @@
+﻿@using DTOs
+@using APIClients
+@inject IJSRuntime JSRuntime
+
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header gradient-bg text-white">
+                    <h5 class="modal-title">
+                        @if (mode == FormMode.Add)
+                        {
+                            <text>@(IsAlumno ? "Inscribirse a Curso" : "Agregar Inscripción")</text>
+                        }
+                        else if (mode == FormMode.EditNota)
+                        {
+                            <text>Calificar Alumno</text>
+                        }
+                        else
+                        {
+                            <text>Modificar Inscripción</text>
+                        }
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="currentInscripcion" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+
+                        @if (mode == FormMode.Update || mode == FormMode.EditNota)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Id</label>
+                                <input type="text" class="form-control" value="@currentInscripcion.IdInscripcion" readonly />
+                            </div>
+                        }
+
+                        @if (mode != FormMode.EditNota)
+                        {
+                            @if (IsAdmin)
+                            {
+                                <div class="mb-3">
+                                    <label class="form-label">Alumno *</label>
+                                    <InputSelect @bind-Value="currentInscripcion.IdAlumno"
+                                                 class="form-select"
+                                                 disabled="@(mode == FormMode.Update)">
+                                        <option value="0">Seleccionar Alumno</option>
+                                        @if (alumnos != null)
+                                        {
+                                            @foreach (var alumno in alumnos)
+                                            {
+                                                <option value="@alumno.IdPersona">@alumno.NombreCompletoPersona (Legajo: @alumno.Legajo)</option>
+                                            }
+                                        }
+                                    </InputSelect>
+                                    @if (validationErrors.ContainsKey("Alumno"))
+                                    {
+                                        <div class="text-danger small">@validationErrors["Alumno"]</div>
+                                    }
+                                </div>
+                            }
+
+                            <div class="mb-3">
+                                <label class="form-label">Curso *</label>
+                                <InputSelect @bind-Value="currentInscripcion.IdCurso"
+                                             class="form-select"
+                                             disabled="@(mode == FormMode.Update)">
+                                    <option value="0">Seleccionar Curso</option>
+                                    @if (cursos != null)
+                                    {
+                                        @foreach (var curso in cursos)
+                                        {
+                                            <option value="@curso.IdCurso">@curso.DescripcionMateria - @curso.DescripcionComision (@curso.AnioCalendario)</option>
+                                        }
+                                    }
+                                </InputSelect>
+                                @if (validationErrors.ContainsKey("Curso"))
+                                {
+                                    <div class="text-danger small">@validationErrors["Curso"]</div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Alumno</label>
+                                <input type="text" class="form-control" value="@currentInscripcion.NombreCompletoPersona" readonly />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Materia</label>
+                                <input type="text" class="form-control" value="@currentInscripcion.DescripcionMateria" readonly />
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label">Condición *</label>
+                            <InputSelect @bind-Value="currentInscripcion.Condicion"
+                                         class="form-select"
+                                         disabled="@(IsAlumno && mode == FormMode.Add)">
+                                <option value="">Seleccionar Condición</option>
+                                <option value="Regular">Regular</option>
+                                <option value="Libre">Libre</option>
+                                <option value="Promocionado">Promocionado</option>
+                            </InputSelect>
+                            @if (validationErrors.ContainsKey("Condicion"))
+                            {
+                                <div class="text-danger small">@validationErrors["Condicion"]</div>
+                            }
+                        </div>
+
+                        @if (mode == FormMode.Update || mode == FormMode.EditNota)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Nota (0-10)</label>
+                                <InputNumber @bind-Value="currentInscripcion.Nota"
+                                             class="form-control"
+                                             min="0"
+                                             max="10"
+                                             disabled="@(IsAlumno)" />
+                                @if (validationErrors.ContainsKey("Nota"))
+                                {
+                                    <div class="text-danger small">@validationErrors["Nota"]</div>
+                                }
+                                <small class="text-muted">Dejar vacío si aún no tiene nota</small>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                @errorMessage
+                            </div>
+                        }
+
+                        @if (IsAlumno && mode == FormMode.Add)
+                        {
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> Se inscribirá con condición "Regular" por defecto.
+                            </div>
+                        }
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-danger" @onclick="Close">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-outline-primary" disabled="@saving">
+                                @if (saving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                @if (mode == FormMode.Add)
+                                {
+                                    <text>@(IsAlumno ? "Inscribirse" : "Agregar")</text>
+                                }
+                                else if (mode == FormMode.EditNota)
+                                {
+                                    <text>Guardar Nota</text>
+                                }
+                                else
+                                {
+                                    <text>Modificar</text>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border-bottom: none;
+    }
+</style>
+
+@code {
+    [Parameter] public EventCallback OnInscripcionChanged { get; set; }
+    [Parameter] public bool IsAdmin { get; set; } = false;
+    [Parameter] public bool IsDocente { get; set; } = false;
+    [Parameter] public bool IsAlumno { get; set; } = false;
+    [Parameter] public int CurrentUserId { get; set; } = 0;
+
+    private bool showModal = false;
+    private FormMode mode = FormMode.Add;
+    private AlumnoInscripcionDTO currentInscripcion = new AlumnoInscripcionDTO();
+    private bool saving = false;
+    private string errorMessage = string.Empty;
+    private Dictionary<string, string> validationErrors = new Dictionary<string, string>();
+    private List<PersonaDTO>? alumnos;
+    private List<CursoDTO>? cursos;
+
+    public enum FormMode
+    {
+        Add,
+        Update,
+        EditNota
+    }
+
+    public async Task ShowAddModal()
+    {
+        mode = FormMode.Add;
+        currentInscripcion = new AlumnoInscripcionDTO();
+
+        if (IsAlumno)
+        {
+            currentInscripcion.IdAlumno = CurrentUserId;
+            currentInscripcion.Condicion = "Regular";
+        }
+
+        await LoadDropdowns();
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    public async Task ShowEditModal(AlumnoInscripcionDTO inscripcion)
+    {
+        if (!IsAdmin)
+        {
+            errorMessage = "No tienes permisos para editar inscripciones.";
+            return;
+        }
+
+        mode = FormMode.Update;
+        currentInscripcion = new AlumnoInscripcionDTO
+        {
+            IdInscripcion = inscripcion.IdInscripcion,
+            Condicion = inscripcion.Condicion,
+            Nota = inscripcion.Nota,
+            IdAlumno = inscripcion.IdAlumno,
+            Legajo = inscripcion.Legajo,
+            NombrePersona = inscripcion.NombrePersona,
+            ApellidoPersona = inscripcion.ApellidoPersona,
+            IdCurso = inscripcion.IdCurso,
+            AnioCalendario = inscripcion.AnioCalendario,
+            IdComision = inscripcion.IdComision,
+            DescripcionComision = inscripcion.DescripcionComision,
+            IdMateria = inscripcion.IdMateria,
+            DescripcionMateria = inscripcion.DescripcionMateria
+        };
+        await LoadDropdowns();
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    public async Task ShowEditNotaModal(AlumnoInscripcionDTO inscripcion)
+    {
+        if (!IsDocente)
+        {
+            errorMessage = "No tienes permisos para calificar.";
+            return;
+        }
+
+        mode = FormMode.EditNota;
+        currentInscripcion = new AlumnoInscripcionDTO
+        {
+            IdInscripcion = inscripcion.IdInscripcion,
+            Condicion = inscripcion.Condicion,
+            Nota = inscripcion.Nota,
+            IdAlumno = inscripcion.IdAlumno,
+            Legajo = inscripcion.Legajo,
+            NombrePersona = inscripcion.NombrePersona,
+            ApellidoPersona = inscripcion.ApellidoPersona,
+            IdCurso = inscripcion.IdCurso,
+            AnioCalendario = inscripcion.AnioCalendario,
+            IdComision = inscripcion.IdComision,
+            DescripcionComision = inscripcion.DescripcionComision,
+            IdMateria = inscripcion.IdMateria,
+            DescripcionMateria = inscripcion.DescripcionMateria
+        };
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (!await ValidateInscripcion())
+            return;
+
+        try
+        {
+            saving = true;
+            errorMessage = string.Empty;
+
+            if (mode == FormMode.Add)
+            {
+                await AlumnoInscripcionAPIClient.AddAsync(currentInscripcion);
+            }
+            else
+            {
+                await AlumnoInscripcionAPIClient.UpdateAsync(currentInscripcion);
+            }
+
+            await OnInscripcionChanged.InvokeAsync();
+            Close();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private async Task<bool> ValidateInscripcion()
+    {
+        ClearValidationErrors();
+        bool isValid = true;
+
+        if (currentInscripcion.IdAlumno <= 0)
+        {
+            validationErrors["Alumno"] = "Debe seleccionar un alumno";
+            isValid = false;
+        }
+
+        if (mode != FormMode.EditNota)
+        {
+            if (currentInscripcion.IdCurso <= 0)
+            {
+                validationErrors["Curso"] = "Debe seleccionar un curso";
+                isValid = false;
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(currentInscripcion.Condicion))
+        {
+            validationErrors["Condicion"] = "La condición es requerida";
+            isValid = false;
+        }
+
+        if (currentInscripcion.Nota.HasValue)
+        {
+            if (currentInscripcion.Nota.Value < 0 || currentInscripcion.Nota.Value > 10)
+            {
+                validationErrors["Nota"] = "La nota debe estar entre 0 y 10";
+                isValid = false;
+            }
+        }
+
+        // Validar duplicados solo en modo Add
+        if (isValid && mode == FormMode.Add && currentInscripcion.IdAlumno > 0 && currentInscripcion.IdCurso > 0)
+        {
+            bool exists = await AlumnoInscripcionAPIClient.ExistAlumnoCursoAsync(
+                currentInscripcion.IdAlumno,
+                currentInscripcion.IdCurso,
+                null
+            );
+
+            if (exists)
+            {
+                validationErrors["Curso"] = "El alumno ya está inscrito en este curso";
+                isValid = false;
+            }
+        }
+
+        StateHasChanged();
+        return isValid;
+    }
+
+    private void ClearValidationErrors()
+    {
+        validationErrors.Clear();
+        errorMessage = string.Empty;
+    }
+
+    private async Task LoadDropdowns()
+    {
+        try
+        {
+            if (IsAdmin)
+            {
+                alumnos = (await PersonaAPIClient.GetAlumnosAsync())?.ToList();
+            }
+            cursos = (await CursoAPIClient.GetAllAsync())?.ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar datos: {ex.Message}";
+        }
+    }
+
+    private void Close()
+    {
+        showModal = false;
+        ClearValidationErrors();
+        StateHasChanged();
+    }
+}

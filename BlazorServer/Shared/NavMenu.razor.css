@@ -61,8 +61,20 @@
     }
 
     .nav-scrollable {
-        /* Allow sidebar to scroll for tall menus */
+        position: fixed;
+        top: 3.5rem;
+        left: 0;
         height: calc(100vh - 3.5rem);
+        width: 250px;
         overflow-y: auto;
+        background: linear-gradient(to bottom, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    main {
+        margin-left: 250px;
     }
 }
+

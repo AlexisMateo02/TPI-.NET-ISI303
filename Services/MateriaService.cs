@@ -78,7 +78,7 @@ namespace Services
             }
 
             // Validar que una descripción de materia y un plan no estén duplicados
-            if (materiaRepository.PlanAndDescripcionMateriaExist(dto.IdPlan, dto.DescripcionMateria))
+            if (materiaRepository.PlanAndDescripcionMateriaExist(dto.IdPlan, dto.DescripcionMateria, dto.IdMateria))
             {
                 throw new ArgumentException($"Ya existe una materia con la descripción '{dto.DescripcionMateria}' y el plan con ID {dto.IdPlan}");
             }

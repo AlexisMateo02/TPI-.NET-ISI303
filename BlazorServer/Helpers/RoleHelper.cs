@@ -57,6 +57,12 @@ namespace BlazorServer.Helpers
             return role == "1" || role == "2";
         }
 
+        public async Task<bool> IsAdminOrAlumnoAsync()
+        {
+            var role = await GetCurrentUserRoleAsync();
+            return role == "1" || role == "3";
+        }
+
         private string GetUserRoleFromPrincipal(ClaimsPrincipal user)
         {
             try

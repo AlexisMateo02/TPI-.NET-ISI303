@@ -1,6 +1,5 @@
 ﻿@using DTOs
 @using APIClients
-@using System.Text.RegularExpressions
 @inject IJSRuntime JSRuntime
 
 @if (showModal)
@@ -12,55 +11,77 @@
                     <h5 class="modal-title">
                         @if (mode == FormMode.Add)
                         {
-                            <text>Agregar Plan</text>
+                            <text>Agregar Materia</text>
                         }
                         else
                         {
-                            <text>@(IsReadOnly ? "Ver Plan" : "Modificar Plan")</text>
+                            <text>@(IsReadOnly ? "Ver Materia" : "Modificar Materia")</text>
                         }
                     </h5>
                     <button type="button" class="btn-close" @onclick="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <EditForm Model="currentPlan" OnValidSubmit="HandleValidSubmit">
+                    <EditForm Model="currentMateria" OnValidSubmit="HandleValidSubmit">
                         <DataAnnotationsValidator />
 
                         @if (mode == FormMode.Update)
                         {
                             <div class="mb-3">
                                 <label class="form-label">Id</label>
-                                <input type="text" class="form-control" value="@currentPlan.IdPlan" readonly />
+                                <input type="text" class="form-control" value="@currentMateria.IdMateria" readonly />
                             </div>
                         }
 
                         <div class="mb-3">
                             <label class="form-label">Descripción *</label>
-                            <InputText @bind-Value="currentPlan.Descripcion"
+                            <InputText @bind-Value="currentMateria.DescripcionMateria"
                                        class="form-control"
                                        disabled="@IsReadOnly" />
-                            @if (validationErrors.ContainsKey("Descripcion"))
+                            @if (validationErrors.ContainsKey("DescripcionMateria"))
                             {
-                                <div class="text-danger small">@validationErrors["Descripcion"]</div>
+                                <div class="text-danger small">@validationErrors["DescripcionMateria"]</div>
                             }
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Especialidad *</label>
-                            <InputSelect @bind-Value="currentPlan.IdEspecialidad"
+                            <label class="form-label">Horas Semanales *</label>
+                            <InputNumber @bind-Value="currentMateria.HorasSemanales"
+                                         class="form-control"
+                                         disabled="@IsReadOnly" />
+                            @if (validationErrors.ContainsKey("HorasSemanales"))
+                            {
+                                <div class="text-danger small">@validationErrors["HorasSemanales"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Horas Totales *</label>
+                            <InputNumber @bind-Value="currentMateria.HorasTotales"
+                                         class="form-control"
+                                         disabled="@IsReadOnly" />
+                            @if (validationErrors.ContainsKey("HorasTotales"))
+                            {
+                                <div class="text-danger small">@validationErrors["HorasTotales"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Plan *</label>
+                            <InputSelect @bind-Value="currentMateria.IdPlan"
                                          class="form-select"
                                          disabled="@IsReadOnly">
-                                <option value="0">Seleccionar Especialidad</option>
-                                @if (especialidades != null)
+                                <option value="0">Seleccionar Plan</option>
+                                @if (planes != null)
                                 {
-                                    @foreach (var especialidad in especialidades)
+                                    @foreach (var plan in planes)
                                     {
-                                        <option value="@especialidad.Id">@especialidad.Descripcion</option>
+                                        <option value="@plan.IdPlan">@plan.Descripcion - @plan.DescripcionEspecialidad</option>
                                     }
                                 }
                             </InputSelect>
-                            @if (validationErrors.ContainsKey("Especialidad"))
+                            @if (validationErrors.ContainsKey("Plan"))
                             {
-                                <div class="text-danger small">@validationErrors["Especialidad"]</div>
+                                <div class="text-danger small">@validationErrors["Plan"]</div>
                             }
                         </div>
 
@@ -108,16 +129,16 @@
 </style>
 
 @code {
-    [Parameter] public EventCallback OnPlanChanged { get; set; }
+    [Parameter] public EventCallback OnMateriaChanged { get; set; }
     [Parameter] public bool IsReadOnly { get; set; } = false;
 
     private bool showModal = false;
     private FormMode mode = FormMode.Add;
-    private PlanDTO currentPlan = new PlanDTO();
+    private MateriaDTO currentMateria = new MateriaDTO();
     private bool saving = false;
     private string errorMessage = string.Empty;
     private Dictionary<string, string> validationErrors = new Dictionary<string, string>();
-    private List<EspecialidadDTO>? especialidades;
+    private List<PlanDTO>? planes;
 
     public enum FormMode
     {
@@ -129,29 +150,32 @@
     {
         if (IsReadOnly)
         {
-            errorMessage = "No tienes permisos para agregar planes.";
+            errorMessage = "No tienes permisos para agregar materias.";
             return;
         }
 
         mode = FormMode.Add;
-        currentPlan = new PlanDTO();
-        await LoadEspecialidades();
+        currentMateria = new MateriaDTO();
+        await LoadPlanes();
         ClearValidationErrors();
         showModal = true;
         StateHasChanged();
     }
 
-    public async Task ShowEditModal(PlanDTO plan)
+    public async Task ShowEditModal(MateriaDTO materia)
     {
         mode = FormMode.Update;
-        currentPlan = new PlanDTO
+        currentMateria = new MateriaDTO
         {
-            IdPlan = plan.IdPlan,
-            Descripcion = plan.Descripcion,
-            IdEspecialidad = plan.IdEspecialidad,
-            DescripcionEspecialidad = plan.DescripcionEspecialidad
+            IdMateria = materia.IdMateria,
+            DescripcionMateria = materia.DescripcionMateria,
+            HorasSemanales = materia.HorasSemanales,
+            HorasTotales = materia.HorasTotales,
+            IdPlan = materia.IdPlan,
+            DescripcionPlan = materia.DescripcionPlan,
+            DescripcionEspecialidad = materia.DescripcionEspecialidad
         };
-        await LoadEspecialidades();
+        await LoadPlanes();
         ClearValidationErrors();
         showModal = true;
         StateHasChanged();
@@ -165,7 +189,7 @@
             return;
         }
 
-        if (!ValidatePlan())
+        if (!await ValidateMateria())
             return;
 
         try
@@ -175,14 +199,14 @@
 
             if (mode == FormMode.Add)
             {
-                await PlanAPIClient.AddAsync(currentPlan);
+                await MateriaAPIClient.AddAsync(currentMateria);
             }
             else
             {
-                await PlanAPIClient.UpdateAsync(currentPlan);
+                await MateriaAPIClient.UpdateAsync(currentMateria);
             }
 
-            await OnPlanChanged.InvokeAsync();
+            await OnMateriaChanged.InvokeAsync();
             Close();
         }
         catch (Exception ex)
@@ -195,21 +219,50 @@
         }
     }
 
-    private bool ValidatePlan()
+    private async Task<bool> ValidateMateria()
     {
         ClearValidationErrors();
         bool isValid = true;
 
-        if (string.IsNullOrWhiteSpace(currentPlan.Descripcion))
+        if (string.IsNullOrWhiteSpace(currentMateria.DescripcionMateria))
         {
-            validationErrors["Descripcion"] = "La descripción es requerida";
+            validationErrors["DescripcionMateria"] = "La descripción es requerida";
             isValid = false;
         }
 
-        if (currentPlan.IdEspecialidad <= 0)
+        if (currentMateria.HorasSemanales <= 0)
         {
-            validationErrors["Especialidad"] = "Debe seleccionar una especialidad";
+            validationErrors["HorasSemanales"] = "Las horas semanales deben ser mayor a 0";
             isValid = false;
+        }
+
+        if (currentMateria.HorasTotales <= 0)
+        {
+            validationErrors["HorasTotales"] = "Las horas totales deben ser mayor a 0";
+            isValid = false;
+        }
+
+        if (currentMateria.IdPlan <= 0)
+        {
+            validationErrors["Plan"] = "Debe seleccionar un plan";
+            isValid = false;
+        }
+
+        // Validar duplicados
+        if (isValid && !string.IsNullOrWhiteSpace(currentMateria.DescripcionMateria) && currentMateria.IdPlan > 0)
+        {
+            int? excludeId = mode == FormMode.Update ? currentMateria.IdMateria : null;
+            bool exists = await MateriaAPIClient.ExistPlanAndDescripcionMateriaAsync(
+                currentMateria.IdPlan,
+                currentMateria.DescripcionMateria,
+                excludeId
+            );
+
+            if (exists)
+            {
+                validationErrors["DescripcionMateria"] = "Ya existe una materia con esta descripción en el plan seleccionado";
+                isValid = false;
+            }
         }
 
         StateHasChanged();
@@ -222,15 +275,15 @@
         errorMessage = string.Empty;
     }
 
-    private async Task LoadEspecialidades()
+    private async Task LoadPlanes()
     {
         try
         {
-            especialidades = (await EspecialidadAPIClient.GetAllAsync())?.ToList();
+            planes = (await PlanAPIClient.GetAllAsync())?.ToList();
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error al cargar especialidades: {ex.Message}";
+            errorMessage = $"Error al cargar planes: {ex.Message}";
         }
     }
 

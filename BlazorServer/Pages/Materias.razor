@@ -1,4 +1,4 @@
-﻿@page "/planes"
+﻿@page "/materias"
 @using DTOs
 @using APIClients
 @using BlazorServer.Components
@@ -9,15 +9,14 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject BlazorServer.Helpers.RoleHelper RoleHelper
 
-
-<PageTitle>Planes</PageTitle>
+<PageTitle>Materias</PageTitle>
 
 <AuthorizeView>
     <Authorized>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <h3>Planes</h3>
+                    <h3>Materias</h3>
 
                     @if (!string.IsNullOrEmpty(errorMessage))
                     {
@@ -35,7 +34,6 @@
                         </div>
                     }
 
-                    @* Solo mostrar botón agregar si es Admin *@
                     @if (isAdmin)
                     {
                         <div class="mb-3">
@@ -61,6 +59,9 @@
                                     <tr>
                                         <th>Id</th>
                                         <th>Descripción</th>
+                                        <th>Horas Semanales</th>
+                                        <th>Horas Totales</th>
+                                        <th>Plan</th>
                                         <th>Especialidad</th>
                                         @if (isAdmin)
                                         {
@@ -69,21 +70,24 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if (planes != null && planes.Any())
+                                    @if (materias != null && materias.Any())
                                     {
-                                        @foreach (var plan in planes)
+                                        @foreach (var materia in materias)
                                         {
                                             <tr>
-                                                <td>@plan.IdPlan</td>
-                                                <td>@plan.Descripcion</td>
-                                                <td>@plan.DescripcionEspecialidad</td>
+                                                <td>@materia.IdMateria</td>
+                                                <td>@materia.DescripcionMateria</td>
+                                                <td>@materia.HorasSemanales</td>
+                                                <td>@materia.HorasTotales</td>
+                                                <td>@materia.DescripcionPlan</td>
+                                                <td>@materia.DescripcionEspecialidad</td>
                                                 @if (isAdmin)
                                                 {
                                                     <td class="text-end">
-                                                        <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(plan)">
+                                                        <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(materia)">
                                                             <i class="fas fa-edit"></i> Editar
                                                         </button>
-                                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(plan)">
+                                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(materia)">
                                                             <i class="fas fa-trash"></i> Eliminar
                                                         </button>
                                                     </td>
@@ -94,8 +98,8 @@
                                     else
                                     {
                                         <tr>
-                                            <td colspan="@(isAdmin ? 4 : 3)" class="text-center">
-                                                No hay planes disponibles
+                                            <td colspan="@(isAdmin ? 7 : 6)" class="text-center">
+                                                No hay materias disponibles
                                             </td>
                                         </tr>
                                     }
@@ -119,7 +123,7 @@
     </NotAuthorized>
 </AuthorizeView>
 
-<PlanModal @ref="planModal" OnPlanChanged="LoadPlanes" IsReadOnly="@(!isAdmin)" />
+<MateriaModal @ref="materiaModal" OnMateriaChanged="LoadMaterias" IsReadOnly="@(!isAdmin)" />
 
 <style>
     .gradient-bg {
@@ -130,30 +134,30 @@
 </style>
 
 @code {
-    private List<PlanDTO>? planes;
+    private List<MateriaDTO>? materias;
     private bool loading = true;
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
-    private PlanModal? planModal;
+    private MateriaModal? materiaModal;
     private bool isAdmin = false;
 
     protected override async Task OnInitializedAsync()
     {
         isAdmin = await RoleHelper.IsAdminAsync();
-        await LoadPlanes();
+        await LoadMaterias();
     }
 
-    private async Task LoadPlanes()
+    private async Task LoadMaterias()
     {
         try
         {
             loading = true;
-            planes = (await PlanAPIClient.GetAllAsync())?.ToList();
+            materias = (await MateriaAPIClient.GetAllAsync())?.ToList();
             successMessage = string.Empty;
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error al cargar planes: {ex.Message}";
+            errorMessage = $"Error al cargar materias: {ex.Message}";
         }
         finally
         {
@@ -169,13 +173,13 @@
             return;
         }
 
-        if (planModal != null)
+        if (materiaModal != null)
         {
-            await planModal.ShowAddModal();
+            await materiaModal.ShowAddModal();
         }
     }
 
-    private async Task OpenEditModal(PlanDTO plan)
+    private async Task OpenEditModal(MateriaDTO materia)
     {
         if (!isAdmin)
         {
@@ -183,13 +187,13 @@
             return;
         }
 
-        if (planModal != null)
+        if (materiaModal != null)
         {
-            await planModal.ShowEditModal(plan);
+            await materiaModal.ShowEditModal(materia);
         }
     }
 
-    private async Task ConfirmDelete(PlanDTO plan)
+    private async Task ConfirmDelete(MateriaDTO materia)
     {
         if (!isAdmin)
         {
@@ -198,25 +202,25 @@
         }
 
         var confirm = await JSRuntime.InvokeAsync<bool>("confirm",
-            $"¿Está seguro que desea eliminar el plan '{plan.Descripcion}'?");
+            $"¿Está seguro que desea eliminar la materia '{materia.DescripcionMateria}'?");
 
         if (confirm)
         {
-            await DeletePlan(plan.IdPlan);
+            await DeleteMateria(materia.IdMateria);
         }
     }
 
-    private async Task DeletePlan(int id)
+    private async Task DeleteMateria(int id)
     {
         try
         {
-            await PlanAPIClient.DeleteAsync(id);
-            successMessage = "Plan eliminado exitosamente.";
-            await LoadPlanes();
+            await MateriaAPIClient.DeleteAsync(id);
+            successMessage = "Materia eliminada exitosamente.";
+            await LoadMaterias();
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error al eliminar plan: {ex.Message}";
+            errorMessage = $"Error al eliminar materia: {ex.Message}";
         }
     }
 }

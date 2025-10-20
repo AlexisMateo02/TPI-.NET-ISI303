@@ -6,7 +6,7 @@
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
+                <div class="modal-header gradient-bg text-white">
                     <h5 class="modal-title">
                         <i class="fas fa-search"></i> Buscar Persona
                     </h5>
@@ -24,7 +24,7 @@
                                    @onkeyup="HandleSearchKeyUp" />
                         </div>
                         <div class="col-md-2">
-                            <button class="btn btn-primary w-100" @onclick="SearchPersonas" disabled="@loading">
+                            <button class="btn btn-outline-success w-100" @onclick="SearchPersonas" disabled="@loading">
                                 @if (loading)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
@@ -33,7 +33,7 @@
                             </button>
                         </div>
                         <div class="col-md-2">
-                            <button class="btn btn-outline-secondary w-100" @onclick="ClearSearch">
+                            <button class="btn btn-outline-danger w-100" @onclick="ClearSearch">
                                 <i class="fas fa-eraser"></i> Limpiar
                             </button>
                         </div>
@@ -53,7 +53,7 @@
                     {
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
-                                <thead class="table-dark">
+                                <thead class="gradient-bg">
                                     <tr>
                                         <th>Legajo</th>
                                         <th>Apellido</th>
@@ -79,7 +79,7 @@
                                             </td>
                                             <td>@(persona.DescripcionPlan ?? "-")</td>
                                             <td class="text-end">
-                                                <button class="btn btn-success btn-sm"
+                                                <button class="btn btn-sm btn-outline-primary"
                                                         @onclick="() => SelectPersona(persona)"
                                                         title="Seleccionar esta persona">
                                                     <i class="fas fa-check"></i> Elegir
@@ -109,7 +109,7 @@
                     }
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="Close">
+                    <button type="button" class="btn btn-outline-danger" @onclick="Close">
                         <i class="fas fa-times"></i> Cancelar
                     </button>
                     <small class="text-muted me-auto">
@@ -123,6 +123,13 @@
         </div>
     </div>
 }
+
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border-bottom: none;
+    }
+</style>
 
 @code {
     [Parameter] public EventCallback<PersonaDTO> OnPersonaSelected { get; set; }

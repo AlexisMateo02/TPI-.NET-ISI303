@@ -1,4 +1,4 @@
-﻿@page "/planes"
+﻿@page "/comisiones"
 @using DTOs
 @using APIClients
 @using BlazorServer.Components
@@ -9,15 +9,14 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject BlazorServer.Helpers.RoleHelper RoleHelper
 
-
-<PageTitle>Planes</PageTitle>
+<PageTitle>Comisiones</PageTitle>
 
 <AuthorizeView>
     <Authorized>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <h3>Planes</h3>
+                    <h3>Comisiones</h3>
 
                     @if (!string.IsNullOrEmpty(errorMessage))
                     {
@@ -35,7 +34,6 @@
                         </div>
                     }
 
-                    @* Solo mostrar botón agregar si es Admin *@
                     @if (isAdmin)
                     {
                         <div class="mb-3">
@@ -61,6 +59,8 @@
                                     <tr>
                                         <th>Id</th>
                                         <th>Descripción</th>
+                                        <th>Año Especialidad</th>
+                                        <th>Plan</th>
                                         <th>Especialidad</th>
                                         @if (isAdmin)
                                         {
@@ -69,21 +69,23 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if (planes != null && planes.Any())
+                                    @if (comisiones != null && comisiones.Any())
                                     {
-                                        @foreach (var plan in planes)
+                                        @foreach (var comision in comisiones)
                                         {
                                             <tr>
-                                                <td>@plan.IdPlan</td>
-                                                <td>@plan.Descripcion</td>
-                                                <td>@plan.DescripcionEspecialidad</td>
+                                                <td>@comision.IdComision</td>
+                                                <td>@comision.DescripcionComision</td>
+                                                <td>@comision.AnioEspecialidad</td>
+                                                <td>@comision.DescripcionPlan</td>
+                                                <td>@comision.DescripcionEspecialidad</td>
                                                 @if (isAdmin)
                                                 {
                                                     <td class="text-end">
-                                                        <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(plan)">
+                                                        <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(comision)">
                                                             <i class="fas fa-edit"></i> Editar
                                                         </button>
-                                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(plan)">
+                                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(comision)">
                                                             <i class="fas fa-trash"></i> Eliminar
                                                         </button>
                                                     </td>
@@ -94,8 +96,8 @@
                                     else
                                     {
                                         <tr>
-                                            <td colspan="@(isAdmin ? 4 : 3)" class="text-center">
-                                                No hay planes disponibles
+                                            <td colspan="@(isAdmin ? 6 : 5)" class="text-center">
+                                                No hay comisiones disponibles
                                             </td>
                                         </tr>
                                     }
@@ -119,7 +121,7 @@
     </NotAuthorized>
 </AuthorizeView>
 
-<PlanModal @ref="planModal" OnPlanChanged="LoadPlanes" IsReadOnly="@(!isAdmin)" />
+<ComisionModal @ref="comisionModal" OnComisionChanged="LoadComisiones" IsReadOnly="@(!isAdmin)" />
 
 <style>
     .gradient-bg {
@@ -130,30 +132,30 @@
 </style>
 
 @code {
-    private List<PlanDTO>? planes;
+    private List<ComisionDTO>? comisiones;
     private bool loading = true;
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
-    private PlanModal? planModal;
+    private ComisionModal? comisionModal;
     private bool isAdmin = false;
 
     protected override async Task OnInitializedAsync()
     {
         isAdmin = await RoleHelper.IsAdminAsync();
-        await LoadPlanes();
+        await LoadComisiones();
     }
 
-    private async Task LoadPlanes()
+    private async Task LoadComisiones()
     {
         try
         {
             loading = true;
-            planes = (await PlanAPIClient.GetAllAsync())?.ToList();
+            comisiones = (await ComisionAPIClient.GetAllAsync())?.ToList();
             successMessage = string.Empty;
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error al cargar planes: {ex.Message}";
+            errorMessage = $"Error al cargar comisiones: {ex.Message}";
         }
         finally
         {
@@ -169,13 +171,13 @@
             return;
         }
 
-        if (planModal != null)
+        if (comisionModal != null)
         {
-            await planModal.ShowAddModal();
+            await comisionModal.ShowAddModal();
         }
     }
 
-    private async Task OpenEditModal(PlanDTO plan)
+    private async Task OpenEditModal(ComisionDTO comision)
     {
         if (!isAdmin)
         {
@@ -183,13 +185,13 @@
             return;
         }
 
-        if (planModal != null)
+        if (comisionModal != null)
         {
-            await planModal.ShowEditModal(plan);
+            await comisionModal.ShowEditModal(comision);
         }
     }
 
-    private async Task ConfirmDelete(PlanDTO plan)
+    private async Task ConfirmDelete(ComisionDTO comision)
     {
         if (!isAdmin)
         {
@@ -198,25 +200,25 @@
         }
 
         var confirm = await JSRuntime.InvokeAsync<bool>("confirm",
-            $"¿Está seguro que desea eliminar el plan '{plan.Descripcion}'?");
+            $"¿Está seguro que desea eliminar la comisión '{comision.DescripcionComision}'?");
 
         if (confirm)
         {
-            await DeletePlan(plan.IdPlan);
+            await DeleteComision(comision.IdComision);
         }
     }
 
-    private async Task DeletePlan(int id)
+    private async Task DeleteComision(int id)
     {
         try
         {
-            await PlanAPIClient.DeleteAsync(id);
-            successMessage = "Plan eliminado exitosamente.";
-            await LoadPlanes();
+            await ComisionAPIClient.DeleteAsync(id);
+            successMessage = "Comisión eliminada exitosamente.";
+            await LoadComisiones();
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error al eliminar plan: {ex.Message}";
+            errorMessage = $"Error al eliminar comisión: {ex.Message}";
         }
     }
 }

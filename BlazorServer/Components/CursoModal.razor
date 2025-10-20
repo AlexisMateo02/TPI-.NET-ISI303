@@ -1,0 +1,313 @@
+﻿@using DTOs
+@using APIClients
+@inject IJSRuntime JSRuntime
+
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header gradient-bg text-white">
+                    <h5 class="modal-title">
+                        @if (mode == FormMode.Add)
+                        {
+                            <text>Agregar Curso</text>
+                        }
+                        else
+                        {
+                            <text>@(IsReadOnly ? "Ver Curso" : "Modificar Curso")</text>
+                        }
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="currentCurso" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+
+                        @if (mode == FormMode.Update)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Id</label>
+                                <input type="text" class="form-control" value="@currentCurso.IdCurso" readonly />
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label">Año Calendario *</label>
+                            <InputNumber @bind-Value="currentCurso.AnioCalendario"
+                                         class="form-control"
+                                         disabled="@IsReadOnly" />
+                            @if (validationErrors.ContainsKey("AnioCalendario"))
+                            {
+                                <div class="text-danger small">@validationErrors["AnioCalendario"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Cupo *</label>
+                            <InputNumber @bind-Value="currentCurso.Cupo"
+                                         class="form-control"
+                                         disabled="@IsReadOnly" />
+                            @if (validationErrors.ContainsKey("Cupo"))
+                            {
+                                <div class="text-danger small">@validationErrors["Cupo"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Comisión *</label>
+                            <InputSelect @bind-Value="currentCurso.IdComision"
+                                         class="form-select"
+                                         disabled="@IsReadOnly">
+                                <option value="0">Seleccionar Comisión</option>
+                                @if (comisiones != null)
+                                {
+                                    @foreach (var comision in comisiones)
+                                    {
+                                        <option value="@comision.IdComision">@comision.DescripcionComision</option>
+                                    }
+                                }
+                            </InputSelect>
+                            @if (validationErrors.ContainsKey("Comision"))
+                            {
+                                <div class="text-danger small">@validationErrors["Comision"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Materia *</label>
+                            <InputSelect @bind-Value="currentCurso.IdMateria"
+                                         class="form-select"
+                                         disabled="@IsReadOnly">
+                                <option value="0">Seleccionar Materia</option>
+                                @if (materias != null)
+                                {
+                                    @foreach (var materia in materias)
+                                    {
+                                        <option value="@materia.IdMateria">@materia.DescripcionMateria</option>
+                                    }
+                                }
+                            </InputSelect>
+                            @if (validationErrors.ContainsKey("Materia"))
+                            {
+                                <div class="text-danger small">@validationErrors["Materia"]</div>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                @errorMessage
+                            </div>
+                        }
+
+                        @if (IsReadOnly)
+                        {
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No tienes permisos para modificar esta información.
+                            </div>
+                        }
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-danger" @onclick="Close">
+                                @(IsReadOnly ? "Cerrar" : "Cancelar")
+                            </button>
+                            @if (!IsReadOnly)
+                            {
+                                <button type="submit" class="btn btn-outline-primary" disabled="@saving">
+                                    @if (saving)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                    }
+                                    @(mode == FormMode.Add ? "Agregar" : "Modificar")
+                                </button>
+                            }
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border-bottom: none;
+    }
+</style>
+
+@code {
+    [Parameter] public EventCallback OnCursoChanged { get; set; }
+    [Parameter] public bool IsReadOnly { get; set; } = false;
+
+    private bool showModal = false;
+    private FormMode mode = FormMode.Add;
+    private CursoDTO currentCurso = new CursoDTO();
+    private bool saving = false;
+    private string errorMessage = string.Empty;
+    private Dictionary<string, string> validationErrors = new Dictionary<string, string>();
+    private List<ComisionDTO>? comisiones;
+    private List<MateriaDTO>? materias;
+
+    public enum FormMode
+    {
+        Add,
+        Update
+    }
+
+    public async Task ShowAddModal()
+    {
+        if (IsReadOnly)
+        {
+            errorMessage = "No tienes permisos para agregar cursos.";
+            return;
+        }
+
+        mode = FormMode.Add;
+        currentCurso = new CursoDTO();
+        await LoadDropdowns();
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    public async Task ShowEditModal(CursoDTO curso)
+    {
+        mode = FormMode.Update;
+        currentCurso = new CursoDTO
+        {
+            IdCurso = curso.IdCurso,
+            AnioCalendario = curso.AnioCalendario,
+            Cupo = curso.Cupo,
+            IdComision = curso.IdComision,
+            DescripcionComision = curso.DescripcionComision,
+            IdMateria = curso.IdMateria,
+            DescripcionMateria = curso.DescripcionMateria
+        };
+        await LoadDropdowns();
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (IsReadOnly)
+        {
+            errorMessage = "No tienes permisos para realizar esta acción.";
+            return;
+        }
+
+        if (!await ValidateCurso())
+            return;
+
+        try
+        {
+            saving = true;
+            errorMessage = string.Empty;
+
+            if (mode == FormMode.Add)
+            {
+                await CursoAPIClient.AddAsync(currentCurso);
+            }
+            else
+            {
+                await CursoAPIClient.UpdateAsync(currentCurso);
+            }
+
+            await OnCursoChanged.InvokeAsync();
+            Close();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private async Task<bool> ValidateCurso()
+    {
+        ClearValidationErrors();
+        bool isValid = true;
+
+        if (currentCurso.AnioCalendario <= 0)
+        {
+            validationErrors["AnioCalendario"] = "El año calendario debe ser mayor a 0";
+            isValid = false;
+        }
+        else if (currentCurso.AnioCalendario < 1900 || currentCurso.AnioCalendario > 2100)
+        {
+            validationErrors["AnioCalendario"] = "El año calendario debe estar entre 1900 y 2100";
+            isValid = false;
+        }
+
+        if (currentCurso.Cupo <= 0)
+        {
+            validationErrors["Cupo"] = "El cupo debe ser mayor a 0";
+            isValid = false;
+        }
+
+        if (currentCurso.IdComision <= 0)
+        {
+            validationErrors["Comision"] = "Debe seleccionar una comisión";
+            isValid = false;
+        }
+
+        if (currentCurso.IdMateria <= 0)
+        {
+            validationErrors["Materia"] = "Debe seleccionar una materia";
+            isValid = false;
+        }
+
+        // Validar duplicados
+        if (isValid && currentCurso.IdComision > 0 && currentCurso.IdMateria > 0 && currentCurso.AnioCalendario > 0)
+        {
+            int? excludeId = mode == FormMode.Update ? currentCurso.IdCurso : null;
+            bool exists = await CursoAPIClient.ExistComisionMateriaAndAnioCalendarioAsync(
+                currentCurso.IdComision,
+                currentCurso.IdMateria,
+                currentCurso.AnioCalendario,
+                excludeId
+            );
+
+            if (exists)
+            {
+                validationErrors["AnioCalendario"] = "Ya existe un curso con esta comisión, materia y año calendario";
+                isValid = false;
+            }
+        }
+
+        StateHasChanged();
+        return isValid;
+    }
+
+    private void ClearValidationErrors()
+    {
+        validationErrors.Clear();
+        errorMessage = string.Empty;
+    }
+
+    private async Task LoadDropdowns()
+    {
+        try
+        {
+            comisiones = (await ComisionAPIClient.GetAllAsync())?.ToList();
+            materias = (await MateriaAPIClient.GetAllAsync())?.ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar datos: {ex.Message}";
+        }
+    }
+
+    private void Close()
+    {
+        showModal = false;
+        ClearValidationErrors();
+        StateHasChanged();
+    }
+}

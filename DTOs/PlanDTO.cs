@@ -6,5 +6,6 @@
         public string Descripcion { get; set; }
         public int IdEspecialidad { get; set; }
         public string? DescripcionEspecialidad { get; set; }
+        public string DisplayText => $"{Descripcion} - {DescripcionEspecialidad}";
     }
 }

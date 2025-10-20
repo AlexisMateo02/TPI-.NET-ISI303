@@ -1,0 +1,410 @@
+﻿@using DTOs
+@using APIClients
+@inject IJSRuntime JSRuntime
+
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header gradient-bg text-white">
+                    <h5 class="modal-title">
+                        @if (mode == FormMode.Add)
+                        {
+                            <text><i class="fas fa-user-plus"></i> Agregar Persona</text>
+                        }
+                        else
+                        {
+                            <text><i class="fas fa-user-edit"></i> Modificar Persona</text>
+                        }
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <EditForm Model="currentPersona" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+
+                        @if (mode == FormMode.Update)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">ID</label>
+                                <input type="text" class="form-control" value="@currentPersona.IdPersona" readonly />
+                            </div>
+                        }
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Nombre *</label>
+                                    <InputText @bind-Value="currentPersona.Nombre" class="form-control" />
+                                    @if (validationErrors.ContainsKey("Nombre"))
+                                    {
+                                        <div class="text-danger small">@validationErrors["Nombre"]</div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Apellido *</label>
+                                    <InputText @bind-Value="currentPersona.Apellido" class="form-control" />
+                                    @if (validationErrors.ContainsKey("Apellido"))
+                                    {
+                                        <div class="text-danger small">@validationErrors["Apellido"]</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Email *</label>
+                                    <InputText @bind-Value="currentPersona.Email"
+                                               class="form-control"
+                                               @onblur="ValidateEmail" />
+                                    @if (validationErrors.ContainsKey("Email"))
+                                    {
+                                        <div class="text-danger small">@validationErrors["Email"]</div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Teléfono</label>
+                                    <InputText @bind-Value="currentPersona.Telefono" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">Dirección</label>
+                                    <InputText @bind-Value="currentPersona.Direccion" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Fecha de Nacimiento *</label>
+                                    <InputDate @bind-Value="currentPersona.FechaNacimiento" class="form-control" />
+                                    @if (validationErrors.ContainsKey("FechaNacimiento"))
+                                    {
+                                        <div class="text-danger small">@validationErrors["FechaNacimiento"]</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Legajo *</label>
+                                    <InputNumber @bind-Value="currentPersona.Legajo"
+                                                 class="form-control"
+                                                 @onblur="ValidateLegajo" />
+                                    @if (validationErrors.ContainsKey("Legajo"))
+                                    {
+                                        <div class="text-danger small">@validationErrors["Legajo"]</div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Tipo de Persona *</label>
+                                    <InputSelect @bind-Value="currentPersona.TipoPersona" class="form-select">
+                                        <option value="0">Seleccionar tipo</option>
+                                        <option value="1">Alumno</option>
+                                        <option value="2">Docente</option>
+                                    </InputSelect>
+                                    @if (validationErrors.ContainsKey("TipoPersona"))
+                                    {
+                                        <div class="text-danger small">@validationErrors["TipoPersona"]</div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Plan *</label>
+                                    @if (loadingPlanes)
+                                    {
+                                        <div class="form-control">
+                                            <span class="spinner-border spinner-border-sm me-2"></span>
+                                            Cargando planes...
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <InputSelect @bind-Value="currentPersona.IdPlan" class="form-select">
+                                            <option value="0">Seleccionar plan</option>
+                                            @foreach (var plan in planes)
+                                            {
+                                                <option value="@plan.IdPlan">@plan.DisplayText</option>
+                                            }
+                                        </InputSelect>
+                                    }
+                                    @if (validationErrors.ContainsKey("IdPlan"))
+                                    {
+                                        <div class="text-danger small">@validationErrors["IdPlan"]</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle"></i> @errorMessage
+                            </div>
+                        }
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-danger" @onclick="Close">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-outline-primary" disabled="@saving">
+                                @if (saving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                <i class="fas fa-save"></i> @(mode == FormMode.Add ? "Agregar" : "Modificar")
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border-bottom: none;
+    }
+</style>
+
+@code {
+    [Parameter] public EventCallback OnPersonaChanged { get; set; }
+
+    private bool showModal = false;
+    private bool saving = false;
+    private bool loadingPlanes = false;
+    private string errorMessage = string.Empty;
+    private Dictionary<string, string> validationErrors = new();
+    private PersonaDTO currentPersona = new();
+    private FormMode mode = FormMode.Add;
+    private List<PlanDTO> planes = new();
+
+    public enum FormMode
+    {
+        Add,
+        Update
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarPlanes();
+    }
+
+    private async Task CargarPlanes()
+    {
+        try
+        {
+            loadingPlanes = true;
+            planes = (await PlanAPIClient.GetAllAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar planes: {ex.Message}";
+            Console.WriteLine($"Error al cargar planes: {ex.Message}");
+        }
+        finally
+        {
+            loadingPlanes = false;
+        }
+    }
+
+    public async Task ShowAddModal()
+    {
+        mode = FormMode.Add;
+        currentPersona = new PersonaDTO
+        {
+            FechaNacimiento = DateTime.Now.AddYears(-18),
+            IdPlan = 0
+        };
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    public async Task ShowEditModal(PersonaDTO persona)
+    {
+        mode = FormMode.Update;
+        currentPersona = new PersonaDTO
+        {
+            IdPersona = persona.IdPersona,
+            Nombre = persona.Nombre,
+            Apellido = persona.Apellido,
+            Direccion = persona.Direccion,
+            Email = persona.Email,
+            Telefono = persona.Telefono,
+            FechaNacimiento = persona.FechaNacimiento,
+            Legajo = persona.Legajo,
+            TipoPersona = persona.TipoPersona,
+            IdPlan = persona.IdPlan,
+            DescripcionPlan = persona.DescripcionPlan,
+            DescripcionEspecialidad = persona.DescripcionEspecialidad
+        };
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (!await ValidatePersona())
+            return;
+
+        try
+        {
+            saving = true;
+            errorMessage = string.Empty;
+
+            if (mode == FormMode.Add)
+                await PersonaAPIClient.AddAsync(currentPersona);
+            else
+                await PersonaAPIClient.UpdateAsync(currentPersona);
+
+            await OnPersonaChanged.InvokeAsync();
+            Close();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private async Task<bool> ValidatePersona()
+    {
+        ClearValidationErrors();
+        bool isValid = true;
+
+        if (string.IsNullOrWhiteSpace(currentPersona.Nombre))
+        {
+            validationErrors["Nombre"] = "El nombre es obligatorio";
+            isValid = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(currentPersona.Apellido))
+        {
+            validationErrors["Apellido"] = "El apellido es obligatorio";
+            isValid = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(currentPersona.Email))
+        {
+            validationErrors["Email"] = "El email es obligatorio";
+            isValid = false;
+        }
+
+        if (currentPersona.Legajo <= 0)
+        {
+            validationErrors["Legajo"] = "El legajo debe ser un número positivo";
+            isValid = false;
+        }
+
+        if (currentPersona.TipoPersona < 1 || currentPersona.TipoPersona > 2)
+        {
+            validationErrors["TipoPersona"] = "Debe seleccionar un tipo de persona válido";
+            isValid = false;
+        }
+
+        if (currentPersona.IdPlan <= 0 || !planes.Any(p => p.IdPlan == currentPersona.IdPlan))
+        {
+            validationErrors["IdPlan"] = "Debe seleccionar un plan válido";
+            isValid = false;
+        }
+
+        if (currentPersona.FechaNacimiento > DateTime.Now)
+        {
+            validationErrors["FechaNacimiento"] = "La fecha de nacimiento no puede ser futura";
+            isValid = false;
+        }
+
+        StateHasChanged();
+        return isValid;
+    }
+
+    private async Task ValidateEmail()
+    {
+        if (!string.IsNullOrWhiteSpace(currentPersona.Email))
+        {
+            try
+            {
+                int? excludeId = mode == FormMode.Update ? currentPersona.IdPersona : null;
+                bool exists = await PersonaAPIClient.ExistsEmailAsync(currentPersona.Email, excludeId);
+
+                if (exists)
+                {
+                    validationErrors["Email"] = "Este email ya está en uso";
+                }
+                else
+                {
+                    validationErrors.Remove("Email");
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al validar email: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task ValidateLegajo()
+    {
+        if (currentPersona.Legajo > 0)
+        {
+            try
+            {
+                int? excludeId = mode == FormMode.Update ? currentPersona.IdPersona : null;
+                bool exists = await PersonaAPIClient.ExistsLegajoAsync(currentPersona.Legajo, excludeId);
+
+                if (exists)
+                {
+                    validationErrors["Legajo"] = "Este legajo ya está en uso";
+                }
+                else
+                {
+                    validationErrors.Remove("Legajo");
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al validar legajo: {ex.Message}");
+            }
+        }
+    }
+
+    private void ClearValidationErrors()
+    {
+        validationErrors.Clear();
+        errorMessage = string.Empty;
+    }
+
+    private void Close()
+    {
+        showModal = false;
+        ClearValidationErrors();
+        StateHasChanged();
+    }
+}
+

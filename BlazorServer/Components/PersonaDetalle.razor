@@ -1,0 +1,164 @@
+﻿@page "/mi-perfil"
+@using DTOs
+@using APIClients
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthProvider
+@inject BlazorServer.Services.AuthClientService AuthService
+
+<AuthorizeView>
+    <Authorized>
+        <PageTitle>Mi Perfil</PageTitle>
+
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <h3><i class="fas fa-id-card"></i> Mis Datos</h3>
+
+                    @if (loading)
+                    {
+                        <div class="text-center">
+                            <span class="spinner-border text-primary"></span>
+                            <p class="mt-2">Cargando información...</p>
+                        </div>
+                    }
+                    else if (persona == null)
+                    {
+                        <div class="alert alert-warning">
+                            No se pudo cargar la información de tu perfil.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="card shadow">
+                            <div class="card-header gradient-bg text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-user me-2"></i>@persona.NombreCompletoPersona
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Legajo</label>
+                                            <p class="form-control-plaintext border rounded p-2">@persona.Legajo</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Email</label>
+                                            <p class="form-control-plaintext border rounded p-2">@persona.Email</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Dirección</label>
+                                            <p class="form-control-plaintext border rounded p-2">@persona.Direccion</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Teléfono</label>
+                                            <p class="form-control-plaintext border rounded p-2">@persona.Telefono</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Tipo de Persona</label>
+                                            <p>
+                                                <span class="badge @GetTipoPersonaBadgeClass(persona.TipoPersona)">
+                                                    @persona.TipoPersonaDescripcion
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Plan</label>
+                                            <p class="form-control-plaintext border rounded p-2">@persona.DescripcionPlan</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Especialidad</label>
+                                            <p class="form-control-plaintext border rounded p-2">@persona.DescripcionEspecialidad</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="alert alert-warning">
+            <h4>Acceso Denegado</h4>
+            <p>Debes iniciar sesión para acceder a esta página.</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border-bottom: none;
+    }
+</style>
+
+@code {
+    private PersonaDTO? persona;
+    private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarPersonaActual();
+    }
+
+    private async Task CargarPersonaActual()
+    {
+        try
+        {
+            // Obtener username del usuario logueado
+            var username = await AuthService.GetUsernameAsync();
+            if (!string.IsNullOrEmpty(username))
+            {
+                // Buscar la persona por el usuario
+                var todasPersonas = await PersonaAPIClient.GetAllAsync();
+                var usuarioPersona = todasPersonas.FirstOrDefault(p =>
+                    p.NombreCompletoPersona.Contains(username) ||
+                    p.Email == username);
+
+                if (usuarioPersona != null)
+                {
+                    persona = await PersonaAPIClient.GetAsync(usuarioPersona.IdPersona);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar perfil: {ex.Message}");
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private string GetTipoPersonaBadgeClass(int tipoPersona)
+    {
+        return tipoPersona switch
+        {
+            1 => "bg-success",
+            2 => "bg-primary",
+            _ => "bg-secondary"
+        };
+    }
+}

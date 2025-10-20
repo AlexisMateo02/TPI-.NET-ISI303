@@ -1,4 +1,4 @@
-﻿@page "/planes"
+﻿@page "/docentecursos"
 @using DTOs
 @using APIClients
 @using BlazorServer.Components
@@ -9,15 +9,14 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject BlazorServer.Helpers.RoleHelper RoleHelper
 
-
-<PageTitle>Planes</PageTitle>
+<PageTitle>Docente por Cursos</PageTitle>
 
 <AuthorizeView>
     <Authorized>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <h3>Planes</h3>
+                    <h3>Dictados</h3>
 
                     @if (!string.IsNullOrEmpty(errorMessage))
                     {
@@ -35,7 +34,6 @@
                         </div>
                     }
 
-                    @* Solo mostrar botón agregar si es Admin *@
                     @if (isAdmin)
                     {
                         <div class="mb-3">
@@ -60,8 +58,12 @@
                                 <thead class="gradient-bg">
                                     <tr>
                                         <th>Id</th>
-                                        <th>Descripción</th>
-                                        <th>Especialidad</th>
+                                        <th>Cargo</th>
+                                        <th>Docente</th>
+                                        <th>Legajo</th>
+                                        <th>Año</th>
+                                        <th>Comisión</th>
+                                        <th>Materia</th>
                                         @if (isAdmin)
                                         {
                                             <th class="text-end">Acciones</th>
@@ -69,21 +71,25 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if (planes != null && planes.Any())
+                                    @if (docenteCursos != null && docenteCursos.Any())
                                     {
-                                        @foreach (var plan in planes)
+                                        @foreach (var dictado in docenteCursos)
                                         {
                                             <tr>
-                                                <td>@plan.IdPlan</td>
-                                                <td>@plan.Descripcion</td>
-                                                <td>@plan.DescripcionEspecialidad</td>
+                                                <td>@dictado.IdDictado</td>
+                                                <td>@dictado.Cargo</td>
+                                                <td>@dictado.NombreCompletoPersona</td>
+                                                <td>@dictado.Legajo</td>
+                                                <td>@dictado.AnioCalendario</td>
+                                                <td>@dictado.DescripcionComision</td>
+                                                <td>@dictado.DescripcionMateria</td>
                                                 @if (isAdmin)
                                                 {
                                                     <td class="text-end">
-                                                        <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(plan)">
+                                                        <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(dictado)">
                                                             <i class="fas fa-edit"></i> Editar
                                                         </button>
-                                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(plan)">
+                                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(dictado)">
                                                             <i class="fas fa-trash"></i> Eliminar
                                                         </button>
                                                     </td>
@@ -94,8 +100,8 @@
                                     else
                                     {
                                         <tr>
-                                            <td colspan="@(isAdmin ? 4 : 3)" class="text-center">
-                                                No hay planes disponibles
+                                            <td colspan="@(isAdmin ? 8 : 7)" class="text-center">
+                                                No hay dictados disponibles
                                             </td>
                                         </tr>
                                     }
@@ -119,7 +125,7 @@
     </NotAuthorized>
 </AuthorizeView>
 
-<PlanModal @ref="planModal" OnPlanChanged="LoadPlanes" IsReadOnly="@(!isAdmin)" />
+<DocenteCursoModal @ref="docenteCursoModal" OnDocenteCursoChanged="LoadDocenteCursos" IsReadOnly="@(!isAdmin)" />
 
 <style>
     .gradient-bg {
@@ -130,30 +136,30 @@
 </style>
 
 @code {
-    private List<PlanDTO>? planes;
+    private List<DocenteCursoDTO>? docenteCursos;
     private bool loading = true;
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
-    private PlanModal? planModal;
+    private DocenteCursoModal? docenteCursoModal;
     private bool isAdmin = false;
 
     protected override async Task OnInitializedAsync()
     {
         isAdmin = await RoleHelper.IsAdminAsync();
-        await LoadPlanes();
+        await LoadDocenteCursos();
     }
 
-    private async Task LoadPlanes()
+    private async Task LoadDocenteCursos()
     {
         try
         {
             loading = true;
-            planes = (await PlanAPIClient.GetAllAsync())?.ToList();
+            docenteCursos = (await DocenteCursoAPIClient.GetAllAsync())?.ToList();
             successMessage = string.Empty;
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error al cargar planes: {ex.Message}";
+            errorMessage = $"Error al cargar dictados: {ex.Message}";
         }
         finally
         {
@@ -169,13 +175,13 @@
             return;
         }
 
-        if (planModal != null)
+        if (docenteCursoModal != null)
         {
-            await planModal.ShowAddModal();
+            await docenteCursoModal.ShowAddModal();
         }
     }
 
-    private async Task OpenEditModal(PlanDTO plan)
+    private async Task OpenEditModal(DocenteCursoDTO dictado)
     {
         if (!isAdmin)
         {
@@ -183,13 +189,13 @@
             return;
         }
 
-        if (planModal != null)
+        if (docenteCursoModal != null)
         {
-            await planModal.ShowEditModal(plan);
+            await docenteCursoModal.ShowEditModal(dictado);
         }
     }
 
-    private async Task ConfirmDelete(PlanDTO plan)
+    private async Task ConfirmDelete(DocenteCursoDTO dictado)
     {
         if (!isAdmin)
         {
@@ -198,25 +204,25 @@
         }
 
         var confirm = await JSRuntime.InvokeAsync<bool>("confirm",
-            $"¿Está seguro que desea eliminar el plan '{plan.Descripcion}'?");
+            $"¿Está seguro que desea eliminar el dictado de '{dictado.NombreCompletoPersona}' en '{dictado.DescripcionMateria}'?");
 
         if (confirm)
         {
-            await DeletePlan(plan.IdPlan);
+            await DeleteDocenteCurso(dictado.IdDictado);
         }
     }
 
-    private async Task DeletePlan(int id)
+    private async Task DeleteDocenteCurso(int id)
     {
         try
         {
-            await PlanAPIClient.DeleteAsync(id);
-            successMessage = "Plan eliminado exitosamente.";
-            await LoadPlanes();
+            await DocenteCursoAPIClient.DeleteAsync(id);
+            successMessage = "Dictado eliminado exitosamente.";
+            await LoadDocenteCursos();
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error al eliminar plan: {ex.Message}";
+            errorMessage = $"Error al eliminar dictado: {ex.Message}";
         }
     }
 }

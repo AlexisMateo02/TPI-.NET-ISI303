@@ -8,15 +8,15 @@
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header gradient-bg text-white">
                     <h5 class="modal-title">
                         @if (mode == FormMode.Add)
                         {
-                            <text>Agregar</text>
+                            <text>Agregar Especialidad</text>
                         }
                         else
                         {
-                            <text>@(IsReadOnly ? "Ver" : "Modificar")</text>
+                            <text>@(IsReadOnly ? "Ver Especialidad" : "Modificar Especialidad")</text>
                         }
                     </h5>
                     <button type="button" class="btn-close" @onclick="Close"></button>
@@ -59,12 +59,12 @@
                         }
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @onclick="Close">
+                            <button type="button" class="btn btn-outline-danger" @onclick="Close">
                                 @(IsReadOnly ? "Cerrar" : "Cancelar")
                             </button>
                             @if (!IsReadOnly)
                             {
-                                <button type="submit" class="btn btn-primary" disabled="@saving">
+                                <button type="submit" class="btn btn-outline-primary" disabled="@saving">
                                     @if (saving)
                                     {
                                         <span class="spinner-border spinner-border-sm me-2"></span>
@@ -79,6 +79,13 @@
         </div>
     </div>
 }
+
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border-bottom: none;
+    }
+</style>
 
 @code {
     [Parameter] public EventCallback OnEspecialidadChanged { get; set; }

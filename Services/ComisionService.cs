@@ -76,7 +76,7 @@ namespace Services
             }
 
             // Validar que un año de especialidad y un plan no estén duplicados
-            if (comisionRepository.PlanAndAnioEspecialidadExist(dto.AnioEspecialidad, dto.IdPlan))
+            if (comisionRepository.PlanAndAnioEspecialidadExist(dto.AnioEspecialidad, dto.IdPlan, dto.IdComision))
             {
                 throw new ArgumentException($"Ya existe una comision con el año de especialidad '{dto.AnioEspecialidad}' y el plan con ID {dto.IdPlan}");
             }

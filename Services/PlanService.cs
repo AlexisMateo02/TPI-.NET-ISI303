@@ -64,7 +64,7 @@ namespace Services
                 throw new ArgumentException($"No existe la especialidad con ID {dto.IdEspecialidad}");
             }
 
-            if (planRepository.DescripcionExistsInEspecialidad(dto.Descripcion, dto.IdEspecialidad))
+            if (planRepository.DescripcionExistsInEspecialidad(dto.Descripcion, dto.IdEspecialidad, dto.IdPlan))
             {
                 throw new ArgumentException($"Ya existe un plan con la descripción '{dto.Descripcion}' en la especialidad seleccionada");
             }

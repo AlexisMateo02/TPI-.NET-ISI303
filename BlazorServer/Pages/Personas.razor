@@ -1,0 +1,407 @@
+﻿@page "/personas"
+@using DTOs
+@using APIClients
+@using BlazorServer.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IJSRuntime JSRuntime
+@inject BlazorServer.Helpers.RoleHelper RoleHelper
+@inject BlazorServer.Services.AuthClientService AuthService
+
+<AuthorizeView>
+    <Authorized>
+        <PageTitle>Personas</PageTitle>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3>
+                            <i class="fas fa-users"></i>
+                            @(isAdmin ? "Gestión de Personas" : "Mis Datos")
+                        </h3>
+                        @if (isAdmin)
+                        {
+                            <button class="btn btn-outline-primary" @onclick="AgregarPersona">
+                                <i class="fas fa-user-plus"></i> Nueva Persona
+                            </button>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">@errorMessage</div>
+                    }
+
+                    <!-- Solo admin ve los filtros -->
+                    @if (isAdmin)
+                    {
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row g-2">
+                                    <div class="col-md-8">
+                                        <div class="btn-group">
+                                            <button class="btn @(filtroActual == "todas" ? "btn-primary" : "btn-outline-primary")"
+                                                    @onclick="() => CargarTodas()">
+                                                <i class="fas fa-list"></i> Todas
+                                            </button>
+                                            <button class="btn @(filtroActual == "alumnos" ? "btn-success" : "btn-outline-success")"
+                                                    @onclick="() => CargarAlumnos()">
+                                                <i class="fas fa-user-graduate"></i> Alumnos
+                                            </button>
+                                            <button class="btn @(filtroActual == "docentes" ? "btn-info" : "btn-outline-info")"
+                                                    @onclick="() => CargarDocentes()">
+                                                <i class="fas fa-chalkboard-teacher"></i> Docentes
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (loading)
+                    {
+                        <div class="text-center my-5">
+                            <span class="spinner-border text-primary"></span>
+                            <p class="mt-2">Cargando @(isAdmin ? "personas..." : "mis datos...")</p>
+                        </div>
+                    }
+                    else if (isAdmin && personas != null && !personas.Any())
+                    {
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle fa-2x mb-3"></i>
+                            <h5>@GetMensajeSinPersonas()</h5>
+                            <p class="mb-0">@GetDescripcionSinPersonas()</p>
+                        </div>
+                    }
+                    else if (isAdmin && personas != null)
+                    {
+                        <!-- Tabla para administradores -->
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="gradient-bg">
+                                    <tr>
+                                        <th>Legajo</th>
+                                        <th>Nombre Completo</th>
+                                        <th>Email</th>
+                                        <th>Teléfono</th>
+                                        <th>Tipo</th>
+                                        <th>Plan</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var p in personas)
+                                    {
+                                        <tr>
+                                            <td>@p.Legajo</td>
+                                            <td>@p.NombreCompletoPersona</td>
+                                            <td>@p.Email</td>
+                                            <td>@p.Telefono</td>
+                                            <td>
+                                                <span class="badge @GetTipoPersonaBadgeClass(p.TipoPersona)">
+                                                    @p.TipoPersonaDescripcion
+                                                </span>
+                                            </td>
+                                            <td>@p.DescripcionPlan</td>
+                                            <td class="text-end">
+                                                <button class="btn btn-sm btn-outline-primary me-1"
+                                                        @onclick="() => EditarPersona(p)">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger"
+                                                        @onclick="() => EliminarPersona(p.IdPersona)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else if (!isAdmin && personaActual != null)
+                    {
+                        <!-- Tarjeta individual para alumnos/docentes -->
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <div class="card shadow">
+                                    <div class="card-header gradient-bg text-white">
+                                        <h5 class="card-title mb-0">
+                                            <i class="fas fa-user me-2"></i>@personaActual.NombreCompletoPersona
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Legajo</label>
+                                                    <p class="form-control-plaintext border rounded p-2">@personaActual.Legajo</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Email</label>
+                                                    <p class="form-control-plaintext border rounded p-2">@personaActual.Email</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Dirección</label>
+                                                    <p class="form-control-plaintext border rounded p-2">@personaActual.Direccion</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Teléfono</label>
+                                                    <p class="form-control-plaintext border rounded p-2">@personaActual.Telefono</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Tipo de Persona</label>
+                                                    <p>
+                                                        <span class="badge @GetTipoPersonaBadgeClass(personaActual.TipoPersona)">
+                                                            @personaActual.TipoPersonaDescripcion
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Plan</label>
+                                                    <p class="form-control-plaintext border rounded p-2">@personaActual.DescripcionPlan</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Especialidad</label>
+                                                    <p class="form-control-plaintext border rounded p-2">@personaActual.DescripcionEspecialidad</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="alert alert-warning">
+            <h4>Acceso Denegado</h4>
+            <p>Debes iniciar sesión para acceder a esta página.</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+<PersonaModal @ref="personaModal" OnPersonaChanged="Refrescar" />
+
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        border-bottom: none !important;
+    }
+</style>
+
+@code {
+    private IEnumerable<PersonaDTO>? personas;
+    private PersonaDTO? personaActual; // Para alumnos/docentes
+    private PersonaModal? personaModal;
+    private bool loading = true;
+    private string errorMessage = string.Empty;
+    private bool isAdmin = false;
+    private string filtroActual = "todas";
+
+    protected override async Task OnInitializedAsync()
+    {
+        isAdmin = await RoleHelper.IsAdminAsync();
+        await CargarSegunRol();
+    }
+
+    private async Task CargarSegunRol()
+    {
+        try
+        {
+            loading = true;
+            errorMessage = string.Empty;
+
+            if (isAdmin)
+            {
+                await CargarTodas();
+            }
+            else
+            {
+                // Alumnos y docentes ven solo sus propios datos
+                await CargarPersonaActual();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar datos: {ex.Message}";
+            Console.WriteLine($"Error en CargarSegunRol: {ex.Message}");
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CargarPersonaActual()
+    {
+        try
+        {
+            var username = await AuthService.GetUsernameAsync();
+            if (string.IsNullOrEmpty(username))
+            {
+                errorMessage = "No se pudo obtener la información de tu sesión.";
+                return;
+            }
+
+            // Buscar el usuario actual
+            var todosUsuarios = await UsuarioAPIClient.GetAllAsync();
+            var usuarioActual = todosUsuarios.FirstOrDefault(u => u.NombreUsuario == username);
+
+            if (usuarioActual == null)
+            {
+                errorMessage = "No se encontró tu usuario en el sistema.";
+                return;
+            }
+
+            if (!usuarioActual.IdPersona.HasValue)
+            {
+                errorMessage = "Tu usuario no tiene una persona asociada.";
+                return;
+            }
+
+            // Buscar la persona por ID
+            personaActual = await PersonaAPIClient.GetAsync(usuarioActual.IdPersona.Value);
+
+            if (personaActual == null)
+            {
+                errorMessage = "No se encontraron tus datos personales.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar tus datos: {ex.Message}";
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task CargarTodas() => await CargarPersonas(() => PersonaAPIClient.GetAllAsync(), "todas");
+    private async Task CargarAlumnos() => await CargarPersonas(() => PersonaAPIClient.GetAlumnosAsync(), "alumnos");
+    private async Task CargarDocentes() => await CargarPersonas(() => PersonaAPIClient.GetDocentesAsync(), "docentes");
+
+    private async Task CargarPersonas(Func<Task<IEnumerable<PersonaDTO>>> cargaMethod, string filtro)
+    {
+        try
+        {
+            personas = await cargaMethod();
+            filtroActual = filtro;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar personas: {ex.Message}";
+            personas = new List<PersonaDTO>();
+        }
+    }
+
+    private string GetMensajeSinPersonas()
+    {
+        if (!isAdmin)
+        {
+            return "No hay alumnos disponibles";
+        }
+
+        return filtroActual switch
+        {
+            "alumnos" => "No hay alumnos registrados",
+            "docentes" => "No hay docentes registrados",
+            _ => "No hay personas registradas"
+        };
+    }
+
+    private string GetDescripcionSinPersonas()
+    {
+        if (!isAdmin)
+        {
+            return "Actualmente no hay alumnos asignados en el sistema.";
+        }
+
+        return filtroActual switch
+        {
+            "alumnos" => "Puede agregar nuevos alumnos usando el botón 'Nueva Persona'",
+            "docentes" => "Puede agregar nuevos docentes usando el botón 'Nueva Persona'",
+            _ => "Puede agregar nuevas personas usando el botón 'Nueva Persona'"
+        };
+    }
+
+    private async Task AgregarPersona()
+    {
+        if (!isAdmin)
+        {
+            errorMessage = "No tienes permisos para realizar esta acción.";
+            return;
+        }
+        await personaModal!.ShowAddModal();
+    }
+
+    private async Task EditarPersona(PersonaDTO persona)
+    {
+        if (!isAdmin)
+        {
+            errorMessage = "No tienes permisos para realizar esta acción.";
+            return;
+        }
+        await personaModal!.ShowEditModal(persona);
+    }
+
+    private async Task EliminarPersona(int id)
+    {
+        if (!isAdmin)
+        {
+            errorMessage = "No tienes permisos para realizar esta acción.";
+            return;
+        }
+
+        bool confirmar = await JSRuntime.InvokeAsync<bool>("confirm", "¿Desea eliminar esta persona?");
+        if (confirmar)
+        {
+            try
+            {
+                await PersonaAPIClient.DeleteAsync(id);
+                await Refrescar();
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Error al eliminar persona: {ex.Message}";
+            }
+        }
+    }
+
+    private async Task Refrescar()
+    {
+        await CargarSegunRol();
+    }
+
+    private string GetTipoPersonaBadgeClass(int tipoPersona)
+    {
+        return tipoPersona switch
+        {
+            1 => "bg-success", // Alumno
+            2 => "bg-primary", // Docente
+            _ => "bg-secondary"
+        };
+    }
+}

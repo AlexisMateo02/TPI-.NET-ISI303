@@ -1,0 +1,302 @@
+﻿@using DTOs
+@using APIClients
+@inject IJSRuntime JSRuntime
+
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header gradient-bg text-white">
+                    <h5 class="modal-title">
+                        @if (mode == FormMode.Add)
+                        {
+                            <text>Agregar Dictado</text>
+                        }
+                        else
+                        {
+                            <text>@(IsReadOnly ? "Ver Dictado" : "Modificar Dictado")</text>
+                        }
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="currentDocenteCurso" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+
+                        @if (mode == FormMode.Update)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Id</label>
+                                <input type="text" class="form-control" value="@currentDocenteCurso.IdDictado" readonly />
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label">Cargo *</label>
+                            <InputSelect @bind-Value="currentDocenteCurso.Cargo"
+                                         class="form-select"
+                                         disabled="@IsReadOnly">
+                                <option value="">Seleccionar Cargo</option>
+                                <option value="Titular">Titular</option>
+                                <option value="Adjunto">Adjunto</option>
+                                <option value="Ayudante">Ayudante</option>
+                                <option value="JTP">JTP</option>
+                            </InputSelect>
+                            @if (validationErrors.ContainsKey("Cargo"))
+                            {
+                                <div class="text-danger small">@validationErrors["Cargo"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Docente *</label>
+                            <InputSelect @bind-Value="currentDocenteCurso.IdDocente"
+                                         class="form-select"
+                                         disabled="@IsReadOnly">
+                                <option value="0">Seleccionar Docente</option>
+                                @if (docentes != null)
+                                {
+                                    @foreach (var docente in docentes)
+                                    {
+                                        <option value="@docente.IdPersona">@docente.NombreCompletoPersona (Legajo: @docente.Legajo)</option>
+                                    }
+                                }
+                            </InputSelect>
+                            @if (validationErrors.ContainsKey("Docente"))
+                            {
+                                <div class="text-danger small">@validationErrors["Docente"]</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Curso *</label>
+                            <InputSelect @bind-Value="currentDocenteCurso.IdCurso"
+                                         class="form-select"
+                                         disabled="@IsReadOnly">
+                                <option value="0">Seleccionar Curso</option>
+                                @if (cursos != null)
+                                {
+                                    @foreach (var curso in cursos)
+                                    {
+                                        <option value="@curso.IdCurso">@curso.DescripcionMateria - @curso.DescripcionComision (@curso.AnioCalendario)</option>
+                                    }
+                                }
+                            </InputSelect>
+                            @if (validationErrors.ContainsKey("Curso"))
+                            {
+                                <div class="text-danger small">@validationErrors["Curso"]</div>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                @errorMessage
+                            </div>
+                        }
+
+                        @if (IsReadOnly)
+                        {
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No tienes permisos para modificar esta información.
+                            </div>
+                        }
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-danger" @onclick="Close">
+                                @(IsReadOnly ? "Cerrar" : "Cancelar")
+                            </button>
+                            @if (!IsReadOnly)
+                            {
+                                <button type="submit" class="btn btn-outline-primary" disabled="@saving">
+                                    @if (saving)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                    }
+                                    @(mode == FormMode.Add ? "Agregar" : "Modificar")
+                                </button>
+                            }
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border-bottom: none;
+    }
+</style>
+
+@code {
+    [Parameter] public EventCallback OnDocenteCursoChanged { get; set; }
+    [Parameter] public bool IsReadOnly { get; set; } = false;
+
+    private bool showModal = false;
+    private FormMode mode = FormMode.Add;
+    private DocenteCursoDTO currentDocenteCurso = new DocenteCursoDTO();
+    private bool saving = false;
+    private string errorMessage = string.Empty;
+    private Dictionary<string, string> validationErrors = new Dictionary<string, string>();
+    private List<PersonaDTO>? docentes;
+    private List<CursoDTO>? cursos;
+
+    public enum FormMode
+    {
+        Add,
+        Update
+    }
+
+    public async Task ShowAddModal()
+    {
+        if (IsReadOnly)
+        {
+            errorMessage = "No tienes permisos para agregar dictados.";
+            return;
+        }
+
+        mode = FormMode.Add;
+        currentDocenteCurso = new DocenteCursoDTO();
+        await LoadDropdowns();
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    public async Task ShowEditModal(DocenteCursoDTO docenteCurso)
+    {
+        mode = FormMode.Update;
+        currentDocenteCurso = new DocenteCursoDTO
+        {
+            IdDictado = docenteCurso.IdDictado,
+            Cargo = docenteCurso.Cargo,
+            IdDocente = docenteCurso.IdDocente,
+            Legajo = docenteCurso.Legajo,
+            NombrePersona = docenteCurso.NombrePersona,
+            ApellidoPersona = docenteCurso.ApellidoPersona,
+            IdCurso = docenteCurso.IdCurso,
+            AnioCalendario = docenteCurso.AnioCalendario,
+            IdComision = docenteCurso.IdComision,
+            DescripcionComision = docenteCurso.DescripcionComision,
+            IdMateria = docenteCurso.IdMateria,
+            DescripcionMateria = docenteCurso.DescripcionMateria
+        };
+        await LoadDropdowns();
+        ClearValidationErrors();
+        showModal = true;
+        StateHasChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (IsReadOnly)
+        {
+            errorMessage = "No tienes permisos para realizar esta acción.";
+            return;
+        }
+
+        if (!await ValidateDocenteCurso())
+            return;
+
+        try
+        {
+            saving = true;
+            errorMessage = string.Empty;
+
+            if (mode == FormMode.Add)
+            {
+                await DocenteCursoAPIClient.AddAsync(currentDocenteCurso);
+            }
+            else
+            {
+                await DocenteCursoAPIClient.UpdateAsync(currentDocenteCurso);
+            }
+
+            await OnDocenteCursoChanged.InvokeAsync();
+            Close();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private async Task<bool> ValidateDocenteCurso()
+    {
+        ClearValidationErrors();
+        bool isValid = true;
+
+        if (string.IsNullOrWhiteSpace(currentDocenteCurso.Cargo))
+        {
+            validationErrors["Cargo"] = "El cargo es requerido";
+            isValid = false;
+        }
+
+        if (currentDocenteCurso.IdDocente <= 0)
+        {
+            validationErrors["Docente"] = "Debe seleccionar un docente";
+            isValid = false;
+        }
+
+        if (currentDocenteCurso.IdCurso <= 0)
+        {
+            validationErrors["Curso"] = "Debe seleccionar un curso";
+            isValid = false;
+        }
+
+        // Validar duplicados
+        if (isValid && currentDocenteCurso.IdDocente > 0 && currentDocenteCurso.IdCurso > 0 && !string.IsNullOrWhiteSpace(currentDocenteCurso.Cargo))
+        {
+            int? excludeId = mode == FormMode.Update ? currentDocenteCurso.IdDictado : null;
+            bool exists = await DocenteCursoAPIClient.ExistDocenteCursoCargoAsync(
+                currentDocenteCurso.IdDocente,
+                currentDocenteCurso.IdCurso,
+                currentDocenteCurso.Cargo,
+                excludeId
+            );
+
+            if (exists)
+            {
+                validationErrors["Cargo"] = "Este docente ya tiene asignado este cargo en el curso seleccionado";
+                isValid = false;
+            }
+        }
+
+        StateHasChanged();
+        return isValid;
+    }
+
+    private void ClearValidationErrors()
+    {
+        validationErrors.Clear();
+        errorMessage = string.Empty;
+    }
+
+    private async Task LoadDropdowns()
+    {
+        try
+        {
+            docentes = (await PersonaAPIClient.GetDocentesAsync())?.ToList();
+            cursos = (await CursoAPIClient.GetAllAsync())?.ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar datos: {ex.Message}";
+        }
+    }
+
+    private void Close()
+    {
+        showModal = false;
+        ClearValidationErrors();
+        StateHasChanged();
+    }
+}
