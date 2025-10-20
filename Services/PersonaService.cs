@@ -171,6 +171,34 @@ namespace Services
             return personaRepository.LegajoExists(legajo, excludeId);
         }
 
+        public IEnumerable<PersonaDTO> GetByCriteria(PersonaCriteriaDTO criteriaDTO)
+        {
+            var personaRepository = new PersonaRepository();
+
+            // Mapear DTO a Entidades
+            var criteria = new PersonaCriteria(criteriaDTO.Texto);
+
+            // Llamar al repositorio
+            var personas = personaRepository.GetByCriteria(criteria);
+
+            // Mapear Entidades a DTO
+            return personas.Select(persona => new PersonaDTO
+            {
+                IdPersona = persona.IdPersona,
+                Nombre = persona.Nombre,
+                Apellido = persona.Apellido,
+                Direccion = persona.Direccion,
+                Email = persona.Email,
+                Telefono = persona.Telefono,
+                FechaNacimiento = persona.FechaNacimiento,
+                Legajo = persona.Legajo,
+                TipoPersona = persona.TipoPersona,
+                IdPlan = persona.IdPlan,
+                DescripcionPlan = persona.Plan?.Descripcion,
+                DescripcionEspecialidad = persona.Plan?.Especialidad?.Descripcion
+            });
+        }
+
         // Métodos específicos por tipo de persona
         public IEnumerable<PersonaDTO> GetAlumnos()
         {

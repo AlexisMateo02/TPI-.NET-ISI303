@@ -34,8 +34,19 @@ namespace Data
         public void Add(Usuario usuario)
         {
             using var context = CreateContext();
-            context.Usuarios.Add(usuario);
-            context.SaveChanges();
+            using var transaction = context.Database.BeginTransaction();
+
+            try
+            {
+                context.Usuarios.Add(usuario);
+                context.SaveChanges();
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
         public bool Update(Usuario usuario)
         {

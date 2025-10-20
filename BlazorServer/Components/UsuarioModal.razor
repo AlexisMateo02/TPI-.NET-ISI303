@@ -7,7 +7,7 @@
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header gradient-bg text-white">
                     <h5 class="modal-title">
                         @if (mode == FormMode.Add)
                         {
@@ -82,8 +82,23 @@
 
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">ID Persona</label>
-                                    <InputNumber @bind-Value="currentUsuario.IdPersona" class="form-control" />
+                                    <label class="form-label">Persona</label>
+                                    <div class="input-group">
+                                        <input type="text"
+                                               class="form-control"
+                                               value="@personaSeleccionadaText"
+                                               placeholder="Haga clic para buscar persona..."
+                                               readonly />
+                                        <button class="btn btn-outline-primary" type="button" @onclick="AbrirModalBusquedaPersonas">
+                                            <i class="fas fa-search"></i> Buscar
+                                        </button>
+                                        @if (currentUsuario.IdPersona.HasValue)
+                                        {
+                                            <button class="btn btn-outline-danger" type="button" @onclick="LimpiarPersona">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        }
+                                    </div>
                                     <small class="form-text text-muted">Opcional - Vincular con una persona existente</small>
                                     @if (validationErrors.ContainsKey("IdPersona"))
                                     {
@@ -161,8 +176,18 @@
     </div>
 }
 
+<PersonaSearchModal @ref="personaSearchModal" OnPersonaSelected="HandlePersonaSelected" />
+
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border-bottom: none;
+    }
+</style>
+
 @code {
     [Parameter] public EventCallback OnUsuarioChanged { get; set; }
+
 
     private bool showModal = false;
     private FormMode mode = FormMode.Add;
@@ -170,6 +195,8 @@
     private bool saving = false;
     private string errorMessage = string.Empty;
     private Dictionary<string, string> validationErrors = new Dictionary<string, string>();
+    private PersonaSearchModal? personaSearchModal;
+    private string personaSeleccionadaText = string.Empty;
 
     public enum FormMode
     {
@@ -321,6 +348,35 @@
     {
         validationErrors.Clear();
         errorMessage = string.Empty;
+    }
+
+    private async Task AbrirModalBusquedaPersonas()
+    {
+        if (personaSearchModal != null)
+        {
+            await personaSearchModal.ShowModal();
+        }
+    }
+
+    private async Task HandlePersonaSelected(PersonaDTO persona)
+    {
+        currentUsuario.IdPersona = persona.IdPersona;
+        currentUsuario.Legajo = persona.Legajo;
+        currentUsuario.NombrePersona = persona.Nombre;
+        currentUsuario.ApellidoPersona = persona.Apellido;
+
+        personaSeleccionadaText = $"{persona.Apellido}, {persona.Nombre} - Legajo: {persona.Legajo}";
+        StateHasChanged();
+    }
+
+    private void LimpiarPersona()
+    {
+        currentUsuario.IdPersona = null;
+        currentUsuario.Legajo = null;
+        currentUsuario.NombrePersona = null;
+        currentUsuario.ApellidoPersona = null;
+        personaSeleccionadaText = string.Empty;
+        StateHasChanged();
     }
 
     private void Close()

@@ -138,6 +138,23 @@ namespace APIWeb
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
+            app.MapGet("/personas/criteria", (string texto) =>
+            {
+                try
+                {
+                    PersonaService personaService = new PersonaService();
+                    var criteria = new PersonaCriteriaDTO { Texto = texto };
+                    var personas = personaService.GetByCriteria(criteria);
+                    return Results.Ok(personas);
+                }
+                catch (Exception ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+            })
+            .WithName("GetPersonasByCriteria")
+            .WithOpenApi();
+
             app.MapGet("/personas/alumnos", () =>
             {
                 PersonaService personaService = new PersonaService();

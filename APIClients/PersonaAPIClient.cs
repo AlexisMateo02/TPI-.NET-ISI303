@@ -198,6 +198,33 @@ namespace APIClients
             }
         }
 
+        public static async Task<IEnumerable<PersonaDTO>> GetByCriteriaAsync(string texto)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync($"personas/criteria?texto={Uri.EscapeDataString(texto)}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var personas = await response.Content.ReadFromJsonAsync<IEnumerable<PersonaDTO>>();
+                    return personas ?? new List<PersonaDTO>();
+                }
+                else
+                {
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Error al buscar personas. Status: {response.StatusCode}, Detalle: {errorContent}");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"Error de conexión al buscar personas: {ex.Message}", ex);
+            }
+            catch (TaskCanceledException ex)
+            {
+                throw new Exception($"Timeout al buscar personas: {ex.Message}", ex);
+            }
+        }
+
         public static async Task<IEnumerable<PersonaDTO>> GetAlumnosAsync()
         {
             try

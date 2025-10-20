@@ -13,7 +13,7 @@
                 <main>
                     <div class="top-row px-4 auth">
                         <span class="me-3">Hola, @authContext.User.Identity?.Name!</span>
-                        <a href="logout" class="btn btn-logout btn-sm">Cerrar Sesión</a>
+                        <a href="logout" class="btn btn-sm btn-outline-danger">Cerrar Sesión</a>
                     </div>
 
                     <article class="content px-4">
@@ -32,18 +32,6 @@
 </CascadingAuthenticationState>
 
 <style>
-    .btn-logout {
-        color: #dc3545;
-        border-color: #dc3545;
-        background-color: transparent;
-    }
-
-        .btn-logout:hover {
-            color: #fff;
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-
     .public-layout {
         min-height: 100vh;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

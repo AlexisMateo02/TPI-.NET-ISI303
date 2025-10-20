@@ -18,7 +18,7 @@
                         <h3>Gestión de Usuarios</h3>
                         @if (!isAdmin)
                         {
-                            <button class="btn btn-warning" @onclick="OpenChangePasswordModal">
+                            <button class="btn btn-gradient btn-sm" @onclick="OpenChangePasswordModal">
                                 <i class="fas fa-key"></i> Cambiar mi Contraseña
                             </button>
                         }
@@ -54,12 +54,12 @@
                                                @onkeyup="HandleSearchKeyUp" />
                                     </div>
                                     <div class="col-md-2">
-                                        <button class="btn btn-primary w-100" @onclick="SearchUsuarios">
+                                        <button class="btn btn-outline-success w-100" @onclick="SearchUsuarios">
                                             <i class="fas fa-search"></i> Buscar
                                         </button>
                                     </div>
                                     <div class="col-md-2">
-                                        <button class="btn btn-success w-100" @onclick="OpenAddModal">
+                                        <button class="btn btn-outline-primary w-100" @onclick="OpenAddModal">
                                             <i class="fas fa-plus"></i> Agregar
                                         </button>
                                     </div>
@@ -79,7 +79,7 @@
                         {
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover">
-                                    <thead class="table-dark">
+                                    <thead class="gradient-bg">
                                         <tr>
                                             <th>ID</th>
                                             <th>Usuario</th>
@@ -162,6 +162,33 @@
 
 <UsuarioModal @ref="usuarioModal" OnUsuarioChanged="LoadUsuarios" />
 <CambiarContraseniaModal @ref="cambiarContraseniaModal" OnContraseniaChanged="HandleContraseniaChanged" />
+
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        border-bottom: none !important;
+    }
+
+    .btn-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            color: white;
+        }
+
+        .btn-gradient:active {
+            transform: translateY(0);
+        }
+</style>
 
 @code {
     private List<UsuarioDTO>? usuarios;

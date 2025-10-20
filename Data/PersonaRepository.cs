@@ -112,5 +112,24 @@ namespace Data
             using var context = CreateContext();
             return context.Planes.Any(p => p.IdPlan == idPlan);
         }
+        public IEnumerable<Persona> GetByCriteria(PersonaCriteria criteria)
+        {
+            using var context = CreateContext();
+
+            var query = context.Personas
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(criteria.Texto))
+            {
+                string searchTerm = criteria.Texto.ToLower();
+                query = query.Where(p =>
+                    p.Nombre.ToLower().Contains(searchTerm) ||
+                    p.Apellido.ToLower().Contains(searchTerm) ||
+                    p.Legajo.ToString().Contains(searchTerm)
+                );
+            }
+
+            return query.OrderBy(p => p.Nombre).ToList();
+        }
     }
 }
