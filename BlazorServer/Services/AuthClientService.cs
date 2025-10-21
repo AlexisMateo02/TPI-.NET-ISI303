@@ -1,9 +1,7 @@
-﻿using APIClients;
-using BlazorServer.Providers;
+﻿using BlazorServer.Providers;
 using DTOs;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using System.Security.Claims;
 
 namespace BlazorServer.Services
 {

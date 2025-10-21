@@ -52,18 +52,45 @@ namespace Data
         {
             using var context = CreateContext();
             var existingUsuario = context.Usuarios.Find(usuario.Id);
+
             if (existingUsuario != null)
             {
+                // ⚠️ SOLO actualizar campos NO sensibles
                 existingUsuario.SetNombreUsuario(usuario.NombreUsuario);
-                if (!string.IsNullOrWhiteSpace(usuario.Clave))
-                {
-                    existingUsuario.SetClave(usuario.Clave);
-                }
                 existingUsuario.SetHabilitado(usuario.Habilitado);
+                existingUsuario.SetRol(usuario.Rol);
                 existingUsuario.SetIdPersona(usuario.IdPersona);
+
+                // ❌ NUNCA actualizar Clave aquí
+                // ❌ NO hacer: existingUsuario.SetClave(usuario.Clave);
+
                 context.SaveChanges();
                 return true;
             }
+
+            return false;
+        }
+
+        // Método SEPARADO para actualizar con nueva contraseña
+        public bool UpdateConNuevaContrasenia(int idUsuario, string nombreUsuario, bool habilitado, int rol, int? idPersona, string nuevaClaveTextoPlano)
+        {
+            using var context = CreateContext();
+            var existingUsuario = context.Usuarios.Find(idUsuario);
+
+            if (existingUsuario != null)
+            {
+                existingUsuario.SetNombreUsuario(nombreUsuario);
+                existingUsuario.SetHabilitado(habilitado);
+                existingUsuario.SetRol(rol);
+                existingUsuario.SetIdPersona(idPersona);
+
+                // ✅ SOLO llamar a SetClave con TEXTO PLANO
+                existingUsuario.SetClave(nuevaClaveTextoPlano);
+
+                context.SaveChanges();
+                return true;
+            }
+
             return false;
         }
         public bool Delete(int id)

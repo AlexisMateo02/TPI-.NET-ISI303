@@ -89,42 +89,59 @@ namespace Services
         {
             var usuarioRepository = new UsuarioRepository();
 
-            // Obtener el usuario existente desde la BD
-            var usuario = usuarioRepository.Get(dto.Id);
-            if (usuario == null)
+            // 1. Obtener usuario existente para validaciones
+            var usuarioExistente = usuarioRepository.Get(dto.Id);
+            if (usuarioExistente == null)
                 return false;
 
-            // Validar que el nombre de usuario no esté duplicado (excluyendo el usuario actual)
+            // 2. Validar nombre de usuario duplicado (excluyendo el actual)
             if (usuarioRepository.NombreUsuarioExists(dto.NombreUsuario, dto.Id))
             {
                 throw new ArgumentException($"Ya existe otro usuario con el nombre '{dto.NombreUsuario}'.");
             }
 
-            // Validar que existe la persona si se proporciona
+            // 3. Validar que existe la persona (si se proporciona)
             if (dto.IdPersona.HasValue && !usuarioRepository.PersonaExists(dto.IdPersona.Value))
             {
                 throw new ArgumentException($"No existe la persona con el ID {dto.IdPersona.Value}");
             }
 
-            // Actualizar propiedades básicas
-            usuario.SetNombreUsuario(dto.NombreUsuario);
-            usuario.SetHabilitado(dto.Habilitado);
+            // 4. Decidir qué método del repositorio usar
+            bool resultado;
 
-            // Actualizar IdPersona
-            if (dto.IdPersona.HasValue)
-            {
-                usuario.SetIdPersona(dto.IdPersona.Value);
-            }
-
-            // SOLO actualizar la contraseña si se proporciona una nueva
-            // Si dto.Clave no es null/empty/whitespace, significa que el usuario quiere cambiarla
             if (!string.IsNullOrWhiteSpace(dto.Clave))
             {
-                usuario.SetClave(dto.Clave); // Esto hashea la nueva contraseña
+                // ✅ Hay nueva contraseña: usar método que actualiza contraseña
+                resultado = usuarioRepository.UpdateConNuevaContrasenia(
+                    dto.Id,
+                    dto.NombreUsuario,
+                    dto.Habilitado,
+                    dto.Rol,
+                    dto.IdPersona,
+                    dto.Clave // ← TEXTO PLANO desde el formulario
+                );
             }
-            // Si dto.Clave es null/empty, la contraseña existente se mantiene intacta
+            else
+            {
+                // ✅ NO hay nueva contraseña: crear objeto Usuario SIN tocar Clave
+                var usuarioParaActualizar = new Usuario(
+                    dto.Id,
+                    dto.NombreUsuario,
+                    usuarioExistente.Clave, // ← Hash viejo (NO se usará en Update)
+                    dto.Habilitado,
+                    usuarioExistente.FechaAlta,
+                    dto.Rol
+                );
 
-            return usuarioRepository.Update(usuario);
+                if (dto.IdPersona.HasValue)
+                {
+                    usuarioParaActualizar.SetIdPersona(dto.IdPersona.Value);
+                }
+
+                resultado = usuarioRepository.Update(usuarioParaActualizar);
+            }
+
+            return resultado;
         }
 
         public bool Delete(int id)
