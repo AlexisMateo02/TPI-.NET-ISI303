@@ -45,6 +45,7 @@ app.MapComisionEndpoints();
 app.MapCursoEndpoints();
 app.MapMateriaEndpoints();
 app.MapDocenteCursoEndpoints();
+app.MapAlumnoInscripcionEndpoints();
 app.MapAuthEndpoints();
 
 app.Run();

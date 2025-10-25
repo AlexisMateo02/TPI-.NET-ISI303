@@ -237,16 +237,64 @@
             
             if (user.Identity?.IsAuthenticated == true)
             {
-                var idClaim = user.FindFirst("id");
-                if (idClaim != null && int.TryParse(idClaim.Value, out int id))
+                var idPersonaClaim = user.FindFirst("idPersona")
+                                   ?? user.FindFirst("personaId")
+                                   ?? user.FindFirst("IdPersona");
+
+                if (idPersonaClaim != null && int.TryParse(idPersonaClaim.Value, out int id))
                 {
                     currentUserId = id;
+                    return;
                 }
+
+                var username = user.Identity.Name;
+                if (!string.IsNullOrEmpty(username))
+                {
+                    await GetPersonaIdFromUsername(username);
+                    return;
+                }
+
+                errorMessage = "No se pudo identificar tu información de alumno. Contacta al administrador.";
             }
         }
         catch (Exception ex)
         {
             errorMessage = $"Error al obtener usuario actual: {ex.Message}";
+        }
+    }
+
+    private async Task GetPersonaIdFromUsername(string username)
+    {
+        try
+        {
+            // Obtener todos los usuarios y buscar el que coincida
+            var usuarios = await UsuarioAPIClient.GetAllAsync();
+            var usuario = usuarios?.FirstOrDefault(u =>
+                u.NombreUsuario.Equals(username, StringComparison.OrdinalIgnoreCase));
+
+            if (usuario != null && usuario.IdPersona.HasValue)
+            {
+                currentUserId = usuario.IdPersona.Value;
+                Console.WriteLine($"🔍 Persona ID from username '{username}': {currentUserId}");
+
+                var persona = await PersonaAPIClient.GetAsync(currentUserId);
+                if (persona != null)
+                {
+                    if (persona.TipoPersona != 1)
+                    {
+                        errorMessage = "Tu usuario no tiene permisos de alumno. Contacta al administrador.";
+                        currentUserId = 0;
+                    }
+                }
+            }
+            else
+            {
+                errorMessage = "No se pudo encontrar tu información de alumno. Contacta al administrador.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Error al obtener información del alumno.";
         }
     }
 

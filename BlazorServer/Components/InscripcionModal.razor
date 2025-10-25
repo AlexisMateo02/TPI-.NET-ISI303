@@ -210,6 +210,8 @@
         {
             currentInscripcion.IdAlumno = CurrentUserId;
             currentInscripcion.Condicion = "Regular";
+
+            Console.WriteLine($"🔍 Alumno ID set to: {CurrentUserId}"); // Debug
         }
 
         await LoadDropdowns();
