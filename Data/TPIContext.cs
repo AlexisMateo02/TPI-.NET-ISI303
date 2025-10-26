@@ -18,7 +18,6 @@ namespace Data
 
         internal TPIContext()
         {
-            // this.Database.EnsureDeleted(); // Solo en desarrollo
             // this.Database.EnsureCreated();
             // DataSeeder.Seed(this);
         }
@@ -222,7 +221,7 @@ namespace Data
                     .WithMany()
                     .HasForeignKey(e => e.IdCurso)
                     .OnDelete(DeleteBehavior.Restrict);
-                entity.HasIndex(e => new { e.IdDocente, e.IdCurso, e.Cargo })
+                entity.HasIndex(e => new { e.IdDocente, e.IdCurso })
                     .IsUnique();
             });
 

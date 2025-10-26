@@ -71,11 +71,17 @@ namespace Services
                 throw new ArgumentException($"No existe el curso con ID {dto.IdCurso}");
             }
 
-            // Validar que no esté duplicado (mismo docente, curso y cargo)
-            if (docenteCursoRepository.DocenteCursoCargoExists(dto.IdDocente, dto.IdCurso, dto.Cargo))
+            // Validar que solo haya un titular por curso
+            if (dto.Cargo.ToLower() == "titular" && docenteCursoRepository.TitularExistsInCurso(dto.IdCurso))
             {
-                throw new ArgumentException($"Ya existe un dictado con el docente ID {dto.IdDocente}, " +
-                    $"el curso ID {dto.IdCurso} y el cargo '{dto.Cargo}'");
+                throw new ArgumentException($"Ya existe un docente titular en el curso ID {dto.IdCurso}. Solo puede haber un titular por curso.");
+            }
+
+            // Validar que no esté duplicado (mismo docente, curso y cargo)
+            if (docenteCursoRepository.DocenteCursoExists(dto.IdDocente, dto.IdCurso))
+            {
+                throw new ArgumentException($"Ya existe un dictado con el docente ID {dto.IdDocente} y " +
+                    $"el curso ID {dto.IdCurso}");
             }
 
             DocenteCurso docenteCurso = new DocenteCurso(dto.Cargo, dto.IdDocente, dto.IdCurso);
@@ -103,11 +109,17 @@ namespace Services
                 throw new ArgumentException($"No existe el curso con ID {dto.IdCurso}");
             }
 
-            // Validar que no esté duplicado (excluyendo el dictado actual)
-            if (docenteCursoRepository.DocenteCursoCargoExists(dto.IdDocente, dto.IdCurso, dto.Cargo, dto.IdDictado))
+            // Validar que solo haya un titular por curso
+            if (dto.Cargo.ToLower() == "titular" && docenteCursoRepository.TitularExistsInCurso(dto.IdCurso))
             {
-                throw new ArgumentException($"Ya existe otro dictado con el docente ID {dto.IdDocente}, " +
-                    $"el curso ID {dto.IdCurso} y el cargo '{dto.Cargo}'");
+                throw new ArgumentException($"Ya existe un docente titular en el curso ID {dto.IdCurso}. Solo puede haber un titular por curso.");
+            }
+
+            // Validar que no esté duplicado (excluyendo el dictado actual)
+            if (docenteCursoRepository.DocenteCursoExists(dto.IdDocente, dto.IdCurso, dto.IdDictado))
+            {
+                throw new ArgumentException($"Ya existe otro dictado con el docente ID {dto.IdDocente} y " +
+                    $"el curso ID {dto.IdCurso}");
             }
 
             DocenteCurso docenteCurso = new DocenteCurso(dto.IdDictado, dto.Cargo, dto.IdDocente, dto.IdCurso);
@@ -121,10 +133,10 @@ namespace Services
             return docenteCursoRepository.Delete(id);
         }
 
-        public bool ExistsDocenteCursoCargo(int idDocente, int idCurso, string cargo, int? excludeId = null)
+        public bool ExistsDocenteCurso(int idDocente, int idCurso, int? excludeId = null)
         {
             var docenteCursoRepository = new DocenteCursoRepository();
-            return docenteCursoRepository.DocenteCursoCargoExists(idDocente, idCurso, cargo, excludeId);
+            return docenteCursoRepository.DocenteCursoExists(idDocente, idCurso, excludeId);
         }
     }
 }

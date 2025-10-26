@@ -69,17 +69,31 @@ namespace Data
             return false;
         }
 
-        public bool DocenteCursoCargoExists(int idDocente, int idCurso, string cargo, int? excludeId = null)
+        public bool DocenteCursoExists(int idDocente, int idCurso, int? excludeId = null)
         {
             using var context = CreateContext();
             var query = context.Dictados
                 .Where(dc => dc.IdDocente == idDocente
-                          && dc.IdCurso == idCurso
-                          && dc.Cargo.ToLower() == cargo.ToLower());
+                          && dc.IdCurso == idCurso);
             if (excludeId.HasValue)
             {
                 query = query.Where(dc => dc.IdDictado != excludeId.Value);
             }
+            return query.Any();
+        }
+
+        public bool TitularExistsInCurso(int idCurso, int? excludeId = null)
+        {
+            using var context = CreateContext();
+            var query = context.Dictados
+                .Where(dc => dc.IdCurso == idCurso
+                          && dc.Cargo.ToLower() == "titular");
+
+            if (excludeId.HasValue)
+            {
+                query = query.Where(dc => dc.IdDictado != excludeId.Value);
+            }
+
             return query.Any();
         }
 

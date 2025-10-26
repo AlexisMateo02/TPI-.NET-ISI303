@@ -174,6 +174,24 @@ namespace APIWeb
             .WithName("GetDocentes")
             .Produces<List<PersonaDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
+
+            app.MapGet("/personas/nextLegajo", () =>
+            {
+                try
+                {
+                    PersonaService personaService = new PersonaService();
+                    int nextLegajo = personaService.GetNextLegajo();
+                    return Results.Ok(nextLegajo);
+                }
+                catch (Exception ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+            })
+            .WithName("GetNextLegajo")
+            .Produces<int>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithOpenApi();
         }
     }
 }

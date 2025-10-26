@@ -243,5 +243,11 @@ namespace Services
                 DescripcionEspecialidad = persona.Plan?.Especialidad?.Descripcion
             }).ToList();
         }
+
+        public int GetNextLegajo()
+        {
+            var personaRepository = new PersonaRepository();
+            return personaRepository.GetNextLegajo();
+        }
     }
 }

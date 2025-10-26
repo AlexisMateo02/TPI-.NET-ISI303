@@ -128,5 +128,18 @@ namespace Services
             var alumnoInscripcionRepository = new AlumnoInscripcionRepository();
             return alumnoInscripcionRepository.AlumnoCursoExists(idAlumno, idCurso, excludeId);
         }
+
+        public bool PuedeCalificar(int idDocente, int idCurso)
+        {
+            var docenteCursoRepository = new DocenteCursoRepository();
+
+            var dictado = docenteCursoRepository.GetAll()
+                .FirstOrDefault(dc => dc.IdDocente == idDocente
+                                   && dc.IdCurso == idCurso
+                                   && (dc.Cargo.ToLower() == "titular"
+                                       || dc.Cargo.ToLower() == "adjunto"));
+
+            return dictado != null;
+        }
     }
 }

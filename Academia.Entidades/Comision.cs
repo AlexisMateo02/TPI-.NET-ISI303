@@ -54,10 +54,10 @@
         public void SetAnioEspecialidad(int anioEspecialidad)
         {
             int añoActual = DateTime.Now.Year;
-            if (anioEspecialidad > añoActual)
-                throw new ArgumentException($"El año de especialidad no puede ser mayor al año actual ({añoActual}).", nameof(anioEspecialidad));
-            if (anioEspecialidad < 1950)
-                throw new ArgumentException("El año de especialidad debe ser mayor a 1950.", nameof(anioEspecialidad));
+            if (anioEspecialidad > 10)
+                throw new ArgumentException($"El año de especialidad no puede ser mayor a 10).", nameof(anioEspecialidad));
+            if (anioEspecialidad < 0)
+                throw new ArgumentException("El año de especialidad debe ser positivo.", nameof(anioEspecialidad));
             AnioEspecialidad = anioEspecialidad;
         }
 

@@ -73,7 +73,7 @@
                 throw new ArgumentException("La condición no puede ser nula o vacía.", nameof(condicion));
 
             // Validar que sea una condición válida
-            var condicionesValidas = new[] { "Cursando", "Aprobado", "Libre", "Regular" };
+            var condicionesValidas = new[] { "Cursando", "Regular", "Aprobado", "Libre" };
             if (!condicionesValidas.Contains(condicion))
                 throw new ArgumentException($"La condición debe ser una de las siguientes: {string.Join(", ", condicionesValidas)}.", nameof(condicion));
 

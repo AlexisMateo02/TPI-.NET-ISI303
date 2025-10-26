@@ -41,7 +41,6 @@
                                 <option value="Titular">Titular</option>
                                 <option value="Adjunto">Adjunto</option>
                                 <option value="Ayudante">Ayudante</option>
-                                <option value="JTP">JTP</option>
                             </InputSelect>
                             @if (validationErrors.ContainsKey("Cargo"))
                             {
@@ -253,19 +252,18 @@
         }
 
         // Validar duplicados
-        if (isValid && currentDocenteCurso.IdDocente > 0 && currentDocenteCurso.IdCurso > 0 && !string.IsNullOrWhiteSpace(currentDocenteCurso.Cargo))
+        if (isValid && currentDocenteCurso.IdDocente > 0 && currentDocenteCurso.IdCurso > 0)
         {
             int? excludeId = mode == FormMode.Update ? currentDocenteCurso.IdDictado : null;
-            bool exists = await DocenteCursoAPIClient.ExistDocenteCursoCargoAsync(
+            bool exists = await DocenteCursoAPIClient.ExistDocenteCursoAsync(
                 currentDocenteCurso.IdDocente,
                 currentDocenteCurso.IdCurso,
-                currentDocenteCurso.Cargo,
                 excludeId
             );
 
             if (exists)
             {
-                validationErrors["Cargo"] = "Este docente ya tiene asignado este cargo en el curso seleccionado";
+                validationErrors["Curso"] = "Este docente ya está asignado en el curso seleccionado";
                 isValid = false;
             }
         }

@@ -276,5 +276,32 @@ namespace APIClients
                 throw new Exception($"Timeout al obtener docentes: {ex.Message}", ex);
             }
         }
+
+        public static async Task<int> GetNextLegajoAsync()
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync("personas/nextLegajo");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<int>();
+                }
+                else
+                {
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Error al obtener próximo legajo. Status: {response.StatusCode}, Detalle: {errorContent}");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"Error de conexión al obtener próximo legajo: {ex.Message}", ex);
+            }
+            catch (TaskCanceledException ex)
+            {
+                throw new Exception($"Timeout al obtener próximo legajo: {ex.Message}", ex);
+            }
+        }
+
     }
 }

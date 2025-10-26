@@ -102,12 +102,12 @@ namespace APIWeb
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapGet("/docentecursos/existDocenteCursoCargo", (int idDocente, int idCurso, string cargo, int? excludeId) =>
+            app.MapGet("/docentecursos/existDocenteCurso", (int idDocente, int idCurso, int? excludeId) =>
             {
                 try
                 {
                     DocenteCursoService docenteCursoService = new DocenteCursoService();
-                    bool exists = docenteCursoService.ExistsDocenteCursoCargo(idDocente, idCurso, cargo, excludeId);
+                    bool exists = docenteCursoService.ExistsDocenteCurso(idDocente, idCurso, excludeId);
                     return Results.Ok(exists);
                 }
                 catch (Exception ex)
@@ -115,7 +115,7 @@ namespace APIWeb
                     return Results.BadRequest(new { error = ex.Message });
                 }
             })
-            .WithName("ExistDocenteCursoCargoInDocenteCurso")
+            .WithName("ExistDocenteCursoInDocenteCurso")
             .Produces<bool>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();

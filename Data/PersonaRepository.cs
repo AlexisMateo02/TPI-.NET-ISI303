@@ -131,5 +131,21 @@ namespace Data
 
             return query.OrderBy(p => p.Nombre).ToList();
         }
+
+        public int GetNextLegajo()
+        {
+            using var context = CreateContext();
+
+            var todasLasPersonas = context.Personas.ToList();
+
+            if (!todasLasPersonas.Any())
+            {
+                return 1;
+            }
+
+            var maxLegajo = todasLasPersonas.Max(p => p.Legajo);
+            return maxLegajo + 1;
+        }
+
     }
 }

@@ -223,7 +223,7 @@
         isAdmin = await RoleHelper.IsAdminAsync();
         isDocente = await RoleHelper.IsDocenteAsync();
         isAlumno = await RoleHelper.IsAlumnoAsync();
-        
+
         await GetCurrentUserId();
         await LoadInscripciones();
     }
@@ -234,7 +234,7 @@
         {
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
-            
+
             if (user.Identity?.IsAuthenticated == true)
             {
                 var idPersonaClaim = user.FindFirst("idPersona")
@@ -275,24 +275,23 @@
             if (usuario != null && usuario.IdPersona.HasValue)
             {
                 currentUserId = usuario.IdPersona.Value;
-                Console.WriteLine($"🔍 Persona ID from username '{username}': {currentUserId}");
 
-                var persona = await PersonaAPIClient.GetAsync(currentUserId);
-                if (persona != null)
+                if (isAlumno)
                 {
-                    if (persona.TipoPersona != 1)
+                    var persona = await PersonaAPIClient.GetAsync(currentUserId);
+                    if (persona != null)
                     {
-                        errorMessage = "Tu usuario no tiene permisos de alumno. Contacta al administrador.";
-                        currentUserId = 0;
+                        if (persona.TipoPersona != 1)
+                        {
+                            errorMessage = "Tu usuario no tiene permisos de alumno. Contacta al administrador.";
+                            currentUserId = 0;
+                            return;
+                        }
                     }
                 }
             }
-            else
-            {
-                errorMessage = "No se pudo encontrar tu información de alumno. Contacta al administrador.";
-            }
         }
-        catch (Exception ex)
+        catch
         {
             errorMessage = "Error al obtener información del alumno.";
         }
@@ -304,16 +303,20 @@
         {
             loading = true;
             var todasInscripciones = (await AlumnoInscripcionAPIClient.GetAllAsync())?.ToList();
-            
+
             if (isAlumno && currentUserId > 0)
             {
                 inscripciones = todasInscripciones?.Where(i => i.IdAlumno == currentUserId).ToList();
+            }
+            else if (isDocente && currentUserId > 0)
+            {
+                inscripciones = await GetInscripcionesDeMisCursos(currentUserId);
             }
             else
             {
                 inscripciones = todasInscripciones;
             }
-            
+
             successMessage = string.Empty;
         }
         catch (Exception ex)
@@ -353,6 +356,12 @@
         if (!isDocente)
         {
             errorMessage = "No tienes permisos para realizar esta acción.";
+            return;
+        }
+
+        if (!await PuedeCalificarCurso(inscripcion.IdCurso))
+        {
+            errorMessage = "No tienes permisos para calificar en este curso.";
             return;
         }
 
@@ -402,6 +411,50 @@
         }
     }
 
+    private async Task<List<AlumnoInscripcionDTO>?> GetInscripcionesDeMisCursos(int idDocente)
+    {
+        try
+        {
+            var misDictados = (await DocenteCursoAPIClient.GetAllAsync())?
+                .Where(d => d.IdDocente == idDocente)
+                .ToList();
+
+            if (misDictados == null || !misDictados.Any())
+                return new List<AlumnoInscripcionDTO>();
+
+            var misCursosIds = misDictados.Select(d => d.IdCurso).Distinct().ToList();
+
+            var todasInscripciones = (await AlumnoInscripcionAPIClient.GetAllAsync())?.ToList();
+
+            return todasInscripciones?
+                .Where(i => misCursosIds.Contains(i.IdCurso))
+                .ToList();
+        }
+        catch
+        {
+            return new List<AlumnoInscripcionDTO>();
+        }
+    }
+
+    private async Task<bool> PuedeCalificarCurso(int idCurso)
+    {
+        try
+        {
+            var misDictados = (await DocenteCursoAPIClient.GetAllAsync())?
+                .Where(d => d.IdDocente == currentUserId
+                         && d.IdCurso == idCurso
+                         && (d.Cargo.ToLower() == "titular"
+                             || d.Cargo.ToLower() == "adjunto"))
+                .ToList();
+
+            return misDictados != null && misDictados.Any();
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     private string GetCondicionBadgeClass(string condicion)
     {
         return condicion?.ToLower() switch
@@ -415,7 +468,7 @@
 
     private string GetNotaBadgeClass(int nota)
     {
-        if (nota >= 7) return "bg-success";
+        if (nota >= 6) return "bg-success";
         if (nota >= 4) return "bg-warning text-dark";
         return "bg-danger";
     }

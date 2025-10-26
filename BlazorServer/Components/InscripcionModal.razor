@@ -36,6 +36,28 @@
                             </div>
                         }
 
+                        @if (mode == FormMode.EditNota)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Tu Cargo en este Curso</label>
+                                <input type="text" class="form-control" value="@cargoDocente" readonly />
+                                <small class="text-muted">
+                                    @if (cargoDocente?.ToLower() == "titular")
+                                    {
+                                        <span class="text-success fw-bold">Titular - Puedes calificar</span>
+                                    }
+                                    else if (cargoDocente?.ToLower() == "adjunto")
+                                    {
+                                        <span class="text-warning fw-bold">Adjunto - Puedes calificar</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger fw-bold">Ayudante - No puedes calificar</span>
+                                    }
+                                </small>
+                            </div>
+                        }
+
                         @if (mode != FormMode.EditNota)
                         {
                             @if (IsAdmin)
@@ -98,11 +120,13 @@
                             <label class="form-label">Condición *</label>
                             <InputSelect @bind-Value="currentInscripcion.Condicion"
                                          class="form-select"
-                                         disabled="@(IsAlumno && mode == FormMode.Add)">
+                                         disabled="@(IsAlumno && mode == FormMode.Add)"
+                                         @onchange="OnCondicionChanged">
                                 <option value="">Seleccionar Condición</option>
+                                <option value="Cursando">Cursando</option>
                                 <option value="Regular">Regular</option>
+                                <option value="Aprobado">Aprobado</option>
                                 <option value="Libre">Libre</option>
-                                <option value="Promocionado">Promocionado</option>
                             </InputSelect>
                             @if (validationErrors.ContainsKey("Condicion"))
                             {
@@ -113,17 +137,32 @@
                         @if (mode == FormMode.Update || mode == FormMode.EditNota)
                         {
                             <div class="mb-3">
-                                <label class="form-label">Nota (0-10)</label>
+                                <label class="form-label">
+                                    Nota
+                                    @if (currentInscripcion.Condicion == "Aprobado")
+                                    {
+                                        <span class="text-danger">*</span>
+                                    }
+                                </label>
                                 <InputNumber @bind-Value="currentInscripcion.Nota"
                                              class="form-control"
                                              min="0"
                                              max="10"
-                                             disabled="@(IsAlumno)" />
+                                             disabled="@(IsAlumno || currentInscripcion.Condicion != "Aprobado")" />
                                 @if (validationErrors.ContainsKey("Nota"))
                                 {
                                     <div class="text-danger small">@validationErrors["Nota"]</div>
                                 }
-                                <small class="text-muted">Dejar vacío si aún no tiene nota</small>
+                                <small class="text-muted">
+                                    @if (currentInscripcion.Condicion == "Aprobado")
+                                    {
+                                        <span class="text-success fw-bold">Nota requerida (6-10)</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Nota solo disponible cuando la condición es "Aprobado"</span>
+                                    }
+                                </small>
                             </div>
                         }
 
@@ -137,7 +176,15 @@
                         @if (IsAlumno && mode == FormMode.Add)
                         {
                             <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i> Se inscribirá con condición "Regular" por defecto.
+                                <i class="fas fa-info-circle"></i> Se inscribirá con condición "Cursando" por defecto.
+                            </div>
+                        }
+
+                        @if ((mode == FormMode.Update || mode == FormMode.EditNota) && currentInscripcion.Condicion == "Aprobado")
+                        {
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Condición "Aprobado" seleccionada:</strong> La nota debe ser 6 o superior (6-10).
                             </div>
                         }
 
@@ -193,6 +240,7 @@
     private Dictionary<string, string> validationErrors = new Dictionary<string, string>();
     private List<PersonaDTO>? alumnos;
     private List<CursoDTO>? cursos;
+    private string? cargoDocente;
 
     public enum FormMode
     {
@@ -209,9 +257,7 @@
         if (IsAlumno)
         {
             currentInscripcion.IdAlumno = CurrentUserId;
-            currentInscripcion.Condicion = "Regular";
-
-            Console.WriteLine($"🔍 Alumno ID set to: {CurrentUserId}"); // Debug
+            currentInscripcion.Condicion = "Cursando";
         }
 
         await LoadDropdowns();
@@ -276,6 +322,7 @@
             IdMateria = inscripcion.IdMateria,
             DescripcionMateria = inscripcion.DescripcionMateria
         };
+        cargoDocente = await GetCargoDocenteEnCurso(inscripcion.IdCurso);
         ClearValidationErrors();
         showModal = true;
         StateHasChanged();
@@ -318,6 +365,16 @@
         ClearValidationErrors();
         bool isValid = true;
 
+        if (mode == FormMode.EditNota)
+        {
+            var cargoDocente = await GetCargoDocenteEnCurso(currentInscripcion.IdCurso);
+            if (cargoDocente?.ToLower() != "titular" && cargoDocente?.ToLower() != "adjunto")
+            {
+                errorMessage = "Solo los docentes con cargo de Titular o Adjunto pueden calificar alumnos.";
+                isValid = false;
+            }
+        }
+
         if (currentInscripcion.IdAlumno <= 0)
         {
             validationErrors["Alumno"] = "Debe seleccionar un alumno";
@@ -339,12 +396,36 @@
             isValid = false;
         }
 
-        if (currentInscripcion.Nota.HasValue)
+        if (currentInscripcion.Condicion == "Aprobado")
         {
-            if (currentInscripcion.Nota.Value < 0 || currentInscripcion.Nota.Value > 10)
+            // Condición "Aprobado" requiere nota entre 6-10
+            if (!currentInscripcion.Nota.HasValue)
             {
-                validationErrors["Nota"] = "La nota debe estar entre 0 y 10";
+                validationErrors["Nota"] = "La nota es requerida cuando la condición es 'Aprobado'";
                 isValid = false;
+            }
+            else if (currentInscripcion.Nota.Value < 6 || currentInscripcion.Nota.Value > 10)
+            {
+                validationErrors["Nota"] = "La nota debe estar entre 6 y 10 cuando la condición es 'Aprobado'";
+                isValid = false;
+            }
+        }
+        else
+        {
+            // Para otras condiciones, si hay nota debe ser válida (0-10)
+            if (currentInscripcion.Nota.HasValue)
+            {
+                if (currentInscripcion.Nota.Value < 0 || currentInscripcion.Nota.Value > 10)
+                {
+                    validationErrors["Nota"] = "La nota debe estar entre 0 y 10";
+                    isValid = false;
+                }
+
+                // Nota con condición diferente a "Aprobado"
+                if (currentInscripcion.Nota.Value >= 6 && currentInscripcion.Condicion != "Aprobado")
+                {
+                    errorMessage = $"Nota {currentInscripcion.Nota.Value} con condición '{currentInscripcion.Condicion}'";
+                }
             }
         }
 
@@ -390,10 +471,40 @@
         }
     }
 
+    private void OnCondicionChanged(ChangeEventArgs e)
+    {
+        var nuevaCondicion = e.Value?.ToString();
+
+        if (nuevaCondicion != "Aprobado")
+        {
+            // Si cambia a una condición diferente a "Aprobado", limpiar la nota
+            currentInscripcion.Nota = null;
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task<string?> GetCargoDocenteEnCurso(int idCurso)
+    {
+        try
+        {
+            var misDictados = (await DocenteCursoAPIClient.GetAllAsync())?
+                .Where(d => d.IdDocente == CurrentUserId && d.IdCurso == idCurso)
+                .ToList();
+
+            return misDictados?.FirstOrDefault()?.Cargo;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private void Close()
     {
         showModal = false;
         ClearValidationErrors();
+        cargoDocente = null;
         StateHasChanged();
     }
 }

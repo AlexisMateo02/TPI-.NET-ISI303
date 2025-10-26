@@ -100,9 +100,46 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Legajo *</label>
-                                    <InputNumber @bind-Value="currentPersona.Legajo"
-                                                 class="form-control"
-                                                 @onblur="ValidateLegajo" />
+                                    @if (mode == FormMode.Add)
+                                    {
+                                        <div class="input-group">
+                                            <input type="number" value="@currentPersona.Legajo" class="form-control" readonly />
+                                            <span class="input-group-text">
+                                                @if (loadingLegajo)
+                                                {
+                                                    <span class="spinner-border spinner-border-sm"></span>
+                                                }
+                                                else if (currentPersona.Legajo > 0)
+                                                {
+                                                    <i class="fas fa-check text-success"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="fas fa-hashtag"></i>
+                                                }
+                                            </span>
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            @if (currentPersona.TipoPersona == 1)
+                                            {
+                                                <text>Legajo de alumno asignado automáticamente</text>
+                                            }
+                                            else if (currentPersona.TipoPersona == 2)
+                                            {
+                                                <text>Legajo de docente asignado automáticamente</text>
+                                            }
+                                            else
+                                            {
+                                                <text>Seleccione un tipo de persona para asignar legajo</text>
+                                            }
+                                        </small>
+                                    }
+                                    else
+                                    {
+                                        <InputNumber @bind-Value="currentPersona.Legajo" 
+                                                    class="form-control" 
+                                                    @onblur="ValidateLegajo" />
+                                    }
                                     @if (validationErrors.ContainsKey("Legajo"))
                                     {
                                         <div class="text-danger small">@validationErrors["Legajo"]</div>
@@ -113,14 +150,16 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Tipo de Persona *</label>
-                                    <InputSelect @bind-Value="currentPersona.TipoPersona" class="form-select">
+                                    <select class="form-select" @onchange="OnTipoPersonaChanged">
                                         <option value="0">Seleccionar tipo</option>
                                         <option value="1">Alumno</option>
                                         <option value="2">Docente</option>
-                                    </InputSelect>
-                                    @if (validationErrors.ContainsKey("TipoPersona"))
-                                    {
-                                        <div class="text-danger small">@validationErrors["TipoPersona"]</div>
+                                    </select>
+                                    @if(validationErrors.ContainsKey("TipoPersona"))
+                                    {            
+                                    <div class = "text-danger small">
+                                        @validationErrors["TipoPersona"]
+                                    </div>  
                                     }
                                 </div>
                             </div>
@@ -192,6 +231,7 @@
     private bool showModal = false;
     private bool saving = false;
     private bool loadingPlanes = false;
+    private bool loadingLegajo = false;
     private string errorMessage = string.Empty;
     private Dictionary<string, string> validationErrors = new();
     private PersonaDTO currentPersona = new();
@@ -233,11 +273,13 @@
         currentPersona = new PersonaDTO
         {
             FechaNacimiento = DateTime.Now.AddYears(-18),
-            IdPlan = 0
+            IdPlan = 0,
+            TipoPersona = 0, // Inicializar sin tipo seleccionado
+            Legajo = 0 // Inicializar en 0
         };
         ClearValidationErrors();
         showModal = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     public async Task ShowEditModal(PersonaDTO persona)
@@ -370,7 +412,8 @@
 
     private async Task ValidateLegajo()
     {
-        if (currentPersona.Legajo > 0)
+        // En modo agregar no validamos legajo porque es automático
+        if (mode == FormMode.Update && currentPersona.Legajo > 0)
         {
             try
             {
@@ -394,6 +437,49 @@
         }
     }
 
+    private async Task OnTipoPersonaChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int tipo))
+        {
+            currentPersona.TipoPersona = tipo;
+
+            if (mode == FormMode.Add && (tipo == 1 || tipo == 2))
+            {
+                try
+                {
+                    loadingLegajo = true;
+                    errorMessage = string.Empty;
+                    await InvokeAsync(StateHasChanged);
+
+                    int nextLegajo = await PersonaAPIClient.GetNextLegajoAsync();
+
+                    if (nextLegajo <= 0)
+                    {
+                        throw new Exception("El sistema devolvió un legajo inválido");
+                    }
+
+                    currentPersona.Legajo = nextLegajo;
+                    validationErrors.Remove("Legajo");
+                }
+                catch (Exception ex)
+                {
+                    errorMessage = $"Error al asignar legajo: {ex.Message}";
+                    currentPersona.Legajo = 0;
+                }
+                finally
+                {
+                    loadingLegajo = false;
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+            else if (mode == FormMode.Add)
+            {
+                currentPersona.Legajo = 0;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+
     private void ClearValidationErrors()
     {
         validationErrors.Clear();
@@ -407,4 +493,3 @@
         StateHasChanged();
     }
 }
-

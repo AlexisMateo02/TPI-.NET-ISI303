@@ -128,11 +128,11 @@ namespace APIClients
                 throw new Exception($"Timeout al eliminar dictado con Id {id}: {ex.Message}", ex);
             }
         }
-        public static async Task<bool> ExistDocenteCursoCargoAsync(int idDocente, int idCurso, string cargo, int? excludeId = null)
+        public static async Task<bool> ExistDocenteCursoAsync(int idDocente, int idCurso, int? excludeId = null)
         {
             try
             {
-                string url = $"docentecursos/existDocenteCursoCargo?idDocente={idDocente}&idCurso={idCurso}&cargo={Uri.EscapeDataString(cargo)}";
+                string url = $"docentecursos/existDocenteCurso?idDocente={idDocente}&idCurso={idCurso}";
                 if (excludeId.HasValue)
                 {
                     url += $"&excludeId={excludeId.Value}";
