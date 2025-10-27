@@ -124,6 +124,40 @@ namespace APIWeb
             .Produces<bool>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
+
+            app.MapGet("/planes/{id}/pdf", (int id) =>
+            {
+                try
+                {
+                    PlanService planService = new PlanService();
+
+                    // Verificar que el plan existe
+                    var plan = planService.Get(id);
+                    if (plan == null)
+                    {
+                        return Results.NotFound($"No se encontró el plan con ID {id}");
+                    }
+
+                    // Generar el PDF
+                    byte[] pdfBytes = planService.GenerarPdf(id);
+
+                    // Devolver el PDF como archivo
+                    return Results.File(
+                        fileContents: pdfBytes,
+                        contentType: "application/pdf",
+                        fileDownloadName: $"Plan_{plan.Descripcion}_{DateTime.Now:yyyyMMdd}.pdf"
+                    );
+                }
+                catch (Exception ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+            })
+            .WithName("GenerarPdfPlan")
+            .Produces<byte[]>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithOpenApi();
         }
     }
 }

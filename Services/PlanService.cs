@@ -27,14 +27,35 @@ namespace Services
             if (plan == null)
                 return null;
 
+            var materias = GetMateriasByPlan(id);
+
             return new PlanDTO
             {
                 IdPlan = plan.IdPlan,
                 Descripcion = plan.Descripcion,
                 IdEspecialidad = plan.IdEspecialidad,
-                DescripcionEspecialidad = plan.Especialidad?.Descripcion
+                DescripcionEspecialidad = plan.Especialidad?.Descripcion,
+                Materias = materias
 
             };
+        }
+        private List<MateriaDTO> GetMateriasByPlan(int idPlan)
+        {
+            var materiaRepository = new MateriaRepository();
+            var materias = materiaRepository.GetAll()
+                .Where(m => m.IdPlan == idPlan)
+                .ToList();
+
+            return materias.Select(materia => new MateriaDTO
+            {
+                IdMateria = materia.IdMateria,
+                DescripcionMateria = materia.DescripcionMateria,
+                HorasSemanales = materia.HorasSemanales,
+                HorasTotales = materia.HorasTotales,
+                IdPlan = materia.IdPlan,
+                DescripcionPlan = materia.Plan?.Descripcion,
+                DescripcionEspecialidad = materia.Plan?.Especialidad?.Descripcion
+            }).ToList();
         }
         public PlanDTO Add(PlanDTO dto)
         {
@@ -124,6 +145,16 @@ namespace Services
         {
             var planRepository = new PlanRepository();
             return planRepository.DescripcionExistsInEspecialidad(descripcion, idEspecialidad, excludeId);
+        }
+
+        public byte[] GenerarPdf(int idPlan)
+        {
+            var plan = Get(idPlan);
+            if (plan == null)
+                throw new ArgumentException($"No se encontró el plan con ID {idPlan}");
+
+            var pdfService = new PlanPdfService();
+            return pdfService.GenerarPdf(plan);
         }
     }
 }

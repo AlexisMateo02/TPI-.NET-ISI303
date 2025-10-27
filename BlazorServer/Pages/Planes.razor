@@ -3,12 +3,9 @@
 @using APIClients
 @using BlazorServer.Components
 @using Microsoft.AspNetCore.Components.Authorization
-@using System.Security.Claims
-@using System.IdentityModel.Tokens.Jwt
+@using Microsoft.JSInterop
 @inject IJSRuntime JSRuntime
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject BlazorServer.Helpers.RoleHelper RoleHelper
-
 
 <PageTitle>Planes</PageTitle>
 
@@ -35,7 +32,6 @@
                         </div>
                     }
 
-                    @* Solo mostrar botón agregar si es Admin *@
                     @if (isAdmin)
                     {
                         <div class="mb-3">
@@ -62,10 +58,7 @@
                                         <th>Id</th>
                                         <th>Descripción</th>
                                         <th>Especialidad</th>
-                                        @if (isAdmin)
-                                        {
-                                            <th class="text-end">Acciones</th>
-                                        }
+                                        <th class="text-end">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -77,24 +70,37 @@
                                                 <td>@plan.IdPlan</td>
                                                 <td>@plan.Descripcion</td>
                                                 <td>@plan.DescripcionEspecialidad</td>
-                                                @if (isAdmin)
-                                                {
-                                                    <td class="text-end">
+                                                <td class="text-end">
+                                                    <button class="btn btn-sm btn-outline-info me-1"
+                                                            @onclick="() => GenerarPdf(plan.IdPlan)"
+                                                            title="Descargar PDF"
+                                                            disabled="@generatingPdf">
+                                                        @if (generatingPdf && pdfPlanId == plan.IdPlan)
+                                                        {
+                                                            <span class="spinner-border spinner-border-sm"></span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="fas fa-file-pdf"></i>
+                                                        }
+                                                    </button>
+                                                    @if (isAdmin)
+                                                    {
                                                         <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(plan)">
-                                                            <i class="fas fa-edit"></i> Editar
+                                                            <i class="fas fa-edit"></i>
                                                         </button>
                                                         <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(plan)">
-                                                            <i class="fas fa-trash"></i> Eliminar
+                                                            <i class="fas fa-trash"></i>
                                                         </button>
-                                                    </td>
-                                                }
+                                                    }
+                                                </td>
                                             </tr>
                                         }
                                     }
                                     else
                                     {
                                         <tr>
-                                            <td colspan="@(isAdmin ? 4 : 3)" class="text-center">
+                                            <td colspan="4" class="text-center">
                                                 No hay planes disponibles
                                             </td>
                                         </tr>
@@ -136,6 +142,8 @@
     private string successMessage = string.Empty;
     private PlanModal? planModal;
     private bool isAdmin = false;
+    private bool generatingPdf = false;
+    private int pdfPlanId = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -158,6 +166,38 @@
         finally
         {
             loading = false;
+        }
+    }
+
+    private async Task GenerarPdf(int idPlan)
+    {
+        try
+        {
+            generatingPdf = true;
+            pdfPlanId = idPlan;
+            errorMessage = string.Empty;
+            StateHasChanged();
+
+            byte[] pdfBytes = await PlanAPIClient.GenerarPdfAsync(idPlan);
+
+            var plan = planes?.FirstOrDefault(p => p.IdPlan == idPlan);
+            string fileName = plan != null
+                ? $"Plan_{plan.Descripcion.Replace(" ", "_")}.pdf"
+                : $"Plan_{idPlan}.pdf";
+
+            await JSRuntime.InvokeVoidAsync("downloadFile", fileName, Convert.ToBase64String(pdfBytes));
+
+            successMessage = "PDF generado exitosamente.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al generar PDF: {ex.Message}";
+        }
+        finally
+        {
+            generatingPdf = false;
+            pdfPlanId = 0;
+            StateHasChanged();
         }
     }
 

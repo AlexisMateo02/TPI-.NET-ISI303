@@ -159,5 +159,31 @@ namespace APIClients
                 throw new Exception($"Timeout al verificar descripción duplicada: {ex.Message}", ex);
             }
         }
+
+        public static async Task<byte[]> GenerarPdfAsync(int idPlan)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync($"planes/{idPlan}/pdf");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsByteArrayAsync();
+                }
+                else
+                {
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Error al generar PDF del plan {idPlan}. Status: {response.StatusCode}, Detalle: {errorContent}");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"Error de conexión al generar PDF del plan {idPlan}: {ex.Message}", ex);
+            }
+            catch (TaskCanceledException ex)
+            {
+                throw new Exception($"Timeout al generar PDF del plan {idPlan}: {ex.Message}", ex);
+            }
+        }
     }
 }

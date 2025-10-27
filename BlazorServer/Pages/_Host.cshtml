@@ -30,5 +30,15 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
+
+    <script>
+        function downloadFile(fileName, base64String) {
+            const linkSource = `data:application/pdf;base64,${base64String}`;
+            const downloadLink = document.createElement("a");
+            downloadLink.href = linkSource;
+            downloadLink.download = fileName;
+            downloadLink.click();
+        }
+    </script>
 </body>
 </html>
