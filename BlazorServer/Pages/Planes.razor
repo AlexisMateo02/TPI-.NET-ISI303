@@ -82,15 +82,16 @@
                                                         else
                                                         {
                                                             <i class="fas fa-file-pdf"></i>
+                                                            <span class="ms-1">Descargar PDF</span>
                                                         }
                                                     </button>
                                                     @if (isAdmin)
                                                     {
                                                         <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(plan)">
-                                                            <i class="fas fa-edit"></i>
+                                                            <i class="fas fa-edit"></i> Editar
                                                         </button>
                                                         <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(plan)">
-                                                            <i class="fas fa-trash"></i>
+                                                            <i class="fas fa-trash"></i> Eliminar
                                                         </button>
                                                     }
                                                 </td>

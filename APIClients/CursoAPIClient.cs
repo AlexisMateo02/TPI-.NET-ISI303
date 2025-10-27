@@ -1,4 +1,5 @@
-﻿using DTOs;
+﻿using Academia.Entidades;
+using DTOs;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
@@ -157,6 +158,31 @@ namespace APIClients
             catch (TaskCanceledException ex)
             {
                 throw new Exception($"Timeout al verificar año de calendario, comisión y materia de curso duplicados: {ex.Message}", ex);
+            }
+        }
+        public static async Task<byte[]> GenerarPdfAsync(int idCurso)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync($"cursos/{idCurso}/pdf");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsByteArrayAsync();
+                }
+                else
+                {
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Error al generar PDF del curso {idCurso}. Status: {response.StatusCode}, Detalle: {errorContent}");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"Error de conexión al generar PDF del curso {idCurso}: {ex.Message}", ex);
+            }
+            catch (TaskCanceledException ex)
+            {
+                throw new Exception($"Timeout al generar PDF del curso {idCurso}: {ex.Message}", ex);
             }
         }
     }

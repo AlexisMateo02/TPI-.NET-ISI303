@@ -3,10 +3,8 @@
 @using APIClients
 @using BlazorServer.Components
 @using Microsoft.AspNetCore.Components.Authorization
-@using System.Security.Claims
-@using System.IdentityModel.Tokens.Jwt
+@using Microsoft.JSInterop
 @inject IJSRuntime JSRuntime
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject BlazorServer.Helpers.RoleHelper RoleHelper
 
 <PageTitle>Cursos</PageTitle>
@@ -62,10 +60,7 @@
                                         <th>Cupo</th>
                                         <th>Comisión</th>
                                         <th>Materia</th>
-                                        @if (isAdmin)
-                                        {
-                                            <th class="text-end">Acciones</th>
-                                        }
+                                        <th class="text-end">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -79,24 +74,39 @@
                                                 <td>@curso.Cupo</td>
                                                 <td>@curso.DescripcionComision</td>
                                                 <td>@curso.DescripcionMateria</td>
-                                                @if (isAdmin)
-                                                {
-                                                    <td class="text-end">
+                                                <td class="text-end">
+                                                    <button class="btn btn-sm btn-outline-info me-1"
+                                                            @onclick="() => GenerarPdf(curso.IdCurso)"
+                                                            title="Descargar PDF"
+                                                            disabled="@generatingPdf">
+                                                        @if (generatingPdf && pdfCursoId == curso.IdCurso)
+                                                        {
+                                                            <span class="spinner-border spinner-border-sm"></span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="fas fa-file-pdf"></i>
+                                                            <span class="ms-1">Descargar PDF</span>
+                                                        }
+                                                    </button>
+
+                                                    @if (isAdmin)
+                                                    {
                                                         <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(curso)">
                                                             <i class="fas fa-edit"></i> Editar
                                                         </button>
                                                         <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(curso)">
                                                             <i class="fas fa-trash"></i> Eliminar
                                                         </button>
-                                                    </td>
-                                                }
+                                                    }
+                                                </td>
                                             </tr>
                                         }
                                     }
                                     else
                                     {
                                         <tr>
-                                            <td colspan="@(isAdmin ? 6 : 5)" class="text-center">
+                                            <td colspan="6" class="text-center">
                                                 No hay cursos disponibles
                                             </td>
                                         </tr>
@@ -138,6 +148,8 @@
     private string successMessage = string.Empty;
     private CursoModal? cursoModal;
     private bool isAdmin = false;
+    private bool generatingPdf = false;
+    private int pdfCursoId = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -160,6 +172,36 @@
         finally
         {
             loading = false;
+        }
+    }
+
+    private async Task GenerarPdf(int idCurso)
+    {
+        try
+        {
+            generatingPdf = true;
+            pdfCursoId = idCurso;
+            errorMessage = string.Empty;
+            StateHasChanged();
+
+            byte[] pdfBytes = await CursoAPIClient.GenerarPdfAsync(idCurso);
+
+            var curso = cursos?.FirstOrDefault(c => c.IdCurso == idCurso);
+            string fileName = $"Curso_{curso?.DescripcionMateria?.Replace(" ", "_")}_{curso?.DescripcionComision?.Replace(" ", "_")}_{curso?.AnioCalendario}.pdf";
+
+            await JSRuntime.InvokeVoidAsync("downloadFile", fileName, Convert.ToBase64String(pdfBytes));
+
+            successMessage = "PDF generado exitosamente.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al generar PDF: {ex.Message}";
+        }
+        finally
+        {
+            generatingPdf = false;
+            pdfCursoId = 0;
+            StateHasChanged();
         }
     }
 

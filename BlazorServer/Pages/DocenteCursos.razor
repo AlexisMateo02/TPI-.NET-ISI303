@@ -8,6 +8,7 @@
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject BlazorServer.Helpers.RoleHelper RoleHelper
+@inject BlazorServer.Services.AuthClientService AuthService
 
 <PageTitle>Docente por Cursos</PageTitle>
 
@@ -16,7 +17,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <h3>Dictados</h3>
+                    <h3>@(isAdmin ? "Dictados" : "Mis Dictados")</h3>
 
                     @if (!string.IsNullOrEmpty(errorMessage))
                     {
@@ -59,8 +60,11 @@
                                     <tr>
                                         <th>Id</th>
                                         <th>Cargo</th>
-                                        <th>Docente</th>
-                                        <th>Legajo</th>
+                                        @if (isAdmin)
+                                        {
+                                            <th>Docente</th>
+                                            <th>Legajo</th>
+                                        }
                                         <th>Año</th>
                                         <th>Comisión</th>
                                         <th>Materia</th>
@@ -77,9 +81,16 @@
                                         {
                                             <tr>
                                                 <td>@dictado.IdDictado</td>
-                                                <td>@dictado.Cargo</td>
-                                                <td>@dictado.NombreCompletoPersona</td>
-                                                <td>@dictado.Legajo</td>
+                                                <td>
+                                                    <span class="badge @GetCargoBadgeClass(dictado.Cargo)">
+                                                        @dictado.Cargo
+                                                    </span>
+                                                </td>
+                                                @if (isAdmin)
+                                                {
+                                                    <td>@dictado.NombreCompletoPersona</td>
+                                                    <td>@dictado.Legajo</td>
+                                                }
                                                 <td>@dictado.AnioCalendario</td>
                                                 <td>@dictado.DescripcionComision</td>
                                                 <td>@dictado.DescripcionMateria</td>
@@ -100,8 +111,15 @@
                                     else
                                     {
                                         <tr>
-                                            <td colspan="@(isAdmin ? 8 : 7)" class="text-center">
-                                                No hay dictados disponibles
+                                            <td colspan="@(isAdmin ? 8 : 5)" class="text-center">
+                                                @if (isDocente)
+                                                {
+                                                    <text>No tienes dictados asignados</text>
+                                                }
+                                                else
+                                                {
+                                                    <text>No hay dictados disponibles</text>
+                                                }
                                             </td>
                                         </tr>
                                     }
@@ -142,11 +160,81 @@
     private string successMessage = string.Empty;
     private DocenteCursoModal? docenteCursoModal;
     private bool isAdmin = false;
+    private bool isDocente = false;
+    private int currentUserId = 0;
 
     protected override async Task OnInitializedAsync()
     {
         isAdmin = await RoleHelper.IsAdminAsync();
+        isDocente = await RoleHelper.IsDocenteAsync();
+
+        if (isDocente)
+        {
+            await GetCurrentUserId();
+        }
+
         await LoadDocenteCursos();
+    }
+
+    private async Task GetCurrentUserId()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                var idPersonaClaim = user.FindFirst("idPersona")
+                                   ?? user.FindFirst("personaId")
+                                   ?? user.FindFirst("IdPersona");
+
+                if (idPersonaClaim != null && int.TryParse(idPersonaClaim.Value, out int id))
+                {
+                    currentUserId = id;
+                    return;
+                }
+
+                var username = user.Identity.Name;
+                if (!string.IsNullOrEmpty(username))
+                {
+                    await GetPersonaIdFromUsername(username);
+                    return;
+                }
+
+                errorMessage = "No se pudo identificar tu información de docente. Contacta al administrador.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al obtener usuario actual: {ex.Message}";
+        }
+    }
+
+    private async Task GetPersonaIdFromUsername(string username)
+    {
+        try
+        {
+            var usuarios = await UsuarioAPIClient.GetAllAsync();
+            var usuario = usuarios?.FirstOrDefault(u =>
+                u.NombreUsuario.Equals(username, StringComparison.OrdinalIgnoreCase));
+
+            if (usuario != null && usuario.IdPersona.HasValue)
+            {
+                currentUserId = usuario.IdPersona.Value;
+
+                var persona = await PersonaAPIClient.GetAsync(currentUserId);
+                if (persona != null && persona.TipoPersona != 2)
+                {
+                    errorMessage = "Tu usuario no tiene permisos de docente. Contacta al administrador.";
+                    currentUserId = 0;
+                }
+            }
+        }
+        catch
+        {
+            errorMessage = "Error al obtener información del docente.";
+        }
     }
 
     private async Task LoadDocenteCursos()
@@ -154,7 +242,19 @@
         try
         {
             loading = true;
-            docenteCursos = (await DocenteCursoAPIClient.GetAllAsync())?.ToList();
+            var todosDictados = (await DocenteCursoAPIClient.GetAllAsync())?.ToList();
+
+            if (isDocente && currentUserId > 0)
+            {
+                // Filtrar solo los dictados del docente actual
+                docenteCursos = todosDictados?.Where(d => d.IdDocente == currentUserId).ToList();
+            }
+            else
+            {
+                // Admin ve todos los dictados
+                docenteCursos = todosDictados;
+            }
+
             successMessage = string.Empty;
         }
         catch (Exception ex)
@@ -224,5 +324,16 @@
         {
             errorMessage = $"Error al eliminar dictado: {ex.Message}";
         }
+    }
+
+    private string GetCargoBadgeClass(string cargo)
+    {
+        return cargo?.ToLower() switch
+        {
+            "titular" => "bg-primary",
+            "adjunto" => "bg-success",
+            "auxiliar" => "bg-warning text-dark",
+            _ => "bg-secondary"
+        };
     }
 }

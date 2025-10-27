@@ -28,9 +28,9 @@ namespace Services
             Curso? curso = cursoRepository.Get(id);
 
             if (curso == null)
-            {
                 return null;
-            }
+
+            var alumnosInscriptos = GetAlumnosInscriptosByCurso(id);
 
             return new CursoDTO
             {
@@ -41,7 +41,26 @@ namespace Services
                 DescripcionComision = curso.Comision?.DescripcionComision,
                 IdMateria = curso.IdMateria,
                 DescripcionMateria = curso.Materia?.DescripcionMateria,
+                AlumnosInscriptos = alumnosInscriptos
             };
+        }
+        private List<AlumnoInscripcionDTO> GetAlumnosInscriptosByCurso(int idCurso)
+        {
+            var alumnoInscripcionRepository = new AlumnoInscripcionRepository();
+            var alumnosInscriptos = alumnoInscripcionRepository.GetAll()
+                .Where(m => m.IdCurso == idCurso)
+                .ToList();
+
+            return alumnosInscriptos.Select(alumnoInscripto => new AlumnoInscripcionDTO
+            {
+                IdInscripcion = alumnoInscripto.IdInscripcion,
+                Condicion = alumnoInscripto.Condicion,
+                Nota = alumnoInscripto.Nota,
+                IdAlumno = alumnoInscripto.IdAlumno,
+                Legajo = alumnoInscripto.Alumno?.Legajo,
+                NombrePersona = alumnoInscripto.Alumno?.Nombre,
+                ApellidoPersona = alumnoInscripto.Alumno?.Apellido
+            }).ToList();
         }
         public CursoDTO Add(CursoDTO dto)
         {
@@ -130,6 +149,16 @@ namespace Services
         {
             var cursoRepository = new CursoRepository();
             return cursoRepository.ComisionMateriaAndAnioCalendarioExist(idComision, idMateria, anioCalendario, excludeId);
+        }
+
+        public byte[] GenerarPdf(int idCurso)
+        {
+            var curso = Get(idCurso);
+            if (curso == null)
+                throw new ArgumentException($"No se encontró el curso con ID {idCurso}");
+
+            var pdfService = new CursoPdfService();
+            return pdfService.GenerarPdf(curso);
         }
     }
 }

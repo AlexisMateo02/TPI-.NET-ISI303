@@ -29,7 +29,7 @@ namespace Services
                         .PaddingVertical(1, Unit.Centimetre)
                         .Column(column =>
                         {
-                            column.Spacing(15);
+                            column.Spacing(13);
 
                             if (!string.IsNullOrEmpty(plan.DescripcionEspecialidad))
                             {
@@ -53,7 +53,6 @@ namespace Services
                                 {
                                     table.ColumnsDefinition(columns =>
                                     {
-                                        columns.ConstantColumn(40);  // ID
                                         columns.RelativeColumn(3);   // Materia
                                         columns.ConstantColumn(70);  // Hs. Semanales
                                         columns.ConstantColumn(70);  // Hs. Totales
@@ -62,7 +61,6 @@ namespace Services
                                     // Encabezado de la tabla
                                     table.Header(header =>
                                     {
-                                        header.Cell().Background(Colors.Blue.Lighten3).Padding(5).Text("ID").Bold().FontColor(Colors.White);
                                         header.Cell().Background(Colors.Blue.Lighten3).Padding(5).Text("MATERIA").Bold().FontColor(Colors.White);
                                         header.Cell().Background(Colors.Blue.Lighten3).Padding(5).Text("HS. SEM").Bold().FontColor(Colors.White);
                                         header.Cell().Background(Colors.Blue.Lighten3).Padding(5).Text("HS. TOTAL").Bold().FontColor(Colors.White);
@@ -71,7 +69,6 @@ namespace Services
                                     // Filas de materias
                                     foreach (var materia in plan.Materias.OrderBy(m => m.DescripcionMateria))
                                     {
-                                        table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(materia.IdMateria.ToString());
                                         table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(materia.DescripcionMateria);
                                         table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(materia.HorasSemanales.ToString());
                                         table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(materia.HorasTotales.ToString());

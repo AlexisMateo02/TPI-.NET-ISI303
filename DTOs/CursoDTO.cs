@@ -9,5 +9,6 @@
         public string? DescripcionComision { get; set; }
         public int IdMateria { get; set; }
         public string? DescripcionMateria { get; set; }
+        public List<AlumnoInscripcionDTO>? AlumnosInscriptos { get; set; }
     }
 }

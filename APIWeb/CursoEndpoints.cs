@@ -119,6 +119,40 @@ namespace APIWeb
             .Produces<bool>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
+
+            app.MapGet("/cursos/{id}/pdf", (int id) =>
+            {
+                try
+                {
+                    CursoService cursoService = new CursoService();
+
+                    // Verificar que el curso existe
+                    var curso = cursoService.Get(id);
+                    if (curso == null)
+                    {
+                        return Results.NotFound($"No se encontró el curso con ID {id}");
+                    }
+
+                    // Generar el PDF
+                    byte[] pdfBytes = cursoService.GenerarPdf(id);
+
+                    // Devolver el PDF como archivo
+                    return Results.File(
+                        fileContents: pdfBytes,
+                        contentType: "application/pdf",
+                        fileDownloadName: $"Curso_{curso.DescripcionMateria}_{curso.DescripcionComision}_{curso.AnioCalendario}_{DateTime.Now:yyyyMMdd}.pdf"
+                    );
+                }
+                catch (Exception ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+            })
+            .WithName("GenerarPdfCurso")
+            .Produces<byte[]>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithOpenApi();
         }
 
     }
