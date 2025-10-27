@@ -31,12 +31,13 @@ namespace Services
                         {
                             column.Spacing(15);
 
-                            // Información básica del plan
-                            column.Item().Text($"Descripción: {plan.Descripcion}");
-
                             if (!string.IsNullOrEmpty(plan.DescripcionEspecialidad))
                             {
-                                column.Item().Text($"Especialidad: {plan.DescripcionEspecialidad}");
+                                column.Item().Text($"Descripción: {plan.Descripcion} - Especialidad: {plan.DescripcionEspecialidad}");
+                            }
+                            else
+                            {
+                                column.Item().Text($"Descripción: {plan.Descripcion}");
                             }
 
                             // Línea separadora
