@@ -1,4 +1,7 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inject BlazorServer.Helpers.RoleHelper RoleHelper
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Academia</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -8,68 +11,144 @@
 </div>
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Inicio
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="inscripciones">
-                <span class="oi oi-bookmark" aria-hidden="true"></span> Inscripciones
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="docentecursos">
-                <span class="oi oi-bookmark" aria-hidden="true"></span> Docente por Cursos
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="usuarios">
-                <span class="oi oi-people" aria-hidden="true"></span> Usuarios
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="personas">
-                <span class="oi oi-people" aria-hidden="true"></span> Personas
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="planes">
-                <span class="oi oi-bookmark" aria-hidden="true"></span> Planes
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="especialidades">
-                <span class="oi oi-bookmark" aria-hidden="true"></span> Especialidades
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="materias">
-                <span class="oi oi-bookmark" aria-hidden="true"></span> Materias
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="comisiones">
-                <span class="oi oi-bookmark" aria-hidden="true"></span> Comisiones
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="cursos">
-                <span class="oi oi-bookmark" aria-hidden="true"></span> Cursos
-            </NavLink>
-        </div>
-    </nav>
+    <AuthorizeView>
+        <Authorized>
+            <nav class="flex-column">
+                <!-- Inicio -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> Inicio
+                    </NavLink>
+                </div>
+
+                <!-- Usuarios -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="usuarios">
+                        <span class="oi oi-people" aria-hidden="true"></span>
+                        @(isAdmin ? "Usuarios" : "Mi Usuario")
+                    </NavLink>
+                </div>
+
+                <!-- Personas -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="personas">
+                        <span class="oi oi-people" aria-hidden="true"></span>
+                        @(isAdmin ? "Personas" : "Mis Datos")
+                    </NavLink>
+                </div>
+
+                <!-- Planes -->
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="planes">
+                        <span class="oi oi-bookmark" aria-hidden="true"></span> Planes
+                    </NavLink>
+                </div>
+
+                <!-- Especialidades -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="especialidades">
+                        <span class="oi oi-bookmark" aria-hidden="true"></span> Especialidades
+                    </NavLink>
+                </div>
+
+                <!-- Materias -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="materias">
+                        <span class="oi oi-bookmark" aria-hidden="true"></span> Materias
+                    </NavLink>
+                </div>
+
+                <!-- Comisiones -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="comisiones">
+                        <span class="oi oi-bookmark" aria-hidden="true"></span> Comisiones
+                    </NavLink>
+                </div>
+
+                <!-- Cursos - Admin y Docente -->
+                @if (isAdmin || isDocente)
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="cursos">
+                            <span class="oi oi-bookmark" aria-hidden="true"></span> Cursos
+                        </NavLink>
+                    </div>
+                }
+
+                <!-- Dictados - Admin y Docente -->
+                @if (isAdmin || isDocente)
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="docentecursos">
+                            <span class="oi oi-bookmark" aria-hidden="true"></span> Dictados
+                        </NavLink>
+                    </div>
+                }
+
+                <!-- Inscripciones - Todos los roles con labels diferentes -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="inscripciones">
+                        <span class="oi oi-bookmark" aria-hidden="true"></span>
+                        @if (isAlumno)
+                        {
+                            <text>Mis Inscripciones</text>
+                        }
+                        else if (isDocente)
+                        {
+                            <text>Calificaciones</text>
+                        }
+                        else
+                        {
+                            <text>Inscripciones</text>
+                        }
+                    </NavLink>
+                </div>
+
+                <!-- Logout -->
+                <div class="nav-item px-3">
+                    <a class="nav-link" href="/logout">
+                        <span class="oi oi-account-logout" aria-hidden="true"></span> Cerrar Sesión
+                    </a>
+                </div>
+            </nav>
+        </Authorized>
+        <NotAuthorized>
+            <nav class="flex-column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> Inicio
+                    </NavLink>
+                </div>
+            </nav>
+        </NotAuthorized>
+    </AuthorizeView>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
+    private bool isAdmin = false;
+    private bool isDocente = false;
+    private bool isAlumno = false;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isAdmin = await RoleHelper.IsAdminAsync();
+            isDocente = await RoleHelper.IsDocenteAsync();
+            isAlumno = await RoleHelper.IsAlumnoAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al obtener roles: {ex.Message}");
+        }
+    }
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
 }
-

@@ -42,7 +42,7 @@ else
                                         <div class="text-center">
                                             <h6 class="fw-bold mb-2 text-dark">¡Bienvenido @authContext.User.Identity?.Name!</h6>
                                             <p class="mb-0 text-muted small">
-                                                Rol: <span class="badge bg-primary">@GetRoleDisplayName(userRole)</span> -
+                                                Rol: <span class="badge @GetRoleBadgeClass(userRole)">@GetRoleDisplayName(userRole)</span> -
                                                 Seleccione una de las opciones para continuar.
                                             </p>
                                         </div>
@@ -150,8 +150,8 @@ else
                                     <div class="card-footer bg-transparent border-0 text-center pb-4">
                                         <small class="text-muted">
                                             <i class="bi bi-shield-check me-1"></i>
-                                            Si usted olvidado su contraseña,
-                                            contactese con la administración
+                                            Si usted ha olvidado su contraseña,<br>
+                                            contáctese con la administración
                                         </small>
                                     </div>
                                 </div>
@@ -296,10 +296,22 @@ else
         };
     }
 
+    private string GetRoleBadgeClass(string role)
+    {
+        return role switch
+        {
+            "1" => "bg-danger",
+            "2" => "bg-primary",
+            "3" => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+
     private List<SystemFunction> GetUserFunctions(string userRole)
     {
         var allFunctions = new List<SystemFunction>
         {
+            // Usuarios
             new SystemFunction
             {
                 Title = "Gestión de Usuarios",
@@ -310,67 +322,163 @@ else
             },
             new SystemFunction
             {
+                Title = "Mi Usuario",
+                Description = "Consultar mi información de usuario",
+                Url = "/usuarios",
+                Icon = "bi-person-fill-gear",
+                AllowedRoles = new List<int> { 2, 3 }
+            },
+
+            // Personas
+            new SystemFunction
+            {
+                Title = "Gestión de Personas",
+                Description = "Administrar información de alumnos y docentes",
+                Url = "/personas",
+                Icon = "bi-person-badge-fill",
+                AllowedRoles = new List<int> { 1 }
+            },
+            new SystemFunction
+            {
+                Title = "Mis Datos Personales",
+                Description = "Consultar mi información personal",
+                Url = "/personas",
+                Icon = "bi-person-vcard-fill",
+                AllowedRoles = new List<int> { 2, 3 }
+            },
+
+            // Planes (todos pueden ver)
+            new SystemFunction
+            {
                 Title = "Planes Académicos",
                 Description = "Gestionar planes de estudio",
                 Url = "/planes",
                 Icon = "bi-journal-bookmark-fill",
-                AllowedRoles = new List<int> { 1, 2 }
+                AllowedRoles = new List<int> { 1 }
             },
+            new SystemFunction
+            {
+                Title = "Planes Académicos",
+                Description = "Consultar planes de estudio",
+                Url = "/planes",
+                Icon = "bi-journal-bookmark-fill",
+                AllowedRoles = new List<int> { 2, 3 }
+            },
+
+            // Especialidades (todos pueden ver)
             new SystemFunction
             {
                 Title = "Especialidades",
                 Description = "Gestionar especialidades académicas",
                 Url = "/especialidades",
                 Icon = "bi-mortarboard-fill",
-                AllowedRoles = new List<int> { 1, 2 }
+                AllowedRoles = new List<int> { 1 }
+            },
+            new SystemFunction
+            {
+                Title = "Especialidades",
+                Description = "Consultar especialidades académicas",
+                Url = "/especialidades",
+                Icon = "bi-mortarboard-fill",
+                AllowedRoles = new List<int> { 2, 3 }
+            },
+
+            // Materias (todos pueden ver)
+            new SystemFunction
+            {
+                Title = "Materias",
+                Description = "Gestionar materias académicas",
+                Url = "/materias",
+                Icon = "bi-book-half",
+                AllowedRoles = new List<int> { 1 }
+            },
+            new SystemFunction
+            {
+                Title = "Materias",
+                Description = "Consultar materias disponibles",
+                Url = "/materias",
+                Icon = "bi-book-half",
+                AllowedRoles = new List<int> { 2, 3 }
+            },
+
+            // Comisiones (todos pueden ver)
+            new SystemFunction
+            {
+                Title = "Comisiones",
+                Description = "Gestionar comisiones académicas",
+                Url = "/comisiones",
+                Icon = "bi-grid-3x3-gap-fill",
+                AllowedRoles = new List<int> { 1 }
+            },
+            new SystemFunction
+            {
+                Title = "Comisiones",
+                Description = "Consultar comisiones disponibles",
+                Url = "/comisiones",
+                Icon = "bi-grid-3x3-gap-fill",
+                AllowedRoles = new List<int> { 2, 3 }
+            },
+
+            // Cursos (Admin y Docente)
+            new SystemFunction
+            {
+                Title = "Cursos",
+                Description = "Gestionar cursos",
+                Url = "/cursos",
+                Icon = "bi-calendar3",
+                AllowedRoles = new List<int> { 1 }
             },
             new SystemFunction
             {
                 Title = "Cursos",
-                Description = "Gestionar cursos y materias",
+                Description = "Consultar cursos disponibles",
                 Url = "/cursos",
-                Icon = "bi-book-fill",
-                AllowedRoles = new List<int> { 1, 2 }
+                Icon = "bi-calendar3",
+                AllowedRoles = new List<int> { 2 }
+            },
+
+            // Dictados (Admin y Docente)
+            new SystemFunction
+            {
+                Title = "Dictados",
+                Description = "Gestionar asignaciones de docentes",
+                Url = "/docentecursos",
+                Icon = "bi-person-workspace",
+                AllowedRoles = new List<int> { 1 }
             },
             new SystemFunction
             {
-                Title = "Mis Cursos",
-                Description = "Ver mis cursos asignados",
-                Url = "/mis-cursos",
-                Icon = "bi-collection-fill",
-                AllowedRoles = new List<int> { 2, 3 }
+                Title = "Dictados",
+                Description = "Consultar cursos a dictar",
+                Url = "/docentecursos",
+                Icon = "bi-person-workspace",
+                AllowedRoles = new List<int> { 2 }
             },
+
+            // Inscripciones (todos con diferentes funciones)
             new SystemFunction
             {
                 Title = "Inscripciones",
-                Description = "Inscribirse a cursos disponibles",
+                Description = "Gestionar inscripciones de alumnos",
                 Url = "/inscripciones",
-                Icon = "bi-pencil-square",
-                AllowedRoles = new List<int> { 3 }
+                Icon = "bi-clipboard-check-fill",
+                AllowedRoles = new List<int> { 1 }
             },
             new SystemFunction
             {
                 Title = "Calificaciones",
-                Description = "Consultar calificaciones",
-                Url = "/calificaciones",
+                Description = "Calificar alumnos en mis cursos",
+                Url = "/inscripciones",
                 Icon = "bi-clipboard-data-fill",
+                AllowedRoles = new List<int> { 2 }
+            },
+            new SystemFunction
+            {
+                Title = "Mis Inscripciones",
+                Description = "Inscribirse a cursos y consultar estado",
+                Url = "/inscripciones",
+                Icon = "bi-pencil-square",
                 AllowedRoles = new List<int> { 3 }
-            },
-            new SystemFunction
-            {
-                Title = "Reportes",
-                Description = "Generar reportes del sistema",
-                Url = "/reportes",
-                Icon = "bi-file-earmark-bar-graph-fill",
-                AllowedRoles = new List<int> { 1 }
-            },
-            new SystemFunction
-            {
-                Title = "Configuración",
-                Description = "Configurar parámetros del sistema",
-                Url = "/configuracion",
-                Icon = "bi-gear-fill",
-                AllowedRoles = new List<int> { 1 }
             }
         };
 
