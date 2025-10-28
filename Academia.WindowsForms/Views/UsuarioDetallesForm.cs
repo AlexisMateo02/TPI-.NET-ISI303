@@ -35,7 +35,19 @@ namespace Academia.WindowsForms.Views
         {
             InitializeComponent();
             LoadPersonas();
+            ConfigurarComboRol();
             Mode = FormMode.Add;
+        }
+
+        private void ConfigurarComboRol()
+        {
+            comboBoxRol.Items.Clear();
+            comboBoxRol.Items.Add(new ComboBoxItem { Text = "Administrador", Value = 1 });
+            comboBoxRol.Items.Add(new ComboBoxItem { Text = "Docente", Value = 2 });
+            comboBoxRol.Items.Add(new ComboBoxItem { Text = "Alumno", Value = 3 });
+            comboBoxRol.DisplayMember = "Text";
+            comboBoxRol.ValueMember = "Value";
+            comboBoxRol.DropDownStyle = ComboBoxStyle.DropDownList;
         }
 
         private async void LoadPersonas()
@@ -51,8 +63,7 @@ namespace Academia.WindowsForms.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar datos: {ex.Message}", "Error",
-                              MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al cargar datos: {ex.Message}", "Error",MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -64,6 +75,16 @@ namespace Academia.WindowsForms.Views
                 {
                     this.Usuario.NombreUsuario = textNombreUsuario.Text;
                     this.Usuario.Habilitado = checkHabilitado.Checked;
+
+                    if (comboBoxRol.SelectedItem != null)
+                    {
+                        this.Usuario.Rol = ((ComboBoxItem)comboBoxRol.SelectedItem).Value;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Debe seleccionar un rol.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
 
                     if (listBoxPersona.SelectedItem != null)
                     {
@@ -77,6 +98,7 @@ namespace Academia.WindowsForms.Views
 
                     if (this.Mode == FormMode.Update)
                     {
+                        // Si hay nueva contraseña, asignarla
                         if (!string.IsNullOrWhiteSpace(textClave.Text))
                         {
                             this.Usuario.Clave = textClave.Text;
@@ -85,6 +107,7 @@ namespace Academia.WindowsForms.Views
                     }
                     else
                     {
+                        // En modo Add, la contraseña es obligatoria
                         this.Usuario.Clave = textClave.Text;
                         this.Usuario.FechaAlta = DateTime.Now;
                         await UsuarioAPIClient.AddAsync(this.Usuario);
@@ -113,6 +136,20 @@ namespace Academia.WindowsForms.Views
             this.textClave.Text = "";
             this.checkHabilitado.Checked = this.Usuario.Habilitado;
             this.textFechaAlta.Text = this.Usuario.FechaAlta.ToString("dd/MM/yyyy HH:mm:ss");
+
+            if (this.Usuario.Rol > 0)
+            {
+                for (int i = 0; i < comboBoxRol.Items.Count; i++)
+                {
+                    var item = (ComboBoxItem)comboBoxRol.Items[i];
+                    if (item.Value == this.Usuario.Rol)
+                    {
+                        comboBoxRol.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
             if (this.Usuario.IdPersona.HasValue)
             {
                 listBoxPersona.SelectedValue = this.Usuario.IdPersona.Value;
@@ -134,6 +171,7 @@ namespace Academia.WindowsForms.Views
                 checkHabilitado.Visible = false;
                 fechaAltaLabel.Visible = false;
                 textFechaAlta.Visible = false;
+                labelClave.Text = "Contraseña *";
             }
 
             if (Mode == FormMode.Update)
@@ -145,6 +183,7 @@ namespace Academia.WindowsForms.Views
                 fechaAltaLabel.Visible = true;
                 textFechaAlta.Visible = true;
                 textFechaAlta.ReadOnly = true;
+                labelClave.Text = "Contraseña\n(dejar vacío para mantener)";
             }
         }
 
@@ -171,6 +210,13 @@ namespace Academia.WindowsForms.Views
                 MessageBox.Show("La clave debe tener al menos 6 caracteres.", "Error de validación",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 textClave.Focus();
+                isValid = false;
+            }
+            if (comboBoxRol.SelectedItem == null)
+            {
+                MessageBox.Show("Debe seleccionar un rol.", "Error de validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                comboBoxRol.Focus();
                 isValid = false;
             }
             try
@@ -201,6 +247,12 @@ namespace Academia.WindowsForms.Views
                 this.Cursor = Cursors.Default;
             }
             return isValid;
+        }
+
+        private class ComboBoxItem
+        {
+            public string Text { get; set; }
+            public int Value { get; set; }
         }
     }
 }

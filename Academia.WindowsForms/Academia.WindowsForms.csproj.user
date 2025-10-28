@@ -19,13 +19,19 @@
     <Compile Update="Views\EspecialidadesForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Views\CambiarContraseniaForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Views\Login\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Views\MateriaDetallesForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Views\MateriasForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\MenuForm.cs">
+    <Compile Update="Views\Menu\MenuForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Views\PersonaDetallesForm.cs">
