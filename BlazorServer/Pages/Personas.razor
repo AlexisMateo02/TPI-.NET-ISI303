@@ -19,12 +19,6 @@
                             <i class="fas fa-users"></i>
                             @(isAdmin ? "Gestión de Personas" : "Mis Datos")
                         </h3>
-                        @if (isAdmin)
-                        {
-                            <button class="btn btn-outline-primary" @onclick="AgregarPersona">
-                                <i class="fas fa-user-plus"></i> Nueva Persona
-                            </button>
-                        }
                     </div>
 
                     @if (!string.IsNullOrEmpty(errorMessage))
@@ -37,23 +31,35 @@
                     {
                         <div class="card mb-3">
                             <div class="card-body">
-                                <div class="row g-2">
-                                    <div class="col-md-8">
-                                        <div class="btn-group">
-                                            <button class="btn @(filtroActual == "todas" ? "btn-primary" : "btn-outline-primary")"
-                                                    @onclick="() => CargarTodas()">
-                                                <i class="fas fa-list"></i> Todas
-                                            </button>
-                                            <button class="btn @(filtroActual == "alumnos" ? "btn-success" : "btn-outline-success")"
-                                                    @onclick="() => CargarAlumnos()">
-                                                <i class="fas fa-user-graduate"></i> Alumnos
-                                            </button>
-                                            <button class="btn @(filtroActual == "docentes" ? "btn-info" : "btn-outline-info")"
-                                                    @onclick="() => CargarDocentes()">
-                                                <i class="fas fa-chalkboard-teacher"></i> Docentes
-                                            </button>
-                                        </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="btn-group" style="width: 30%;">
+                                        <button class="btn @(filtroActual == "todas" ? "btn-primary" : "btn-outline-primary")"
+                                                @onclick="() => CargarTodas()">
+                                            <i class="fas fa-list"></i> Todas
+                                        </button>
+                                        <button class="btn @(filtroActual == "alumnos" ? "btn-success" : "btn-outline-success")"
+                                                @onclick="() => CargarAlumnos()">
+                                            <i class="fas fa-user-graduate"></i> Alumnos
+                                        </button>
+                                        <button class="btn @(filtroActual == "docentes" ? "btn-info" : "btn-outline-info")"
+                                                @onclick="() => CargarDocentes()">
+                                            <i class="fas fa-chalkboard-teacher"></i> Docentes
+                                        </button>
                                     </div>
+                                    <div style="width: 45%;">
+                                        <input type="text"
+                                               class="form-control"
+                                               placeholder="Buscar por nombre, apellido o legajo..."
+                                               @bind="searchText"
+                                               @bind:event="oninput"
+                                               @onkeyup="HandleSearchKeyUp" />
+                                    </div>
+                                    <button class="btn btn-outline-success" style="width: 12%;" @onclick="SearchPersonas">
+                                        <i class="fas fa-search"></i> Buscar
+                                    </button>
+                                    <button class="btn btn-outline-primary" style="width: 13%;" @onclick="AgregarPersona">
+                                        <i class="fas fa-user-plus"></i> Agregar
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -122,7 +128,7 @@
                     }
                     else if (!isAdmin && personaActual != null)
                     {
-                        <!-- Tarjeta individual para alumnosy y docentes -->
+                        <!-- Tarjeta individual para alumnos y docentes -->
                         <div class="row justify-content-center">
                             <div class="col-md-8">
                                 <div class="card shadow">
@@ -215,12 +221,13 @@
 
 @code {
     private IEnumerable<PersonaDTO>? personas;
-    private PersonaDTO? personaActual; // Para alumnos/docentes
+    private PersonaDTO? personaActual; // Para alumnos y docentes
     private PersonaModal? personaModal;
     private bool loading = true;
     private string errorMessage = string.Empty;
     private bool isAdmin = false;
     private string filtroActual = "todas";
+    private string searchText = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -299,9 +306,58 @@
         }
     }
 
-    private async Task CargarTodas() => await CargarPersonas(() => PersonaAPIClient.GetAllAsync(), "todas");
-    private async Task CargarAlumnos() => await CargarPersonas(() => PersonaAPIClient.GetAlumnosAsync(), "alumnos");
-    private async Task CargarDocentes() => await CargarPersonas(() => PersonaAPIClient.GetDocentesAsync(), "docentes");
+    private async Task CargarTodas()
+    {
+        await CargarPersonas(() => PersonaAPIClient.GetAllAsync(), "todas");
+        searchText = string.Empty;
+    }
+
+    private async Task CargarAlumnos()
+    {
+        await CargarPersonas(() => PersonaAPIClient.GetAlumnosAsync(), "alumnos");
+        searchText = string.Empty;
+    }
+
+    private async Task CargarDocentes()
+    {
+        await CargarPersonas(() => PersonaAPIClient.GetDocentesAsync(), "docentes");
+        searchText = string.Empty;
+    }
+
+    private async Task SearchPersonas()
+    {
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            await CargarTodas();
+            return;
+        }
+
+        try
+        {
+            loading = true;
+            errorMessage = string.Empty;
+            personas = await PersonaAPIClient.GetByCriteriaAsync(searchText);
+            filtroActual = "busqueda";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al buscar personas: {ex.Message}";
+            personas = new List<PersonaDTO>();
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleSearchKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchPersonas();
+        }
+    }
 
     private async Task CargarPersonas(Func<Task<IEnumerable<PersonaDTO>>> cargaMethod, string filtro)
     {
@@ -328,6 +384,7 @@
         {
             "alumnos" => "No hay alumnos registrados",
             "docentes" => "No hay docentes registrados",
+            "busqueda" => "No se encontraron personas que coincidan con la búsqueda",
             _ => "No hay personas registradas"
         };
     }
@@ -343,6 +400,7 @@
         {
             "alumnos" => "Puede agregar nuevos alumnos usando el botón 'Nueva Persona'",
             "docentes" => "Puede agregar nuevos docentes usando el botón 'Nueva Persona'",
+            "busqueda" => "Intente con otros términos de búsqueda",
             _ => "Puede agregar nuevas personas usando el botón 'Nueva Persona'"
         };
     }
