@@ -33,14 +33,15 @@
             buttonAgregar = new Button();
             buttonListar = new Button();
             dgvPlanes = new DataGridView();
+            buttonReporte = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvPlanes).BeginInit();
             SuspendLayout();
             // 
             // buttonEliminar
             // 
-            buttonEliminar.Location = new Point(503, 353);
+            buttonEliminar.Location = new Point(401, 355);
             buttonEliminar.Name = "buttonEliminar";
-            buttonEliminar.Size = new Size(93, 33);
+            buttonEliminar.Size = new Size(101, 33);
             buttonEliminar.TabIndex = 8;
             buttonEliminar.Text = "Eliminar";
             buttonEliminar.UseVisualStyleBackColor = true;
@@ -48,9 +49,9 @@
             // 
             // buttonModificar
             // 
-            buttonModificar.Location = new Point(613, 353);
+            buttonModificar.Location = new Point(508, 355);
             buttonModificar.Name = "buttonModificar";
-            buttonModificar.Size = new Size(93, 33);
+            buttonModificar.Size = new Size(101, 33);
             buttonModificar.TabIndex = 7;
             buttonModificar.Text = "Modificar";
             buttonModificar.UseVisualStyleBackColor = true;
@@ -58,9 +59,9 @@
             // 
             // buttonAgregar
             // 
-            buttonAgregar.Location = new Point(725, 353);
+            buttonAgregar.Location = new Point(615, 355);
             buttonAgregar.Name = "buttonAgregar";
-            buttonAgregar.Size = new Size(93, 33);
+            buttonAgregar.Size = new Size(101, 33);
             buttonAgregar.TabIndex = 6;
             buttonAgregar.Text = "Agregar";
             buttonAgregar.UseVisualStyleBackColor = true;
@@ -68,9 +69,9 @@
             // 
             // buttonListar
             // 
-            buttonListar.Location = new Point(837, 353);
+            buttonListar.Location = new Point(829, 355);
             buttonListar.Name = "buttonListar";
-            buttonListar.Size = new Size(93, 33);
+            buttonListar.Size = new Size(101, 33);
             buttonListar.TabIndex = 5;
             buttonListar.Text = "Listar";
             buttonListar.UseVisualStyleBackColor = true;
@@ -87,18 +88,30 @@
             dgvPlanes.Size = new Size(923, 325);
             dgvPlanes.TabIndex = 9;
             // 
+            // buttonReporte
+            // 
+            buttonReporte.Location = new Point(722, 355);
+            buttonReporte.Name = "buttonReporte";
+            buttonReporte.Size = new Size(101, 33);
+            buttonReporte.TabIndex = 10;
+            buttonReporte.Text = "Generar reporte";
+            buttonReporte.UseVisualStyleBackColor = true;
+            buttonReporte.Click += buttonReporte_Click;
+            // 
             // PlanesForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(949, 400);
+            ClientSize = new Size(949, 403);
+            Controls.Add(buttonReporte);
             Controls.Add(dgvPlanes);
             Controls.Add(buttonEliminar);
             Controls.Add(buttonModificar);
             Controls.Add(buttonAgregar);
             Controls.Add(buttonListar);
             Name = "PlanesForm";
-            Text = "PlanesForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Planes";
             ((System.ComponentModel.ISupportInitialize)dgvPlanes).EndInit();
             ResumeLayout(false);
         }
@@ -110,5 +123,6 @@
         private Button buttonAgregar;
         private Button buttonListar;
         private DataGridView dgvPlanes;
+        private Button buttonReporte;
     }
 }

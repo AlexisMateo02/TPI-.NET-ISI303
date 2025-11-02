@@ -241,7 +241,8 @@
             Controls.Add(menu);
             Controls.Add(buttonUsuario);
             Name = "MenuForm";
-            Text = "MenuForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Menú";
             ResumeLayout(false);
             PerformLayout();
         }

@@ -131,7 +131,7 @@
             Controls.Add(lblTitulo);
             Name = "LoginForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "LoginForm";
+            Text = "Inicio de Sesión";
             ResumeLayout(false);
             PerformLayout();
         }

@@ -59,7 +59,7 @@
             // 
             // buttonAgregar
             // 
-            buttonAgregar.Location = new Point(324, 307);
+            buttonAgregar.Location = new Point(337, 307);
             buttonAgregar.Name = "buttonAgregar";
             buttonAgregar.Size = new Size(93, 33);
             buttonAgregar.TabIndex = 2;
@@ -69,7 +69,7 @@
             // 
             // buttonModificar
             // 
-            buttonModificar.Location = new Point(212, 307);
+            buttonModificar.Location = new Point(238, 307);
             buttonModificar.Name = "buttonModificar";
             buttonModificar.Size = new Size(93, 33);
             buttonModificar.TabIndex = 3;
@@ -79,7 +79,7 @@
             // 
             // buttonEliminar
             // 
-            buttonEliminar.Location = new Point(102, 307);
+            buttonEliminar.Location = new Point(139, 307);
             buttonEliminar.Name = "buttonEliminar";
             buttonEliminar.Size = new Size(93, 33);
             buttonEliminar.TabIndex = 4;
@@ -91,14 +91,15 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(550, 352);
+            ClientSize = new Size(552, 352);
             Controls.Add(buttonEliminar);
             Controls.Add(buttonModificar);
             Controls.Add(buttonAgregar);
             Controls.Add(buttonListar);
             Controls.Add(dgvEspecialidades);
             Name = "EspecialidadesForm";
-            Text = "EspecialidadesForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Especialidades";
             ((System.ComponentModel.ISupportInitialize)dgvEspecialidades).EndInit();
             ResumeLayout(false);
         }
