@@ -38,7 +38,9 @@ namespace Academia.WindowsForms.Views
                 buttonAgregar.Visible = true;
                 buttonModificar.Visible = true;
                 buttonEliminar.Visible = true;
+                buttonListar.Visible = true;
                 this.Text = "Gestión de Especialidades - Administrador";
+                this.Height = 394;
             }
             else
             {
@@ -46,7 +48,9 @@ namespace Academia.WindowsForms.Views
                 buttonAgregar.Visible = false;
                 buttonModificar.Visible = false;
                 buttonEliminar.Visible = false;
+                buttonListar.Visible = false;
                 this.Text = "Especialidades";
+                this.Height = 345;
             }
         }
 
@@ -118,7 +122,6 @@ namespace Academia.WindowsForms.Views
         private void buttonListar_Click(object sender, EventArgs e)
         {
             _ = LoadEspecialidadesAsync();
-
         }
 
         private async void EliminarEspecialidadSeleccionada()

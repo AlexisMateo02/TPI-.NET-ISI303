@@ -38,6 +38,7 @@ namespace Academia.WindowsForms.Views
                 buttonAgregar.Visible = true;
                 buttonModificar.Visible = true;
                 buttonEliminar.Visible = true;
+                buttonListar.Visible = true;
                 this.Text = "Gestión de Planes - Administrador";
             }
             else
@@ -46,6 +47,7 @@ namespace Academia.WindowsForms.Views
                 buttonAgregar.Visible = false;
                 buttonModificar.Visible = false;
                 buttonEliminar.Visible = false;
+                buttonListar.Visible = false;
                 this.Text = "Planes Académicos";
             }
         }

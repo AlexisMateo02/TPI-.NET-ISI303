@@ -152,25 +152,11 @@ namespace Academia.WindowsForms.Views.Menu
 
         private void buttonComision_Click(object sender, EventArgs e)
         {
-            if (!_roleHelper.IsAdmin())
-            {
-                MessageBox.Show("No tiene permisos para acceder a esta funcionalidad.",
-                    "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             OpenForm<ComisionesForm>();
         }
 
         private void buttonMateria_Click(object sender, EventArgs e)
         {
-            if (!_roleHelper.IsAdmin())
-            {
-                MessageBox.Show("No tiene permisos para acceder a esta funcionalidad.",
-                    "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             OpenForm<MateriasForm>();
         }
 

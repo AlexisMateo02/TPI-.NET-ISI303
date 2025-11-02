@@ -73,7 +73,7 @@
                                                 <td class="text-end">
                                                     <button class="btn btn-sm btn-outline-info me-1"
                                                             @onclick="() => GenerarPdf(plan.IdPlan)"
-                                                            title="Descargar PDF"
+                                                            title="Generar Reporte"
                                                             disabled="@generatingPdf">
                                                         @if (generatingPdf && pdfPlanId == plan.IdPlan)
                                                         {
@@ -82,7 +82,7 @@
                                                         else
                                                         {
                                                             <i class="fas fa-file-pdf"></i>
-                                                            <span class="ms-1">Descargar PDF</span>
+                                                            <span class="ms-1">Generar Reporte</span>
                                                         }
                                                     </button>
                                                     @if (isAdmin)

@@ -1,14 +1,57 @@
-﻿using APIClients;
+﻿using Academia.WindowsForms.Helpers;
+using APIClients;
 using DTOs;
 
 namespace Academia.WindowsForms.Views
 {
     public partial class ComisionesForm : Form
     {
+        private readonly RoleHelper _roleHelper;
+        private readonly string _authToken;
+        private bool _isAdmin;
         public ComisionesForm()
         {
             InitializeComponent();
+
+            // Obtener token de la sesión
+            var (token, _, _) = SessionManager.LoadSession();
+            _authToken = token ?? string.Empty;
+            _roleHelper = new RoleHelper(_authToken);
+
+            // Verificar permisos y configurar UI
+            InitializeByRole();
+        }
+
+        private async void InitializeByRole()
+        {
+            _isAdmin = _roleHelper.IsAdmin();
             ConfigurarColumnas();
+            await LoadComisionesAsync();
+            ConfigureByRole();
+        }
+
+        private void ConfigureByRole()
+        {
+            if (_isAdmin)
+            {
+                // Admin: CRUD completo
+                buttonAgregar.Visible = true;
+                buttonModificar.Visible = true;
+                buttonEliminar.Visible = true;
+                buttonListar.Visible = true;
+                this.Text = "Gestión de Comisiones - Administrador";
+                this.Height = 390;
+            }
+            else
+            {
+                // Docente/Alumno: Solo lectura
+                buttonAgregar.Visible = false;
+                buttonModificar.Visible = false;
+                buttonEliminar.Visible = false;
+                buttonListar.Visible = false;
+                this.Text = "Comisiones";
+                this.Height = 340;
+            }
         }
 
         private void ConfigurarColumnas()
@@ -70,14 +113,13 @@ namespace Academia.WindowsForms.Views
             });
         }
 
-        private async void LoadComisiones()
+        private async Task LoadComisionesAsync()
         {
             try
             {
                 this.dgvComisiones.DataSource = null;
 
-                IEnumerable<ComisionDTO> comisiones;
-                comisiones = await ComisionAPIClient.GetAllAsync();
+                IEnumerable<ComisionDTO> comisiones = await ComisionAPIClient.GetAllAsync();
 
                 var planes = await PlanAPIClient.GetAllAsync();
                 var especialidades = await EspecialidadAPIClient.GetAllAsync();
@@ -102,8 +144,11 @@ namespace Academia.WindowsForms.Views
                 if (this.dgvComisiones.Rows.Count > 0)
                 {
                     this.dgvComisiones.Rows[0].Selected = true;
-                    this.buttonEliminar.Enabled = true;
-                    this.buttonModificar.Enabled = true;
+                    if (_isAdmin)
+                    {
+                        this.buttonEliminar.Enabled = true;
+                        this.buttonModificar.Enabled = true;
+                    }
                 }
                 else
                 {
@@ -113,19 +158,29 @@ namespace Academia.WindowsForms.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar la lista de comisiones: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.buttonEliminar.Enabled = false;
-                this.buttonModificar.Enabled = false;
+                MessageBox.Show($"Error al cargar la lista de comisiones: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (_isAdmin)
+                {
+                    this.buttonEliminar.Enabled = false;
+                    this.buttonModificar.Enabled = false;
+                }
             }
         }
 
         private void buttonListar_Click(object sender, EventArgs e)
         {
-            this.LoadComisiones();
+            _ = LoadComisionesAsync();
         }
 
         private void CreateComision()
         {
+            if (!_isAdmin)
+            {
+                MessageBox.Show("No tiene permisos para realizar esta acción.",
+                    "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 ComisionDetallesForm comisionDetalles = new ComisionDetallesForm();
@@ -137,9 +192,9 @@ namespace Academia.WindowsForms.Views
                     {
                         MessageBox.Show("Comisión creada exitosamente.", "Éxito",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        _ = LoadComisionesAsync();
                     }
                 }
-                this.LoadComisiones();
             }
             catch (Exception ex)
             {
@@ -155,6 +210,13 @@ namespace Academia.WindowsForms.Views
 
         private async void EditarComisionSeleccionada()
         {
+            if (!_isAdmin)
+            {
+                MessageBox.Show("No tiene permisos para realizar esta acción.",
+                    "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             ComisionDTO comisionExistente = this.SelectedItem();
 
             if (comisionExistente == null)
@@ -175,8 +237,8 @@ namespace Academia.WindowsForms.Views
                 {
                     MessageBox.Show("Comisión actualizada exitosamente.", "Éxito",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await LoadComisionesAsync();
                 }
-                this.LoadComisiones();
             }
             catch (Exception ex)
             {
@@ -192,6 +254,13 @@ namespace Academia.WindowsForms.Views
 
         private async void EliminarComisionSeleccionada()
         {
+            if (!_isAdmin)
+            {
+                MessageBox.Show("No tiene permisos para realizar esta acción.",
+                    "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             ComisionDTO comisionExistente = this.SelectedItem();
 
             if (comisionExistente == null)
@@ -212,8 +281,9 @@ namespace Academia.WindowsForms.Views
                 if (result == DialogResult.Yes)
                 {
                     await ComisionAPIClient.DeleteAsync(comisionExistente.IdComision);
-                    MessageBox.Show("Comisión eliminada exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadComisiones();
+                    MessageBox.Show("Comisión eliminada exitosamente.", "Éxito",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await LoadComisionesAsync();
                 }
             }
             catch (Exception ex)

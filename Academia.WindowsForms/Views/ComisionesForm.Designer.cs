@@ -50,9 +50,9 @@
             // 
             // buttonListar
             // 
-            buttonListar.Location = new Point(488, 295);
+            buttonListar.Location = new Point(587, 306);
             buttonListar.Name = "buttonListar";
-            buttonListar.Size = new Size(120, 33);
+            buttonListar.Size = new Size(85, 33);
             buttonListar.TabIndex = 15;
             buttonListar.Text = "Listar";
             buttonListar.UseVisualStyleBackColor = true;
@@ -60,9 +60,9 @@
             // 
             // buttonEliminar
             // 
-            buttonEliminar.Location = new Point(82, 295);
+            buttonEliminar.Location = new Point(314, 305);
             buttonEliminar.Name = "buttonEliminar";
-            buttonEliminar.Size = new Size(120, 32);
+            buttonEliminar.Size = new Size(85, 32);
             buttonEliminar.TabIndex = 14;
             buttonEliminar.Text = "Eliminar";
             buttonEliminar.UseVisualStyleBackColor = true;
@@ -70,9 +70,9 @@
             // 
             // buttonModificar
             // 
-            buttonModificar.Location = new Point(218, 295);
+            buttonModificar.Location = new Point(405, 305);
             buttonModificar.Name = "buttonModificar";
-            buttonModificar.Size = new Size(120, 33);
+            buttonModificar.Size = new Size(85, 33);
             buttonModificar.TabIndex = 13;
             buttonModificar.Text = "Modificar";
             buttonModificar.UseVisualStyleBackColor = true;
@@ -80,9 +80,9 @@
             // 
             // buttonAgregar
             // 
-            buttonAgregar.Location = new Point(353, 295);
+            buttonAgregar.Location = new Point(496, 305);
             buttonAgregar.Name = "buttonAgregar";
-            buttonAgregar.Size = new Size(120, 33);
+            buttonAgregar.Size = new Size(85, 33);
             buttonAgregar.TabIndex = 12;
             buttonAgregar.Text = "Agregar";
             buttonAgregar.UseVisualStyleBackColor = true;
@@ -92,14 +92,15 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(684, 339);
+            ClientSize = new Size(684, 351);
             Controls.Add(buttonListar);
             Controls.Add(buttonEliminar);
             Controls.Add(buttonModificar);
             Controls.Add(buttonAgregar);
             Controls.Add(dgvComisiones);
             Name = "ComisionesForm";
-            Text = "ComisionesForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Comisiones";
             ((System.ComponentModel.ISupportInitialize)dgvComisiones).EndInit();
             ResumeLayout(false);
         }

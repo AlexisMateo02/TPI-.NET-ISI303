@@ -1,14 +1,57 @@
-﻿using DTOs;
+﻿using Academia.WindowsForms.Helpers;
+using DTOs;
 using APIClients;
 
 namespace Academia.WindowsForms.Views
 {
     public partial class MateriasForm : Form
     {
+        private readonly RoleHelper _roleHelper;
+        private readonly string _authToken;
+        private bool _isAdmin;
         public MateriasForm()
         {
             InitializeComponent();
+
+            // Obtener token de la sesión
+            var (token, _, _) = SessionManager.LoadSession();
+            _authToken = token ?? string.Empty;
+            _roleHelper = new RoleHelper(_authToken);
+
+            // Verificar permisos y configurar UI
+            InitializeByRole();
+        }
+
+        private async void InitializeByRole()
+        {
+            _isAdmin = _roleHelper.IsAdmin();
             ConfigurarColumnas();
+            await LoadMateriasAsync();
+            ConfigureByRole();
+        }
+
+        private void ConfigureByRole()
+        {
+            if (_isAdmin)
+            {
+                // Admin: CRUD completo
+                buttonAgregar.Visible = true;
+                buttonModificar.Visible = true;
+                buttonEliminar.Visible = true;
+                buttonListar.Visible = true;
+                this.Text = "Gestión de Materias - Administrador";
+                this.Height = 438;
+            }
+            else
+            {
+                // Docente/Alumno: Solo lectura
+                buttonAgregar.Visible = false;
+                buttonModificar.Visible = false;
+                buttonEliminar.Visible = false;
+                buttonListar.Visible = false;
+                this.Text = "Materias";
+                this.Height = 388;
+            }
         }
 
         private void ConfigurarColumnas()
@@ -77,14 +120,13 @@ namespace Academia.WindowsForms.Views
                 }
             });
         }
-        private async void LoadMaterias()
+        private async Task LoadMateriasAsync()
         {
             try
             {
                 this.dgvMaterias.DataSource = null;
 
-                IEnumerable<MateriaDTO> materias;
-                materias = await MateriaAPIClient.GetAllAsync();
+                IEnumerable<MateriaDTO> materias = await MateriaAPIClient.GetAllAsync();
 
                 var planes = await PlanAPIClient.GetAllAsync();
                 var especialidades = await EspecialidadAPIClient.GetAllAsync();
@@ -109,8 +151,11 @@ namespace Academia.WindowsForms.Views
                 if (this.dgvMaterias.Rows.Count > 0)
                 {
                     this.dgvMaterias.Rows[0].Selected = true;
-                    this.buttonEliminar.Enabled = true;
-                    this.buttonModificar.Enabled = true;
+                    if (_isAdmin)
+                    {
+                        this.buttonEliminar.Enabled = true;
+                        this.buttonModificar.Enabled = true;
+                    }
                 }
                 else
                 {
@@ -120,19 +165,29 @@ namespace Academia.WindowsForms.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar la lista de materias: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.buttonEliminar.Enabled = false;
-                this.buttonModificar.Enabled = false;
+                MessageBox.Show($"Error al cargar la lista de materias: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (_isAdmin)
+                {
+                    this.buttonEliminar.Enabled = false;
+                    this.buttonModificar.Enabled = false;
+                }
             }
         }
 
         private void buttonListar_Click(object sender, EventArgs e)
         {
-            this.LoadMaterias();
+            _ = LoadMateriasAsync();
         }
 
         private void CreateMateria()
         {
+            if (!_isAdmin)
+            {
+                MessageBox.Show("No tiene permisos para realizar esta acción.",
+                    "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 MateriaDetallesForm materiaDetalles = new MateriaDetallesForm();
@@ -144,9 +199,9 @@ namespace Academia.WindowsForms.Views
                     {
                         MessageBox.Show("Materia creada exitosamente.", "Éxito",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        _ = LoadMateriasAsync();
                     }
                 }
-                this.LoadMaterias();
             }
             catch (Exception ex)
             {
@@ -162,6 +217,13 @@ namespace Academia.WindowsForms.Views
 
         private async void EditarMateriaSeleccionada()
         {
+            if (!_isAdmin)
+            {
+                MessageBox.Show("No tiene permisos para realizar esta acción.",
+                    "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             MateriaDTO materiaExistente = this.SelectedItem();
 
             if (materiaExistente == null)
@@ -182,8 +244,8 @@ namespace Academia.WindowsForms.Views
                 {
                     MessageBox.Show("Materia actualizada exitosamente.", "Éxito",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await LoadMateriasAsync();
                 }
-                this.LoadMaterias();
             }
             catch (Exception ex)
             {
@@ -199,6 +261,13 @@ namespace Academia.WindowsForms.Views
 
         private async void EliminarMateriaSeleccionada()
         {
+            if (!_isAdmin)
+            {
+                MessageBox.Show("No tiene permisos para realizar esta acción.",
+                    "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             MateriaDTO materiaExistente = this.SelectedItem();
 
             if (materiaExistente == null)
@@ -219,8 +288,9 @@ namespace Academia.WindowsForms.Views
                 if (result == DialogResult.Yes)
                 {
                     await MateriaAPIClient.DeleteAsync(materiaExistente.IdMateria);
-                    MessageBox.Show("Materia eliminada exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadMaterias();
+                    MessageBox.Show("Materia eliminada exitosamente.", "Éxito",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await LoadMateriasAsync();
                 }
             }
             catch (Exception ex)

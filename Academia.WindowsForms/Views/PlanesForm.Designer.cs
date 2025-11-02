@@ -69,7 +69,7 @@
             // 
             // buttonListar
             // 
-            buttonListar.Location = new Point(829, 355);
+            buttonListar.Location = new Point(722, 354);
             buttonListar.Name = "buttonListar";
             buttonListar.Size = new Size(101, 33);
             buttonListar.TabIndex = 5;
@@ -90,11 +90,11 @@
             // 
             // buttonReporte
             // 
-            buttonReporte.Location = new Point(722, 355);
+            buttonReporte.Location = new Point(829, 354);
             buttonReporte.Name = "buttonReporte";
             buttonReporte.Size = new Size(101, 33);
             buttonReporte.TabIndex = 10;
-            buttonReporte.Text = "Generar reporte";
+            buttonReporte.Text = "Generar Reporte";
             buttonReporte.UseVisualStyleBackColor = true;
             buttonReporte.Click += buttonReporte_Click;
             // 

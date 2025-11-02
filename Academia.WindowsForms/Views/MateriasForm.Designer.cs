@@ -49,7 +49,7 @@
             // 
             // buttonEliminar
             // 
-            buttonEliminar.Location = new Point(297, 343);
+            buttonEliminar.Location = new Point(298, 352);
             buttonEliminar.Name = "buttonEliminar";
             buttonEliminar.Size = new Size(93, 33);
             buttonEliminar.TabIndex = 14;
@@ -59,7 +59,7 @@
             // 
             // buttonModificar
             // 
-            buttonModificar.Location = new Point(407, 343);
+            buttonModificar.Location = new Point(408, 352);
             buttonModificar.Name = "buttonModificar";
             buttonModificar.Size = new Size(93, 33);
             buttonModificar.TabIndex = 13;
@@ -69,7 +69,7 @@
             // 
             // buttonAgregar
             // 
-            buttonAgregar.Location = new Point(519, 343);
+            buttonAgregar.Location = new Point(520, 352);
             buttonAgregar.Name = "buttonAgregar";
             buttonAgregar.Size = new Size(93, 33);
             buttonAgregar.TabIndex = 12;
@@ -79,7 +79,7 @@
             // 
             // buttonListar
             // 
-            buttonListar.Location = new Point(628, 343);
+            buttonListar.Location = new Point(629, 352);
             buttonListar.Name = "buttonListar";
             buttonListar.Size = new Size(93, 33);
             buttonListar.TabIndex = 11;
@@ -91,14 +91,15 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(745, 384);
+            ClientSize = new Size(745, 399);
             Controls.Add(buttonEliminar);
             Controls.Add(buttonModificar);
             Controls.Add(buttonAgregar);
             Controls.Add(buttonListar);
             Controls.Add(dgvMaterias);
             Name = "MateriasForm";
-            Text = "MateriasForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Materias";
             ((System.ComponentModel.ISupportInitialize)dgvMaterias).EndInit();
             ResumeLayout(false);
         }
