@@ -1,4 +1,11 @@
 ﻿using Academia.WindowsForms.Helpers;
+using Academia.WindowsForms.Views.Usuario;
+using Academia.WindowsForms.Views.Persona;
+using Academia.WindowsForms.Views.Plan;
+using Academia.WindowsForms.Views.Especialidad;
+using Academia.WindowsForms.Views.Comision;
+using Academia.WindowsForms.Views.Curso;
+using Academia.WindowsForms.Views.Materia;
 
 namespace Academia.WindowsForms.Views.Menu
 {
@@ -162,14 +169,28 @@ namespace Academia.WindowsForms.Views.Menu
 
         private void buttonCurso_Click(object sender, EventArgs e)
         {
-            if (!_roleHelper.IsAdmin())
+            OpenForm<CursosForm>();
+        }
+
+
+        private void buttonDocenteCurso_Click(object sender, EventArgs e)
+        {
+            if (!_roleHelper.IsAdminOrDocente())
             {
                 MessageBox.Show("No tiene permisos para acceder a esta funcionalidad.",
                     "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            OpenForm<CursosForm>();
+            //OpenForm<DocenteCursosForm>();
+        }
+
+        private void buttonInscripcion_Click(object sender, EventArgs e)
+        {
+            // Todos los roles pueden acceder a inscripciones
+            // pero cada uno verá información diferente según su rol
+
+            // OpenForm<InscripcionesForm>();
         }
 
         private void buttonCerrarSesion_Click(object sender, EventArgs e)
@@ -201,25 +222,6 @@ namespace Academia.WindowsForms.Views.Menu
                 SessionManager.ClearSession();
                 Application.Exit();
             }
-        }
-
-        private void buttonDocenteCurso_Click(object sender, EventArgs e)
-        {
-            if (!_roleHelper.IsAdminOrDocente())
-            {
-                MessageBox.Show("No tiene permisos para acceder a esta funcionalidad.",
-                    "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            //OpenForm<DocenteCursosForm>();
-        }
-
-        private void buttonInscripcion_Click(object sender, EventArgs e)
-        {
-            // Todos los roles pueden acceder a inscripciones
-            // pero cada uno verá información diferente según su rol
-            // OpenForm<InscripcionesForm>();
         }
 
         private void OpenForm<T>() where T : Form, new()

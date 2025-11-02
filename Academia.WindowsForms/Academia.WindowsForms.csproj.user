@@ -1,55 +1,55 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Compile Update="Views\ComisionDetallesForm.cs">
+    <Compile Update="Views\Comision\ComisionDetallesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\ComisionesForm.cs">
+    <Compile Update="Views\Comision\ComisionesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\CursoDetallesForm.cs">
+    <Compile Update="Views\Curso\CursoDetallesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\CursosForm.cs">
+    <Compile Update="Views\Curso\CursosForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\EspecialidadDetallesForm.cs">
+    <Compile Update="Views\Especialidad\EspecialidadDetallesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\EspecialidadesForm.cs">
+    <Compile Update="Views\Especialidad\EspecialidadesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\CambiarContraseniaForm.cs">
+    <Compile Update="Views\Usuario\CambiarContraseniaForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Views\Login\LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\MateriaDetallesForm.cs">
+    <Compile Update="Views\Materia\MateriaDetallesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\MateriasForm.cs">
+    <Compile Update="Views\Materia\MateriasForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Views\Menu\MenuForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\PersonaDetallesForm.cs">
+    <Compile Update="Views\Persona\PersonaDetallesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\PersonasForm.cs">
+    <Compile Update="Views\Persona\PersonasForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\PlanDetallesForm.cs">
+    <Compile Update="Views\Plan\PlanDetallesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\PlanesForm.cs">
+    <Compile Update="Views\Plan\PlanesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\UsuarioDetallesForm.cs">
+    <Compile Update="Views\Usuario\UsuarioDetallesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\UsuariosForm.cs">
+    <Compile Update="Views\Usuario\UsuariosForm.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>

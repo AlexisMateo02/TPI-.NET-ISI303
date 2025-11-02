@@ -60,7 +60,7 @@
             // menu
             // 
             menu.AutoSize = true;
-            menu.BackColor = SystemColors.MenuHighlight;
+            menu.BackColor = Color.GhostWhite;
             menu.BorderStyle = BorderStyle.Fixed3D;
             menu.Font = new Font("Segoe UI", 28F);
             menu.Location = new Point(364, 8);
@@ -109,7 +109,7 @@
             // 
             buttonComision.BackColor = SystemColors.ButtonFace;
             buttonComision.Font = new Font("Segoe UI", 12F);
-            buttonComision.Location = new Point(41, 186);
+            buttonComision.Location = new Point(41, 180);
             buttonComision.Name = "buttonComision";
             buttonComision.Size = new Size(381, 35);
             buttonComision.TabIndex = 5;
@@ -121,7 +121,7 @@
             // 
             buttonMateria.BackColor = SystemColors.ButtonFace;
             buttonMateria.Font = new Font("Segoe UI", 12F);
-            buttonMateria.Location = new Point(437, 186);
+            buttonMateria.Location = new Point(437, 180);
             buttonMateria.Name = "buttonMateria";
             buttonMateria.Size = new Size(381, 35);
             buttonMateria.TabIndex = 6;
@@ -133,7 +133,7 @@
             // 
             buttonCurso.BackColor = SystemColors.ButtonFace;
             buttonCurso.Font = new Font("Segoe UI", 12F);
-            buttonCurso.Location = new Point(41, 237);
+            buttonCurso.Location = new Point(41, 231);
             buttonCurso.Name = "buttonCurso";
             buttonCurso.Size = new Size(381, 35);
             buttonCurso.TabIndex = 7;
@@ -145,7 +145,7 @@
             // 
             labelRol.AutoSize = true;
             labelRol.Font = new Font("Segoe UI", 12F);
-            labelRol.Location = new Point(638, 8);
+            labelRol.Location = new Point(656, 9);
             labelRol.Name = "labelRol";
             labelRol.Size = new Size(36, 21);
             labelRol.TabIndex = 8;
@@ -155,7 +155,7 @@
             // 
             labelRolDisplay.AutoSize = true;
             labelRolDisplay.Font = new Font("Segoe UI", 12F);
-            labelRolDisplay.Location = new Point(680, 8);
+            labelRolDisplay.Location = new Point(698, 9);
             labelRolDisplay.Name = "labelRolDisplay";
             labelRolDisplay.Size = new Size(64, 21);
             labelRolDisplay.TabIndex = 9;
@@ -165,7 +165,7 @@
             // 
             labelUsuario.AutoSize = true;
             labelUsuario.Font = new Font("Segoe UI", 12F);
-            labelUsuario.Location = new Point(638, 40);
+            labelUsuario.Location = new Point(656, 41);
             labelUsuario.Name = "labelUsuario";
             labelUsuario.Size = new Size(67, 21);
             labelUsuario.TabIndex = 10;
@@ -199,7 +199,7 @@
             // 
             buttonDocenteCurso.BackColor = SystemColors.ButtonFace;
             buttonDocenteCurso.Font = new Font("Segoe UI", 12F);
-            buttonDocenteCurso.Location = new Point(41, 291);
+            buttonDocenteCurso.Location = new Point(41, 285);
             buttonDocenteCurso.Name = "buttonDocenteCurso";
             buttonDocenteCurso.Size = new Size(777, 35);
             buttonDocenteCurso.TabIndex = 13;
@@ -211,7 +211,7 @@
             // 
             buttonInscripcion.BackColor = SystemColors.ButtonFace;
             buttonInscripcion.Font = new Font("Segoe UI", 12F);
-            buttonInscripcion.Location = new Point(437, 237);
+            buttonInscripcion.Location = new Point(437, 231);
             buttonInscripcion.Name = "buttonInscripcion";
             buttonInscripcion.Size = new Size(381, 35);
             buttonInscripcion.TabIndex = 14;

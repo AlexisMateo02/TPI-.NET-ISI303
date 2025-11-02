@@ -183,7 +183,7 @@
 
             var plan = planes?.FirstOrDefault(p => p.IdPlan == idPlan);
             string fileName = plan != null
-                ? $"Plan_{plan.Descripcion.Replace(" ", "_")}.pdf"
+                ? $"Plan_{plan.Descripcion.Replace(" ", "_").Replace("/", "_").Replace("\\", "_")}.pdf"
                 : $"Plan_{idPlan}.pdf";
 
             await JSRuntime.InvokeVoidAsync("downloadFile", fileName, Convert.ToBase64String(pdfBytes));

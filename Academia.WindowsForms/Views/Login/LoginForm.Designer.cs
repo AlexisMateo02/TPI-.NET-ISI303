@@ -52,11 +52,11 @@
             // 
             lblSubtitulo.AutoSize = true;
             lblSubtitulo.Font = new Font("Microsoft Sans Serif", 10F);
-            lblSubtitulo.Location = new Point(134, 45);
+            lblSubtitulo.Location = new Point(138, 43);
             lblSubtitulo.Name = "lblSubtitulo";
-            lblSubtitulo.Size = new Size(92, 17);
+            lblSubtitulo.Size = new Size(107, 17);
             lblSubtitulo.TabIndex = 1;
-            lblSubtitulo.Text = "Iniciar Sesión";
+            lblSubtitulo.Text = "Inicio de Sesión";
             // 
             // lblUsername
             // 

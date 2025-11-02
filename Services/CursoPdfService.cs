@@ -31,9 +31,7 @@ namespace Services
                     .PaddingVertical(1, Unit.Centimetre)
                     .Column(column =>
                     {
-                        column.Spacing(13);
-
-                        column.Item().Text($"{curso.DescripcionMateria} - {curso.DescripcionComision} - {curso.AnioCalendario}");
+                        column.Spacing(10);
 
                         // Línea separadora
                         column.Item().PaddingVertical(10).LineHorizontal(1).LineColor(Colors.Grey.Lighten1);

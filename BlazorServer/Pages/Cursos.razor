@@ -187,7 +187,7 @@
             byte[] pdfBytes = await CursoAPIClient.GenerarPdfAsync(idCurso);
 
             var curso = cursos?.FirstOrDefault(c => c.IdCurso == idCurso);
-            string fileName = $"Curso_{curso?.DescripcionMateria?.Replace(" ", "_")}_{curso?.DescripcionComision?.Replace(" ", "_")}_{curso?.AnioCalendario}.pdf";
+            string fileName = $"Curso_{curso?.DescripcionMateria?.Replace(" ", "_").Replace("/", "_").Replace("\\", "_")}_{curso?.DescripcionComision?.Replace(" ", "_").Replace("/", "_").Replace("\\", "_")}_{curso?.AnioCalendario}.pdf";
 
             await JSRuntime.InvokeVoidAsync("downloadFile", fileName, Convert.ToBase64String(pdfBytes));
 
