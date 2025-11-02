@@ -31,7 +31,6 @@ namespace Academia.WindowsForms.Views
 
             if (_isAdmin)
             {
-                // Modo Admin: CRUD completo
                 ConfigurarColumnas();
                 ConfigurarBusqueda();
                 await GetByCriteriaAndLoadAsync();
@@ -39,7 +38,6 @@ namespace Academia.WindowsForms.Views
             }
             else
             {
-                // Modo Docente/Alumno: Solo ver su propia información
                 await SetupReadOnlyMode();
             }
         }

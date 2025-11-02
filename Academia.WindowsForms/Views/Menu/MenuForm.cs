@@ -30,11 +30,8 @@ namespace Academia.WindowsForms.Views.Menu
                 case "2": // Docente
                     SetupDocenteMenu();
                     break;
-                case "3": // Alumno
+                default: // Alumno
                     SetupAlumnoMenu();
-                    break;
-                default:
-                    SetupDefaultMenu();
                     break;
             }
         }
@@ -84,7 +81,7 @@ namespace Academia.WindowsForms.Views.Menu
 
             // Renombrar botones para contexto docente
             buttonUsuario.Text = "Mi Usuario";
-            buttonPersona.Text = "Mis Datos";
+            buttonPersona.Text = "Mis Datos Personales";
             buttonDocenteCurso.Text = "Mis Dictados";
             buttonInscripcion.Text = "Calificar Alumnos";
             buttonCurso.Text = "Cursos";
@@ -114,7 +111,7 @@ namespace Academia.WindowsForms.Views.Menu
 
             // Renombrar botones para contexto alumno
             buttonUsuario.Text = "Mi Usuario";
-            buttonPersona.Text = "Mis Datos";
+            buttonPersona.Text = "Mis Datos Personales";
             buttonInscripcion.Text = "Mis Inscripciones";
             buttonCurso.Text = "Cursos Disponibles";
             buttonMateria.Text = "Materias";
@@ -126,26 +123,6 @@ namespace Academia.WindowsForms.Views.Menu
             labelRol.Text = "Rol:";
             labelRolDisplay.Text = "Alumno";
             labelRolDisplay.ForeColor = Color.Green;
-        }
-
-        private void SetupDefaultMenu()
-        {
-            // Menú por defecto (seguro) - Solo ver inscripciones
-            buttonUsuario.Visible = false;
-            buttonEspecialidad.Visible = false;
-            buttonPlan.Visible = false;
-            buttonPersona.Visible = false;
-            buttonComision.Visible = false;
-            buttonMateria.Visible = false;
-            buttonCurso.Visible = false;
-            buttonDocenteCurso.Visible = false;
-            buttonInscripcion.Visible = true;
-
-            buttonInscripcion.Text = "Inscripciones";
-
-            this.Text = "Sistema Académico - Usuario";
-            labelRol.Text = "Rol:";
-            labelRolDisplay.Text = "Usuario";
         }
 
         private void SetupUserInfo()
@@ -184,13 +161,6 @@ namespace Academia.WindowsForms.Views.Menu
 
         private void buttonPersona_Click(object sender, EventArgs e)
         {
-            if (!_roleHelper.IsAdmin())
-            {
-                MessageBox.Show("No tiene permisos para acceder a esta funcionalidad.",
-                    "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             OpenForm<PersonasForm>();
         }
 

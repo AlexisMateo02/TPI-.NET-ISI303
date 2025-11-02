@@ -38,18 +38,18 @@
             buttonCambiarContrasenia = new Button();
             labelTitulo = new Label();
             groupBoxInfo = new GroupBox();
+            labelRolValue = new Label();
+            labelLegajoValue = new Label();
+            labelPersonaValue = new Label();
+            labelEstadoValue = new Label();
+            labelFechaAltaValue = new Label();
+            labelUsuarioValue = new Label();
             labelLegajo = new Label();
             labelPersona = new Label();
             labelFechaAlta = new Label();
             labelEstado = new Label();
             labelRol = new Label();
             labelUsuario = new Label();
-            labelUsuarioValue = new Label();
-            labelFechaAltaValue = new Label();
-            labelEstadoValue = new Label();
-            labelPersonaValue = new Label();
-            labelLegajoValue = new Label();
-            labelRolValue = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvUsuarios).BeginInit();
             panelMiInfo.SuspendLayout();
             groupBoxInfo.SuspendLayout();
@@ -111,16 +111,16 @@
             // 
             buscarTextBox.Location = new Point(25, 19);
             buscarTextBox.Name = "buscarTextBox";
+            buscarTextBox.PlaceholderText = "Buscar por nombre de usuario, nombre, apellido o legajo...";
             buscarTextBox.Size = new Size(562, 23);
             buscarTextBox.TabIndex = 5;
-            buscarTextBox.Text = "Buscar por nombre de usuario";
             // 
             // panelMiInfo
             // 
             panelMiInfo.Controls.Add(buttonCambiarContrasenia);
             panelMiInfo.Controls.Add(labelTitulo);
             panelMiInfo.Controls.Add(groupBoxInfo);
-            panelMiInfo.Location = new Point(0, 2);
+            panelMiInfo.Location = new Point(0, 1);
             panelMiInfo.Name = "panelMiInfo";
             panelMiInfo.Size = new Size(701, 390);
             panelMiInfo.TabIndex = 6;
@@ -165,6 +165,66 @@
             groupBoxInfo.Size = new Size(623, 227);
             groupBoxInfo.TabIndex = 0;
             groupBoxInfo.TabStop = false;
+            // 
+            // labelRolValue
+            // 
+            labelRolValue.AutoSize = true;
+            labelRolValue.Font = new Font("Segoe UI", 13F);
+            labelRolValue.Location = new Point(340, 157);
+            labelRolValue.Name = "labelRolValue";
+            labelRolValue.Size = new Size(37, 25);
+            labelRolValue.TabIndex = 11;
+            labelRolValue.Text = "Rol";
+            // 
+            // labelLegajoValue
+            // 
+            labelLegajoValue.AutoSize = true;
+            labelLegajoValue.Font = new Font("Segoe UI", 13F);
+            labelLegajoValue.Location = new Point(367, 103);
+            labelLegajoValue.Name = "labelLegajoValue";
+            labelLegajoValue.Size = new Size(64, 25);
+            labelLegajoValue.TabIndex = 10;
+            labelLegajoValue.Text = "Legajo";
+            // 
+            // labelPersonaValue
+            // 
+            labelPersonaValue.AutoSize = true;
+            labelPersonaValue.Font = new Font("Segoe UI", 13F);
+            labelPersonaValue.Location = new Point(377, 47);
+            labelPersonaValue.Name = "labelPersonaValue";
+            labelPersonaValue.Size = new Size(74, 25);
+            labelPersonaValue.TabIndex = 9;
+            labelPersonaValue.Text = "Persona";
+            // 
+            // labelEstadoValue
+            // 
+            labelEstadoValue.AutoSize = true;
+            labelEstadoValue.Font = new Font("Segoe UI", 13F);
+            labelEstadoValue.Location = new Point(104, 157);
+            labelEstadoValue.Name = "labelEstadoValue";
+            labelEstadoValue.Size = new Size(66, 25);
+            labelEstadoValue.TabIndex = 8;
+            labelEstadoValue.Text = "Estado";
+            // 
+            // labelFechaAltaValue
+            // 
+            labelFechaAltaValue.AutoSize = true;
+            labelFechaAltaValue.Font = new Font("Segoe UI", 13F);
+            labelFechaAltaValue.Location = new Point(131, 103);
+            labelFechaAltaValue.Name = "labelFechaAltaValue";
+            labelFechaAltaValue.Size = new Size(93, 25);
+            labelFechaAltaValue.TabIndex = 7;
+            labelFechaAltaValue.Text = "Fecha Alta";
+            // 
+            // labelUsuarioValue
+            // 
+            labelUsuarioValue.AutoSize = true;
+            labelUsuarioValue.Font = new Font("Segoe UI", 13F);
+            labelUsuarioValue.Location = new Point(110, 47);
+            labelUsuarioValue.Name = "labelUsuarioValue";
+            labelUsuarioValue.Size = new Size(72, 25);
+            labelUsuarioValue.TabIndex = 6;
+            labelUsuarioValue.Text = "Usuario";
             // 
             // labelLegajo
             // 
@@ -226,66 +286,6 @@
             labelUsuario.TabIndex = 0;
             labelUsuario.Text = "Usuario:";
             // 
-            // labelUsuarioValue
-            // 
-            labelUsuarioValue.AutoSize = true;
-            labelUsuarioValue.Font = new Font("Segoe UI", 13F);
-            labelUsuarioValue.Location = new Point(110, 47);
-            labelUsuarioValue.Name = "labelUsuarioValue";
-            labelUsuarioValue.Size = new Size(72, 25);
-            labelUsuarioValue.TabIndex = 6;
-            labelUsuarioValue.Text = "Usuario";
-            // 
-            // labelFechaAltaValue
-            // 
-            labelFechaAltaValue.AutoSize = true;
-            labelFechaAltaValue.Font = new Font("Segoe UI", 13F);
-            labelFechaAltaValue.Location = new Point(131, 103);
-            labelFechaAltaValue.Name = "labelFechaAltaValue";
-            labelFechaAltaValue.Size = new Size(93, 25);
-            labelFechaAltaValue.TabIndex = 7;
-            labelFechaAltaValue.Text = "Fecha Alta";
-            // 
-            // labelEstadoValue
-            // 
-            labelEstadoValue.AutoSize = true;
-            labelEstadoValue.Font = new Font("Segoe UI", 13F);
-            labelEstadoValue.Location = new Point(104, 157);
-            labelEstadoValue.Name = "labelEstadoValue";
-            labelEstadoValue.Size = new Size(66, 25);
-            labelEstadoValue.TabIndex = 8;
-            labelEstadoValue.Text = "Estado";
-            // 
-            // labelPersonaValue
-            // 
-            labelPersonaValue.AutoSize = true;
-            labelPersonaValue.Font = new Font("Segoe UI", 13F);
-            labelPersonaValue.Location = new Point(377, 47);
-            labelPersonaValue.Name = "labelPersonaValue";
-            labelPersonaValue.Size = new Size(74, 25);
-            labelPersonaValue.TabIndex = 9;
-            labelPersonaValue.Text = "Persona";
-            // 
-            // labelLegajoValue
-            // 
-            labelLegajoValue.AutoSize = true;
-            labelLegajoValue.Font = new Font("Segoe UI", 13F);
-            labelLegajoValue.Location = new Point(367, 103);
-            labelLegajoValue.Name = "labelLegajoValue";
-            labelLegajoValue.Size = new Size(64, 25);
-            labelLegajoValue.TabIndex = 10;
-            labelLegajoValue.Text = "Legajo";
-            // 
-            // labelRolValue
-            // 
-            labelRolValue.AutoSize = true;
-            labelRolValue.Font = new Font("Segoe UI", 13F);
-            labelRolValue.Location = new Point(340, 157);
-            labelRolValue.Name = "labelRolValue";
-            labelRolValue.Size = new Size(37, 25);
-            labelRolValue.TabIndex = 11;
-            labelRolValue.Text = "Rol";
-            // 
             // UsuariosForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -299,7 +299,8 @@
             Controls.Add(buttonListar);
             Controls.Add(dgvUsuarios);
             Name = "UsuariosForm";
-            Text = "ABMUsuariosForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Usuarios";
             ((System.ComponentModel.ISupportInitialize)dgvUsuarios).EndInit();
             panelMiInfo.ResumeLayout(false);
             panelMiInfo.PerformLayout();
