@@ -218,7 +218,7 @@
             Controls.Add(textNombreUsuario);
             Name = "UsuarioDetallesForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Form1";
+            Text = "Usuario";
             ResumeLayout(false);
             PerformLayout();
         }

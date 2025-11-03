@@ -180,7 +180,8 @@
             Controls.Add(labelId);
             Controls.Add(label2);
             Name = "CursoDetallesForm";
-            Text = "CursoDetallesForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Curso";
             ResumeLayout(false);
             PerformLayout();
         }

@@ -10,5 +10,12 @@
         public int IdMateria { get; set; }
         public string? DescripcionMateria { get; set; }
         public List<AlumnoInscripcionDTO>? AlumnosInscriptos { get; set; }
+        public string DescripcionCompleta
+        {
+            get
+            {
+                return $"{DescripcionMateria} - {DescripcionComision} ({AnioCalendario})";
+            }
+        }
     }
 }

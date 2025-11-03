@@ -6,6 +6,7 @@ using Academia.WindowsForms.Views.Especialidad;
 using Academia.WindowsForms.Views.Comision;
 using Academia.WindowsForms.Views.Curso;
 using Academia.WindowsForms.Views.Materia;
+using Academia.WindowsForms.Views.DocenteCurso;
 
 namespace Academia.WindowsForms.Views.Menu
 {
@@ -175,14 +176,7 @@ namespace Academia.WindowsForms.Views.Menu
 
         private void buttonDocenteCurso_Click(object sender, EventArgs e)
         {
-            if (!_roleHelper.IsAdminOrDocente())
-            {
-                MessageBox.Show("No tiene permisos para acceder a esta funcionalidad.",
-                    "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            //OpenForm<DocenteCursosForm>();
+            OpenForm<DocenteCursosForm>();
         }
 
         private void buttonInscripcion_Click(object sender, EventArgs e)

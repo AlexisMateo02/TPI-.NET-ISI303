@@ -58,7 +58,7 @@
             // 
             checkBoxMostrar.AutoSize = true;
             checkBoxMostrar.Font = new Font("Segoe UI", 15F);
-            checkBoxMostrar.Location = new Point(48, 258);
+            checkBoxMostrar.Location = new Point(96, 231);
             checkBoxMostrar.Name = "checkBoxMostrar";
             checkBoxMostrar.Size = new Size(208, 32);
             checkBoxMostrar.TabIndex = 11;
@@ -80,7 +80,7 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 15F);
-            label3.Location = new Point(137, 152);
+            label3.Location = new Point(137, 143);
             label3.Name = "label3";
             label3.Size = new Size(167, 28);
             label3.TabIndex = 13;
@@ -90,7 +90,7 @@
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Segoe UI", 15F);
-            label4.Location = new Point(48, 204);
+            label4.Location = new Point(48, 189);
             label4.Name = "label4";
             label4.Size = new Size(256, 28);
             label4.TabIndex = 14;
@@ -101,7 +101,7 @@
             label1.AutoSize = true;
             label1.BorderStyle = BorderStyle.Fixed3D;
             label1.Font = new Font("Segoe UI", 20F);
-            label1.Location = new Point(63, 34);
+            label1.Location = new Point(48, 30);
             label1.Name = "label1";
             label1.Size = new Size(334, 39);
             label1.TabIndex = 17;
@@ -109,7 +109,7 @@
             // 
             // btnCancelar
             // 
-            btnCancelar.Location = new Point(531, 253);
+            btnCancelar.Location = new Point(531, 278);
             btnCancelar.Name = "btnCancelar";
             btnCancelar.Size = new Size(110, 37);
             btnCancelar.TabIndex = 19;
@@ -119,7 +119,7 @@
             // 
             // btnAceptar
             // 
-            btnAceptar.Location = new Point(407, 253);
+            btnAceptar.Location = new Point(407, 278);
             btnAceptar.Name = "btnAceptar";
             btnAceptar.Size = new Size(118, 37);
             btnAceptar.TabIndex = 18;
@@ -129,7 +129,7 @@
             // 
             // txtNuevaClave
             // 
-            txtNuevaClave.Location = new Point(317, 157);
+            txtNuevaClave.Location = new Point(317, 148);
             txtNuevaClave.Name = "txtNuevaClave";
             txtNuevaClave.Size = new Size(324, 23);
             txtNuevaClave.TabIndex = 20;
@@ -137,7 +137,7 @@
             // 
             // txtConfirmarClave
             // 
-            txtConfirmarClave.Location = new Point(317, 209);
+            txtConfirmarClave.Location = new Point(317, 194);
             txtConfirmarClave.Name = "txtConfirmarClave";
             txtConfirmarClave.Size = new Size(324, 23);
             txtConfirmarClave.TabIndex = 21;
@@ -160,7 +160,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(666, 314);
+            ClientSize = new Size(666, 327);
             Controls.Add(txtClaveActual);
             Controls.Add(txtConfirmarClave);
             Controls.Add(txtNuevaClave);
@@ -173,7 +173,8 @@
             Controls.Add(checkBoxMostrar);
             Controls.Add(label2);
             Name = "CambiarContraseniaForm";
-            Text = "Form1";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Cambio de Contraseña";
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             ResumeLayout(false);
             PerformLayout();

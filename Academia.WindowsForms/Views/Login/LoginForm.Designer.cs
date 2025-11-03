@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            lblTitulo = new Label();
             lblSubtitulo = new Label();
             lblUsername = new Label();
             lblPassword = new Label();
@@ -36,51 +35,42 @@
             txtPassword = new TextBox();
             btnLogin = new Button();
             btnCancel = new Button();
+            menu = new Label();
             SuspendLayout();
-            // 
-            // lblTitulo
-            // 
-            lblTitulo.AutoSize = true;
-            lblTitulo.Font = new Font("Microsoft Sans Serif", 14F);
-            lblTitulo.Location = new Point(86, 9);
-            lblTitulo.Name = "lblTitulo";
-            lblTitulo.Size = new Size(210, 24);
-            lblTitulo.TabIndex = 0;
-            lblTitulo.Text = "SISTEMA ACADÉMICO";
             // 
             // lblSubtitulo
             // 
             lblSubtitulo.AutoSize = true;
-            lblSubtitulo.Font = new Font("Microsoft Sans Serif", 10F);
-            lblSubtitulo.Location = new Point(138, 43);
+            lblSubtitulo.Font = new Font("Segoe UI", 13F);
+            lblSubtitulo.Location = new Point(117, 61);
             lblSubtitulo.Name = "lblSubtitulo";
-            lblSubtitulo.Size = new Size(107, 17);
+            lblSubtitulo.Size = new Size(136, 25);
             lblSubtitulo.TabIndex = 1;
             lblSubtitulo.Text = "Inicio de Sesión";
             // 
             // lblUsername
             // 
             lblUsername.AutoSize = true;
-            lblUsername.Font = new Font("Microsoft Sans Serif", 9F);
-            lblUsername.Location = new Point(39, 87);
+            lblUsername.Font = new Font("Segoe UI", 9F);
+            lblUsername.Location = new Point(36, 94);
             lblUsername.Name = "lblUsername";
-            lblUsername.Size = new Size(53, 15);
+            lblUsername.Size = new Size(50, 15);
             lblUsername.TabIndex = 2;
             lblUsername.Text = "Usuario:";
             // 
             // lblPassword
             // 
             lblPassword.AutoSize = true;
-            lblPassword.Font = new Font("Microsoft Sans Serif", 9F);
-            lblPassword.Location = new Point(39, 147);
+            lblPassword.Font = new Font("Segoe UI", 9F);
+            lblPassword.Location = new Point(36, 154);
             lblPassword.Name = "lblPassword";
-            lblPassword.Size = new Size(73, 15);
+            lblPassword.Size = new Size(70, 15);
             lblPassword.TabIndex = 3;
             lblPassword.Text = "Contraseña:";
             // 
             // txtUsername
             // 
-            txtUsername.Location = new Point(39, 105);
+            txtUsername.Location = new Point(36, 112);
             txtUsername.Name = "txtUsername";
             txtUsername.PlaceholderText = "Ingrese su usuario";
             txtUsername.Size = new Size(305, 23);
@@ -88,7 +78,7 @@
             // 
             // txtPassword
             // 
-            txtPassword.Location = new Point(39, 165);
+            txtPassword.Location = new Point(36, 172);
             txtPassword.Name = "txtPassword";
             txtPassword.PlaceholderText = "Ingrese su contraseña";
             txtPassword.Size = new Size(305, 23);
@@ -116,11 +106,25 @@
             btnCancel.UseVisualStyleBackColor = true;
             btnCancel.Click += btnCancel_Click;
             // 
+            // menu
+            // 
+            menu.AutoSize = true;
+            menu.BackColor = Color.GhostWhite;
+            menu.BorderStyle = BorderStyle.Fixed3D;
+            menu.Font = new Font("Segoe UI", 18F);
+            menu.Location = new Point(67, 9);
+            menu.Name = "menu";
+            menu.Size = new Size(251, 34);
+            menu.TabIndex = 8;
+            menu.Text = "SISTEMA ACADÉMICO";
+            // 
             // LoginForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = SystemColors.GradientActiveCaption;
             ClientSize = new Size(384, 261);
+            Controls.Add(menu);
             Controls.Add(btnCancel);
             Controls.Add(btnLogin);
             Controls.Add(txtPassword);
@@ -128,7 +132,6 @@
             Controls.Add(lblPassword);
             Controls.Add(lblUsername);
             Controls.Add(lblSubtitulo);
-            Controls.Add(lblTitulo);
             Name = "LoginForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Inicio de Sesión";
@@ -137,8 +140,6 @@
         }
 
         #endregion
-
-        private Label lblTitulo;
         private Label lblSubtitulo;
         private Label lblUsername;
         private Label lblPassword;
@@ -146,5 +147,6 @@
         private TextBox txtPassword;
         private Button btnLogin;
         private Button btnCancel;
+        private Label menu;
     }
 }

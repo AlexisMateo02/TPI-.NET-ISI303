@@ -138,7 +138,8 @@
             Controls.Add(buttonCancelar);
             Controls.Add(buttonAceptar);
             Name = "PlanDetallesForm";
-            Text = "PlanDetallesForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Plan";
             ResumeLayout(false);
             PerformLayout();
         }

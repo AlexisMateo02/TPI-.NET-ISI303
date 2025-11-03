@@ -35,5 +35,13 @@
                 return $"{Apellido}, {Nombre}";
             }
         }
+
+        public string NombreCompletoYLegajoPersona
+        {
+            get
+            {
+                return $"{Apellido}, {Nombre} ({Legajo})";
+            }
+        }
     }
 }

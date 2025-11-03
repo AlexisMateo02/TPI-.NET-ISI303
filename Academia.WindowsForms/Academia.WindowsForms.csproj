@@ -34,7 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\DocenteCurso\" />
     <Folder Include="Views\AlumnoInscripcion\" />
   </ItemGroup>
 

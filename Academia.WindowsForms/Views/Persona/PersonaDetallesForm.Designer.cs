@@ -308,7 +308,8 @@
             Controls.Add(labelId);
             Controls.Add(label2);
             Name = "PersonaDetallesForm";
-            Text = "PersonaDetallesForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Persona";
             ResumeLayout(false);
             PerformLayout();
         }

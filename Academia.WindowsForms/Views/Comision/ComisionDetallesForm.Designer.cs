@@ -182,7 +182,8 @@
             Controls.Add(labelId);
             Controls.Add(label2);
             Name = "ComisionDetallesForm";
-            Text = "ComisionDetallesForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Comision";
             ResumeLayout(false);
             PerformLayout();
         }

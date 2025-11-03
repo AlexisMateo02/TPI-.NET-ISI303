@@ -116,7 +116,8 @@
             Controls.Add(label1);
             Controls.Add(textDescripcion);
             Name = "EspecialidadDetallesForm";
-            Text = "EspecialidadDetallesForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Especialidad";
             ResumeLayout(false);
             PerformLayout();
         }

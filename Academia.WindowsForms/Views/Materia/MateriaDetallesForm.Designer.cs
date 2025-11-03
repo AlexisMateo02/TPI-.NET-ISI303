@@ -203,7 +203,8 @@
             Controls.Add(textId);
             Controls.Add(labelId);
             Name = "MateriaDetallesForm";
-            Text = "MateriaDetallesForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Materia";
             ResumeLayout(false);
             PerformLayout();
         }
