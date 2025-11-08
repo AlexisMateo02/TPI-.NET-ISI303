@@ -132,24 +132,55 @@
                                                 <td class="text-end">
                                                     @if (isAdmin)
                                                     {
-                                                        <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(inscripcion)">
-                                                            <i class="fas fa-edit"></i> Editar
-                                                        </button>
-                                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(inscripcion)">
-                                                            <i class="fas fa-trash"></i> Eliminar
-                                                        </button>
+                                                        @if (inscripcion.Condicion != "Aprobado")
+                                                        {
+                                                            <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(inscripcion)">
+                                                                <i class="fas fa-edit"></i> Editar
+                                                            </button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="btn btn-sm btn-outline-secondary me-1" disabled title="No se puede editar una inscripción aprobada">
+                                                                <i class="fas fa-lock"></i> Aprobado
+                                                            </button>
+                                                        }
+
+                                                        @if (!inscripcion.Nota.HasValue && inscripcion.Condicion == "Cursando")
+                                                        {
+                                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(inscripcion)">
+                                                                <i class="fas fa-trash"></i> Eliminar
+                                                            </button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="btn btn-sm btn-outline-secondary" disabled title="No se puede eliminar: @GetDeleteRestrictionReason(inscripcion)">
+                                                                <i class="fas fa-ban"></i> Bloqueado
+                                                            </button>
+                                                        }
                                                     }
                                                     else if (isDocente && canEditNotas)
                                                     {
-                                                        <button class="btn btn-sm btn-outline-primary" @onclick="() => OpenEditNotaModal(inscripcion)">
-                                                            <i class="fas fa-edit"></i> Calificar
-                                                        </button>
+                                                        @if (inscripcion.Condicion != "Aprobado")
+                                                        {
+                                                            <button class="btn btn-sm btn-outline-primary" @onclick="() => OpenEditNotaModal(inscripcion)">
+                                                                <i class="fas fa-edit"></i> Calificar
+                                                            </button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="btn btn-sm btn-outline-success" disabled>
+                                                                <i class="fas fa-check-circle"></i> Ya Aprobado
+                                                            </button>
+                                                        }
                                                     }
                                                     else if (isAlumno)
                                                     {
-                                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(inscripcion)">
-                                                            <i class="fas fa-trash"></i> Desincribirse
-                                                        </button>
+                                                        @if (inscripcion.Condicion == "Cursando" && !inscripcion.Nota.HasValue)
+                                                        {
+                                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(inscripcion)">
+                                                                <i class="fas fa-user-times"></i> Desincribirse
+                                                            </button>
+                                                        }
                                                     }
                                                 </td>
                                             </tr>
@@ -194,8 +225,8 @@
     </NotAuthorized>
 </AuthorizeView>
 
-<InscripcionModal @ref="inscripcionModal" OnInscripcionChanged="LoadInscripciones" 
-                  IsAdmin="@isAdmin" IsDocente="@isDocente" IsAlumno="@isAlumno" 
+<InscripcionModal @ref="inscripcionModal" OnInscripcionChanged="LoadInscripciones"
+                  IsAdmin="@isAdmin" IsDocente="@isDocente" IsAlumno="@isAlumno"
                   CurrentUserId="@currentUserId" />
 
 <style>
@@ -267,7 +298,6 @@
     {
         try
         {
-            // Obtener todos los usuarios y buscar el que coincida
             var usuarios = await UsuarioAPIClient.GetAllAsync();
             var usuario = usuarios?.FirstOrDefault(u =>
                 u.NombreUsuario.Equals(username, StringComparison.OrdinalIgnoreCase));
@@ -345,6 +375,12 @@
             return;
         }
 
+        if (inscripcion.Condicion == "Aprobado")
+        {
+            errorMessage = "No se puede editar una inscripción con condición 'Aprobado'.";
+            return;
+        }
+
         if (inscripcionModal != null)
         {
             await inscripcionModal.ShowEditModal(inscripcion);
@@ -356,6 +392,12 @@
         if (!isDocente)
         {
             errorMessage = "No tienes permisos para realizar esta acción.";
+            return;
+        }
+
+        if (inscripcion.Condicion == "Aprobado")
+        {
+            errorMessage = "Esta inscripción ya está aprobada y no puede ser modificada.";
             return;
         }
 
@@ -381,11 +423,18 @@
 
         if (isAlumno && inscripcion.IdAlumno != currentUserId)
         {
-            errorMessage = "Solo puedes desincribirte de tus propias inscripciones.";
+            errorMessage = "Solo puedes desinscribirte de tus propias inscripciones.";
             return;
         }
 
-        var message = isAlumno 
+        // NUEVA: Validación de restricciones
+        if (!CanDelete(inscripcion))
+        {
+            errorMessage = $"No se puede eliminar esta inscripción: {GetDeleteRestrictionReason(inscripcion)}";
+            return;
+        }
+
+        var message = isAlumno
             ? $"¿Está seguro que desea desincribirse de '{inscripcion.DescripcionMateria}'?"
             : $"¿Está seguro que desea eliminar la inscripción de '{inscripcion.NombreCompletoPersona}' en '{inscripcion.DescripcionMateria}'?";
 
@@ -409,6 +458,43 @@
         {
             errorMessage = $"Error al eliminar inscripción: {ex.Message}";
         }
+    }
+
+    private bool CanDelete(AlumnoInscripcionDTO inscripcion)
+    {
+        if (isAdmin)
+        {
+            // Admin puede eliminar solo si está "Cursando" y no tiene nota
+            return inscripcion.Condicion == "Cursando" && !inscripcion.Nota.HasValue;
+        }
+
+        if (isAlumno)
+        {
+            // Alumno solo puede desinscribirse si está "Cursando" y no tiene nota
+            return inscripcion.Condicion == "Cursando" && !inscripcion.Nota.HasValue;
+        }
+
+        return false;
+    }
+
+    private string GetDeleteRestrictionReason(AlumnoInscripcionDTO inscripcion)
+    {
+        if (inscripcion.Condicion == "Aprobado")
+        {
+            return "La materia está aprobada";
+        }
+
+        if (inscripcion.Nota.HasValue)
+        {
+            return "Ya tiene nota asignada";
+        }
+
+        if (inscripcion.Condicion != "Cursando")
+        {
+            return $"Condición '{inscripcion.Condicion}' no permite eliminación";
+        }
+
+        return "Restricción del sistema";
     }
 
     private async Task<List<AlumnoInscripcionDTO>?> GetInscripcionesDeMisCursos(int idDocente)
@@ -459,9 +545,10 @@
     {
         return condicion?.ToLower() switch
         {
+            "cursando" => "bg-info",
             "regular" => "bg-success",
+            "aprobado" => "bg-primary",
             "libre" => "bg-warning text-dark",
-            "promocionado" => "bg-primary",
             _ => "bg-secondary"
         };
     }
