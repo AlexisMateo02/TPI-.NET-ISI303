@@ -80,18 +80,8 @@
                                         <th>Comisión</th>
                                         <th>Año</th>
                                         <th>Condición</th>
-                                        @if (isDocente || isAlumno)
-                                        {
-                                            <th>Nota</th>
-                                        }
-                                        @if (isAdmin || (isDocente && canEditNotas))
-                                        {
-                                            <th class="text-end">Acciones</th>
-                                        }
-                                        @if (isAlumno)
-                                        {
-                                            <th class="text-end">Acciones</th>
-                                        }
+                                        <th>Nota</th>
+                                        <th class="text-end">Acciones Disponibles</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -114,24 +104,22 @@
                                                         @inscripcion.Condicion
                                                     </span>
                                                 </td>
-                                                @if (isDocente || isAlumno)
-                                                {
-                                                    <td>
-                                                        @if (inscripcion.Nota.HasValue)
-                                                        {
-                                                            <span class="badge @GetNotaBadgeClass(inscripcion.Nota.Value)">
-                                                                @inscripcion.Nota.Value
-                                                            </span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="text-muted">-</span>
-                                                        }
-                                                    </td>
-                                                }
+                                                <td>
+                                                    @if (inscripcion.Nota.HasValue)
+                                                    {
+                                                        <span class="badge @GetNotaBadgeClass(inscripcion.Nota.Value)">
+                                                            @inscripcion.Nota.Value
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">-</span>
+                                                    }
+                                                </td>
                                                 <td class="text-end">
                                                     @if (isAdmin)
                                                     {
+                                                        @* Admin puede editar si NO está aprobado *@
                                                         @if (inscripcion.Condicion != "Aprobado")
                                                         {
                                                             <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEditModal(inscripcion)">
@@ -140,26 +128,22 @@
                                                         }
                                                         else
                                                         {
-                                                            <button class="btn btn-sm btn-outline-secondary me-1" disabled title="No se puede editar una inscripción aprobada">
-                                                                <i class="fas fa-lock"></i> Aprobado
+                                                            <button class="btn btn-sm btn-outline-success me-1" disabled title="No se puede editar una inscripción aprobada">
+                                                                <i class="fas fa-check-circle"></i> Aprobado
                                                             </button>
                                                         }
 
+                                                        @* Admin puede eliminar solo si está Cursando y no tiene nota *@
                                                         @if (!inscripcion.Nota.HasValue && inscripcion.Condicion == "Cursando")
                                                         {
                                                             <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(inscripcion)">
                                                                 <i class="fas fa-trash"></i> Eliminar
                                                             </button>
                                                         }
-                                                        else
-                                                        {
-                                                            <button class="btn btn-sm btn-outline-secondary" disabled title="No se puede eliminar: @GetDeleteRestrictionReason(inscripcion)">
-                                                                <i class="fas fa-ban"></i> Bloqueado
-                                                            </button>
-                                                        }
                                                     }
                                                     else if (isDocente && canEditNotas)
                                                     {
+                                                        @* Docente puede calificar si NO está aprobado *@
                                                         @if (inscripcion.Condicion != "Aprobado")
                                                         {
                                                             <button class="btn btn-sm btn-outline-primary" @onclick="() => OpenEditNotaModal(inscripcion)">
@@ -169,12 +153,13 @@
                                                         else
                                                         {
                                                             <button class="btn btn-sm btn-outline-success" disabled>
-                                                                <i class="fas fa-check-circle"></i> Ya Aprobado
+                                                                <i class="fas fa-check-circle"></i> Aprobado
                                                             </button>
                                                         }
                                                     }
                                                     else if (isAlumno)
                                                     {
+                                                        @* Alumno solo puede desinscribirse si está "Cursando" y no tiene nota *@
                                                         @if (inscripcion.Condicion == "Cursando" && !inscripcion.Nota.HasValue)
                                                         {
                                                             <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(inscripcion)">
@@ -285,7 +270,7 @@
                     return;
                 }
 
-                errorMessage = "No se pudo identificar tu información de alumno. Contacta al administrador.";
+                errorMessage = "No se pudo identificar tu información. Contacta al administrador.";
             }
         }
         catch (Exception ex)
@@ -309,21 +294,17 @@
                 if (isAlumno)
                 {
                     var persona = await PersonaAPIClient.GetAsync(currentUserId);
-                    if (persona != null)
+                    if (persona != null && persona.TipoPersona != 1)
                     {
-                        if (persona.TipoPersona != 1)
-                        {
-                            errorMessage = "Tu usuario no tiene permisos de alumno. Contacta al administrador.";
-                            currentUserId = 0;
-                            return;
-                        }
+                        errorMessage = "Tu usuario no tiene permisos de alumno. Contacta al administrador.";
+                        currentUserId = 0;
                     }
                 }
             }
         }
         catch
         {
-            errorMessage = "Error al obtener información del alumno.";
+            errorMessage = "Error al obtener información del usuario.";
         }
     }
 
@@ -427,7 +408,6 @@
             return;
         }
 
-        // NUEVA: Validación de restricciones
         if (!CanDelete(inscripcion))
         {
             errorMessage = $"No se puede eliminar esta inscripción: {GetDeleteRestrictionReason(inscripcion)}";
@@ -462,19 +442,7 @@
 
     private bool CanDelete(AlumnoInscripcionDTO inscripcion)
     {
-        if (isAdmin)
-        {
-            // Admin puede eliminar solo si está "Cursando" y no tiene nota
-            return inscripcion.Condicion == "Cursando" && !inscripcion.Nota.HasValue;
-        }
-
-        if (isAlumno)
-        {
-            // Alumno solo puede desinscribirse si está "Cursando" y no tiene nota
-            return inscripcion.Condicion == "Cursando" && !inscripcion.Nota.HasValue;
-        }
-
-        return false;
+        return inscripcion.Condicion == "Cursando" && !inscripcion.Nota.HasValue;
     }
 
     private string GetDeleteRestrictionReason(AlumnoInscripcionDTO inscripcion)
@@ -562,8 +530,7 @@
 
     private int GetColSpan()
     {
-        if (isAdmin) return 9;
-        if (isDocente) return 8;
+        if (isAdmin || isDocente) return 9;
         return 7;
     }
 }
