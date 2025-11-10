@@ -47,7 +47,7 @@
             // 
             // textId
             // 
-            textId.Location = new Point(556, 14);
+            textId.Location = new Point(572, 12);
             textId.Name = "textId";
             textId.Size = new Size(68, 23);
             textId.TabIndex = 23;
@@ -56,11 +56,11 @@
             // 
             labelId.AutoSize = true;
             labelId.Font = new Font("Segoe UI", 12F);
-            labelId.Location = new Point(527, 16);
+            labelId.Location = new Point(541, 14);
             labelId.Name = "labelId";
-            labelId.Size = new Size(23, 21);
+            labelId.Size = new Size(25, 21);
             labelId.TabIndex = 22;
-            labelId.Text = "Id";
+            labelId.Text = "ID";
             // 
             // label2
             // 
@@ -75,7 +75,7 @@
             // 
             // buttonCancelar
             // 
-            buttonCancelar.Location = new Point(531, 402);
+            buttonCancelar.Location = new Point(547, 431);
             buttonCancelar.Name = "buttonCancelar";
             buttonCancelar.Size = new Size(93, 36);
             buttonCancelar.TabIndex = 48;
@@ -85,7 +85,7 @@
             // 
             // buttonAceptar
             // 
-            buttonAceptar.Location = new Point(432, 402);
+            buttonAceptar.Location = new Point(448, 431);
             buttonAceptar.Name = "buttonAceptar";
             buttonAceptar.Size = new Size(93, 36);
             buttonAceptar.TabIndex = 47;
@@ -95,9 +95,9 @@
             // 
             // textDescripcion
             // 
-            textDescripcion.Location = new Point(148, 66);
+            textDescripcion.Location = new Point(12, 78);
             textDescripcion.Name = "textDescripcion";
-            textDescripcion.Size = new Size(487, 158);
+            textDescripcion.Size = new Size(628, 138);
             textDescripcion.TabIndex = 50;
             textDescripcion.Text = "";
             // 
@@ -105,88 +105,88 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 12F);
-            label1.Location = new Point(51, 66);
+            label1.Location = new Point(12, 54);
             label1.Name = "label1";
-            label1.Size = new Size(91, 21);
+            label1.Size = new Size(102, 21);
             label1.TabIndex = 49;
-            label1.Text = "Descripción";
+            label1.Text = "Descripción *";
             // 
             // textHorasSemanales
             // 
-            textHorasSemanales.Location = new Point(148, 239);
+            textHorasSemanales.Location = new Point(12, 257);
             textHorasSemanales.Name = "textHorasSemanales";
-            textHorasSemanales.Size = new Size(487, 23);
+            textHorasSemanales.Size = new Size(628, 23);
             textHorasSemanales.TabIndex = 51;
             // 
             // textHorasTotales
             // 
-            textHorasTotales.Location = new Point(148, 275);
+            textHorasTotales.Location = new Point(12, 322);
             textHorasTotales.Name = "textHorasTotales";
-            textHorasTotales.Size = new Size(487, 23);
+            textHorasTotales.Size = new Size(628, 23);
             textHorasTotales.TabIndex = 52;
             // 
             // label3
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 12F);
-            label3.Location = new Point(12, 239);
+            label3.Location = new Point(12, 233);
             label3.Name = "label3";
-            label3.Size = new Size(130, 21);
+            label3.Size = new Size(141, 21);
             label3.TabIndex = 53;
-            label3.Text = "Horas Semanales";
+            label3.Text = "Horas Semanales *";
             // 
             // label4
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Segoe UI", 12F);
-            label4.Location = new Point(40, 275);
+            label4.Location = new Point(12, 298);
             label4.Name = "label4";
-            label4.Size = new Size(102, 21);
+            label4.Size = new Size(113, 21);
             label4.TabIndex = 54;
-            label4.Text = "Horas Totales";
+            label4.Text = "Horas Totales *";
             // 
             // label11
             // 
             label11.AutoSize = true;
             label11.Font = new Font("Segoe UI", 12F);
-            label11.Location = new Point(391, 313);
+            label11.Location = new Point(338, 363);
             label11.Name = "label11";
-            label11.Size = new Size(40, 21);
+            label11.Size = new Size(51, 21);
             label11.TabIndex = 58;
-            label11.Text = "Plan";
+            label11.Text = "Plan *";
             // 
             // label10
             // 
             label10.AutoSize = true;
             label10.Font = new Font("Segoe UI", 12F);
-            label10.Location = new Point(47, 313);
+            label10.Location = new Point(12, 363);
             label10.Name = "label10";
-            label10.Size = new Size(95, 21);
+            label10.Size = new Size(106, 21);
             label10.TabIndex = 57;
-            label10.Text = "Especialidad";
+            label10.Text = "Especialidad *";
             // 
             // comboBoxEspecialidad
             // 
             comboBoxEspecialidad.FormattingEnabled = true;
-            comboBoxEspecialidad.Location = new Point(148, 313);
+            comboBoxEspecialidad.Location = new Point(12, 387);
             comboBoxEspecialidad.Name = "comboBoxEspecialidad";
-            comboBoxEspecialidad.Size = new Size(198, 23);
+            comboBoxEspecialidad.Size = new Size(302, 23);
             comboBoxEspecialidad.TabIndex = 56;
             comboBoxEspecialidad.SelectedIndexChanged += comboBoxEspecialidad_SelectedValueChanged;
             // 
             // comboBoxPlan
             // 
             comboBoxPlan.FormattingEnabled = true;
-            comboBoxPlan.Location = new Point(437, 313);
+            comboBoxPlan.Location = new Point(338, 387);
             comboBoxPlan.Name = "comboBoxPlan";
-            comboBoxPlan.Size = new Size(198, 23);
+            comboBoxPlan.Size = new Size(302, 23);
             comboBoxPlan.TabIndex = 55;
             // 
             // MateriaDetallesForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(652, 450);
+            ClientSize = new Size(652, 479);
             Controls.Add(label11);
             Controls.Add(label10);
             Controls.Add(comboBoxEspecialidad);

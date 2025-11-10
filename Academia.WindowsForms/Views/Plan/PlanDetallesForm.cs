@@ -100,6 +100,8 @@ namespace Academia.WindowsForms.Views.Plan
             {
                 labelIdPlan.Visible = false;
                 textIdPlan.Visible = false;
+                label1.Text = "Descripción *";
+                label3.Text = "Especialidad *";
             }
 
             if (Mode == FormMode.Update)
@@ -107,6 +109,8 @@ namespace Academia.WindowsForms.Views.Plan
                 labelIdPlan.Visible = true;
                 textIdPlan.Visible = true;
                 textIdPlan.ReadOnly = true;
+                label1.Text = "Descripción";
+                label3.Text = "Especialidad";
             }
         }
 

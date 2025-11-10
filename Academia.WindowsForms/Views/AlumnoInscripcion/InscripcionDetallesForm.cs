@@ -176,7 +176,6 @@ namespace Academia.WindowsForms.Views.AlumnoInscripcion
 
             if (Mode == FormMode.Add)
             {
-                // Asegurar que la condición esté en "Cursando" para modo Add
                 comboBoxCondicion.SelectedIndex = 0;
 
                 if (_isAlumno)
@@ -187,7 +186,6 @@ namespace Academia.WindowsForms.Views.AlumnoInscripcion
 
             if (Mode == FormMode.EditNota)
             {
-                // Modo calificación: mostrar info del docente y datos readonly
                 await LoadCargoDocente();
                 textAlumnoReadOnly.Text = this.Inscripcion.NombreCompletoPersona;
                 textMateriaReadOnly.Text = this.Inscripcion.DescripcionMateria;
@@ -201,7 +199,6 @@ namespace Academia.WindowsForms.Views.AlumnoInscripcion
                 _originalCondicion = this.Inscripcion.Condicion;
             }
 
-            // Solo setear la condición del DTO si NO es modo Add
             if (Mode != FormMode.Add)
             {
                 comboBoxCondicion.SelectedItem = this.Inscripcion.Condicion;
@@ -230,7 +227,6 @@ namespace Academia.WindowsForms.Views.AlumnoInscripcion
                 var cargo = misDictados.FirstOrDefault()?.Cargo ?? "No asignado";
                 textCargoDocente.Text = cargo;
 
-                // Verificar si puede calificar
                 if (cargo.ToLower() != "titular" && cargo.ToLower() != "adjunto")
                 {
                     textCargoDocente.ForeColor = Color.Red;
@@ -259,7 +255,6 @@ namespace Academia.WindowsForms.Views.AlumnoInscripcion
                 labelId.Visible = false;
                 textId.Visible = false;
 
-                // Ocultar controles de modo EditNota
                 labelCargoDocente.Visible = false;
                 textCargoDocente.Visible = false;
                 labelAlumnoReadOnly.Visible = false;
@@ -269,7 +264,6 @@ namespace Academia.WindowsForms.Views.AlumnoInscripcion
                 labelCondicionOriginal.Visible = false;
                 textCondicionOriginal.Visible = false;
 
-                // Mostrar controles normales
                 label2.Visible = true;
                 comboBoxAlumno.Visible = true;
                 label3.Visible = true;
@@ -280,7 +274,7 @@ namespace Academia.WindowsForms.Views.AlumnoInscripcion
                 panelAdvertencia.Visible = false;
 
                 comboBoxCondicion.Enabled = false;
-                comboBoxCondicion.SelectedIndex = 0;  // "Cursando" es el índice 0
+                comboBoxCondicion.SelectedIndex = 0;
 
                 if (_isAlumno)
                 {

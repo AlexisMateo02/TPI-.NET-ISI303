@@ -51,9 +51,9 @@
             label1.Font = new Font("Segoe UI", 12F);
             label1.Location = new Point(12, 70);
             label1.Name = "label1";
-            label1.Size = new Size(91, 21);
+            label1.Size = new Size(102, 21);
             label1.TabIndex = 1;
-            label1.Text = "Descripción";
+            label1.Text = "Descripción *";
             // 
             // labelId
             // 
@@ -61,9 +61,9 @@
             labelId.Font = new Font("Segoe UI", 12F);
             labelId.Location = new Point(597, 14);
             labelId.Name = "labelId";
-            labelId.Size = new Size(23, 21);
+            labelId.Size = new Size(25, 21);
             labelId.TabIndex = 2;
-            labelId.Text = "Id";
+            labelId.Text = "ID";
             // 
             // textId
             // 

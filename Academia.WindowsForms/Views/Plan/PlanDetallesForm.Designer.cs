@@ -72,9 +72,9 @@
             labelIdPlan.Font = new Font("Segoe UI", 12F);
             labelIdPlan.Location = new Point(691, 14);
             labelIdPlan.Name = "labelIdPlan";
-            labelIdPlan.Size = new Size(23, 21);
+            labelIdPlan.Size = new Size(25, 21);
             labelIdPlan.TabIndex = 9;
-            labelIdPlan.Text = "Id";
+            labelIdPlan.Text = "ID";
             // 
             // label1
             // 
@@ -82,9 +82,9 @@
             label1.Font = new Font("Segoe UI", 12F);
             label1.Location = new Point(17, 68);
             label1.Name = "label1";
-            label1.Size = new Size(91, 21);
+            label1.Size = new Size(102, 21);
             label1.TabIndex = 8;
-            label1.Text = "Descripción";
+            label1.Text = "Descripción *";
             // 
             // textDescripcion
             // 
@@ -119,9 +119,9 @@
             label3.Font = new Font("Segoe UI", 12F);
             label3.Location = new Point(596, 68);
             label3.Name = "label3";
-            label3.Size = new Size(95, 21);
+            label3.Size = new Size(106, 21);
             label3.TabIndex = 14;
-            label3.Text = "Especialidad";
+            label3.Text = "Especialidad *";
             // 
             // PlanDetallesForm
             // 

@@ -167,6 +167,11 @@ namespace Academia.WindowsForms.Views.Materia
             {
                 labelId.Visible = false;
                 textId.Visible = false;
+                label1.Text = "Descripción *";
+                label3.Text = "Horas Semanales *";
+                label4.Text = "Horas Totales *";
+                label10.Text = "Especialidad *";
+                label11.Text = "Plan *";
             }
 
             if (Mode == FormMode.Update)
@@ -174,6 +179,11 @@ namespace Academia.WindowsForms.Views.Materia
                 labelId.Visible = true;
                 textId.Visible = true;
                 textId.ReadOnly = true;
+                label1.Text = "Descripción";
+                label3.Text = "Horas Semanales";
+                label4.Text = "Horas Totales";
+                label10.Text = "Especialidad";
+                label11.Text = "Plan";
             }
         }
         private async Task<bool> ValidateMateria()

@@ -97,7 +97,6 @@ namespace Academia.WindowsForms.Views.Usuario
 
                     if (this.Mode == FormMode.Update)
                     {
-                        // Si hay nueva contraseña, asignarla
                         if (!string.IsNullOrWhiteSpace(textClave.Text))
                         {
                             this.Usuario.Clave = textClave.Text;
@@ -171,6 +170,9 @@ namespace Academia.WindowsForms.Views.Usuario
                 fechaAltaLabel.Visible = false;
                 textFechaAlta.Visible = false;
                 labelClave.Text = "Contraseña *";
+                labelInfoClave.Visible = false;
+                textClave.ReadOnly = false;
+                textClave.UseSystemPasswordChar = true;
             }
 
             if (Mode == FormMode.Update)
@@ -182,7 +184,11 @@ namespace Academia.WindowsForms.Views.Usuario
                 fechaAltaLabel.Visible = true;
                 textFechaAlta.Visible = true;
                 textFechaAlta.ReadOnly = true;
-                labelClave.Text = "Contraseña\n(dejar vacío para mantener)";
+                labelClave.Text = "Contraseña";
+                labelInfoClave.Visible = true;
+                labelInfoClave.Text = "Dejar vacío para mantenerla";
+                textClave.ReadOnly = false;
+                textClave.UseSystemPasswordChar = true;
             }
         }
 

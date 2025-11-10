@@ -79,6 +79,7 @@ namespace Academia.WindowsForms.Views.Especialidad
             {
                 labelId.Visible = false;
                 textId.Visible = false;
+                label1.Text = "Descripción *";
             }
 
             if (Mode == FormMode.Update)
@@ -86,6 +87,7 @@ namespace Academia.WindowsForms.Views.Especialidad
                 labelId.Visible = true;
                 textId.Visible = true;
                 textId.ReadOnly = true;
+                label1.Text = "Descripción";
             }
         }
         private async Task<bool> ValidateEspecialidad()

@@ -44,20 +44,21 @@
             listBoxPersona = new ListBox();
             comboBoxRol = new ComboBox();
             label3 = new Label();
+            labelInfoClave = new Label();
             SuspendLayout();
             // 
             // textNombreUsuario
             // 
-            textNombreUsuario.Location = new Point(219, 109);
+            textNombreUsuario.Location = new Point(279, 109);
             textNombreUsuario.Name = "textNombreUsuario";
-            textNombreUsuario.Size = new Size(324, 23);
+            textNombreUsuario.Size = new Size(264, 23);
             textNombreUsuario.TabIndex = 1;
             // 
             // textClave
             // 
-            textClave.Location = new Point(219, 153);
+            textClave.Location = new Point(279, 153);
             textClave.Name = "textClave";
-            textClave.Size = new Size(324, 23);
+            textClave.Size = new Size(264, 23);
             textClave.TabIndex = 2;
             textClave.UseSystemPasswordChar = true;
             // 
@@ -65,7 +66,7 @@
             // 
             Nombre.AutoSize = true;
             Nombre.Font = new Font("Segoe UI", 15F);
-            Nombre.Location = new Point(16, 104);
+            Nombre.Location = new Point(76, 104);
             Nombre.Name = "Nombre";
             Nombre.Size = new Size(197, 28);
             Nombre.TabIndex = 5;
@@ -75,16 +76,15 @@
             // 
             labelClave.AutoSize = true;
             labelClave.Font = new Font("Segoe UI", 15F);
-            labelClave.Location = new Point(90, 148);
+            labelClave.Location = new Point(150, 148);
             labelClave.Name = "labelClave";
             labelClave.Size = new Size(123, 28);
             labelClave.TabIndex = 6;
             labelClave.Text = "Contraseña *";
-            labelClave.TextAlign = ContentAlignment.TopRight;
             // 
             // btnAceptar
             // 
-            btnAceptar.Location = new Point(316, 448);
+            btnAceptar.Location = new Point(316, 408);
             btnAceptar.Name = "btnAceptar";
             btnAceptar.Size = new Size(118, 37);
             btnAceptar.TabIndex = 8;
@@ -94,7 +94,7 @@
             // 
             // btnCancelar
             // 
-            btnCancelar.Location = new Point(440, 448);
+            btnCancelar.Location = new Point(440, 408);
             btnCancelar.Name = "btnCancelar";
             btnCancelar.Size = new Size(110, 37);
             btnCancelar.TabIndex = 9;
@@ -105,36 +105,37 @@
             // checkHabilitado
             // 
             checkHabilitado.AutoSize = true;
+            checkHabilitado.CheckAlign = ContentAlignment.MiddleRight;
             checkHabilitado.Font = new Font("Segoe UI", 15F);
-            checkHabilitado.Location = new Point(32, 280);
+            checkHabilitado.Location = new Point(16, 274);
             checkHabilitado.Name = "checkHabilitado";
-            checkHabilitado.Size = new Size(123, 32);
+            checkHabilitado.Size = new Size(136, 32);
             checkHabilitado.TabIndex = 10;
-            checkHabilitado.Text = "Habilitado";
+            checkHabilitado.Text = "Habilitado *";
             checkHabilitado.UseVisualStyleBackColor = true;
             // 
             // idLabel
             // 
             idLabel.AutoSize = true;
             idLabel.Font = new Font("Segoe UI", 12F);
-            idLabel.Location = new Point(225, 25);
+            idLabel.Location = new Point(250, 25);
             idLabel.Name = "idLabel";
-            idLabel.Size = new Size(23, 21);
+            idLabel.Size = new Size(25, 21);
             idLabel.TabIndex = 13;
-            idLabel.Text = "Id";
+            idLabel.Text = "ID";
             // 
             // textId
             // 
-            textId.Location = new Point(254, 23);
+            textId.Location = new Point(279, 23);
             textId.Name = "textId";
-            textId.Size = new Size(289, 23);
+            textId.Size = new Size(264, 23);
             textId.TabIndex = 12;
             // 
             // fechaAltaLabel
             // 
             fechaAltaLabel.AutoSize = true;
             fechaAltaLabel.Font = new Font("Segoe UI", 12F);
-            fechaAltaLabel.Location = new Point(167, 65);
+            fechaAltaLabel.Location = new Point(192, 65);
             fechaAltaLabel.Name = "fechaAltaLabel";
             fechaAltaLabel.Size = new Size(81, 21);
             fechaAltaLabel.TabIndex = 15;
@@ -142,9 +143,9 @@
             // 
             // textFechaAlta
             // 
-            textFechaAlta.Location = new Point(254, 63);
+            textFechaAlta.Location = new Point(279, 63);
             textFechaAlta.Name = "textFechaAlta";
-            textFechaAlta.Size = new Size(289, 23);
+            textFechaAlta.Size = new Size(264, 23);
             textFechaAlta.TabIndex = 14;
             // 
             // label2
@@ -162,7 +163,7 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 15F);
-            label1.Location = new Point(32, 230);
+            label1.Location = new Point(16, 230);
             label1.Name = "label1";
             label1.Size = new Size(181, 28);
             label1.TabIndex = 18;
@@ -172,34 +173,46 @@
             // 
             listBoxPersona.FormattingEnabled = true;
             listBoxPersona.ItemHeight = 15;
-            listBoxPersona.Location = new Point(219, 230);
+            listBoxPersona.Location = new Point(203, 230);
             listBoxPersona.Name = "listBoxPersona";
-            listBoxPersona.Size = new Size(324, 124);
+            listBoxPersona.Size = new Size(340, 124);
             listBoxPersona.TabIndex = 19;
             // 
             // comboBoxRol
             // 
             comboBoxRol.FormattingEnabled = true;
-            comboBoxRol.Location = new Point(32, 357);
+            comboBoxRol.Location = new Point(74, 331);
             comboBoxRol.Name = "comboBoxRol";
-            comboBoxRol.Size = new Size(145, 23);
+            comboBoxRol.Size = new Size(123, 23);
             comboBoxRol.TabIndex = 20;
             // 
             // label3
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 15F);
-            label3.Location = new Point(32, 326);
+            label3.Location = new Point(16, 326);
             label3.Name = "label3";
-            label3.Size = new Size(40, 28);
+            label3.Size = new Size(53, 28);
             label3.TabIndex = 21;
-            label3.Text = "Rol";
+            label3.Text = "Rol *";
+            // 
+            // labelInfoClave
+            // 
+            labelInfoClave.AutoSize = true;
+            labelInfoClave.Font = new Font("Segoe UI", 9F);
+            labelInfoClave.ForeColor = SystemColors.ControlDarkDark;
+            labelInfoClave.Location = new Point(279, 179);
+            labelInfoClave.Name = "labelInfoClave";
+            labelInfoClave.Size = new Size(57, 15);
+            labelInfoClave.TabIndex = 41;
+            labelInfoClave.Text = "InfoClave";
             // 
             // UsuarioDetallesForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(562, 497);
+            ClientSize = new Size(562, 457);
+            Controls.Add(labelInfoClave);
             Controls.Add(label3);
             Controls.Add(comboBoxRol);
             Controls.Add(listBoxPersona);
@@ -240,5 +253,6 @@
         private ListBox listBoxPersona;
         private ComboBox comboBoxRol;
         private Label label3;
+        private Label labelInfoClave;
     }
 }

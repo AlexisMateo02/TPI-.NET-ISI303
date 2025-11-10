@@ -79,9 +79,9 @@
             labelId.Font = new Font("Segoe UI", 12F);
             labelId.Location = new Point(688, 15);
             labelId.Name = "labelId";
-            labelId.Size = new Size(23, 21);
+            labelId.Size = new Size(25, 21);
             labelId.TabIndex = 16;
-            labelId.Text = "Id";
+            labelId.Text = "ID";
             // 
             // buttonCancelar
             // 
