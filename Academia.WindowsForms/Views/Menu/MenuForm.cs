@@ -7,6 +7,7 @@ using Academia.WindowsForms.Views.Comision;
 using Academia.WindowsForms.Views.Curso;
 using Academia.WindowsForms.Views.Materia;
 using Academia.WindowsForms.Views.DocenteCurso;
+using Academia.WindowsForms.Views.AlumnoInscripcion;
 
 namespace Academia.WindowsForms.Views.Menu
 {
@@ -181,10 +182,7 @@ namespace Academia.WindowsForms.Views.Menu
 
         private void buttonInscripcion_Click(object sender, EventArgs e)
         {
-            // Todos los roles pueden acceder a inscripciones
-            // pero cada uno verá información diferente según su rol
-
-            // OpenForm<InscripcionesForm>();
+            OpenForm<InscripcionesForm>();
         }
 
         private void buttonCerrarSesion_Click(object sender, EventArgs e)
