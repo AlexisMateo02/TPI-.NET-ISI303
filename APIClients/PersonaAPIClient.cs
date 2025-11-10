@@ -277,6 +277,32 @@ namespace APIClients
             }
         }
 
+        public static async Task<int> GetNextLegajoByTipoAsync(int tipoPersona)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync($"personas/nextLegajoByTipo?tipoPersona={tipoPersona}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<int>();
+                }
+                else
+                {
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Error al obtener próximo legajo para tipo {tipoPersona}. Status: {response.StatusCode}, Detalle: {errorContent}");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"Error de conexión al obtener próximo legajo para tipo {tipoPersona}: {ex.Message}", ex);
+            }
+            catch (TaskCanceledException ex)
+            {
+                throw new Exception($"Timeout al obtener próximo legajo para tipo {tipoPersona}: {ex.Message}", ex);
+            }
+        }
+
         public static async Task<int> GetNextLegajoAsync()
         {
             try

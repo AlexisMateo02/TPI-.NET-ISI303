@@ -244,6 +244,17 @@ namespace Services
             }).ToList();
         }
 
+        public int GetNextLegajoByTipo(int tipoPersona)
+        {
+            if (tipoPersona != 1 && tipoPersona != 2)
+            {
+                throw new ArgumentException("El tipo de persona debe ser 1 (Alumno) o 2 (Docente)");
+            }
+
+            var personaRepository = new PersonaRepository();
+            return personaRepository.GetNextLegajoByTipo(tipoPersona);
+        }
+
         public int GetNextLegajo()
         {
             var personaRepository = new PersonaRepository();

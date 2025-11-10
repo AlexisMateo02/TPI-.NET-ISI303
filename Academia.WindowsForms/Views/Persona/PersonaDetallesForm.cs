@@ -35,13 +35,14 @@ namespace Academia.WindowsForms.Views.Persona
             LoadTiposPersona();
             LoadEspecialidades();
             Mode = FormMode.Add;
+            comboBoxTipoPersona.SelectedIndexChanged += ComboBoxTipoPersona_SelectedIndexChanged;
         }
 
         private void LoadTiposPersona()
         {
             var tipos = new List<object>
             {
-                new { Id = 1, Descripcion = "Estudiante" },
+                new { Id = 1, Descripcion = "Alumno" },
                 new { Id = 2, Descripcion = "Docente" }
             };
 
@@ -189,6 +190,36 @@ namespace Academia.WindowsForms.Views.Persona
                 SetEspecialidadYPlan();
             }
         }
+        private async void ComboBoxTipoPersona_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (Mode == FormMode.Add && comboBoxTipoPersona.SelectedValue != null)
+            {
+                int tipoPersona = (int)comboBoxTipoPersona.SelectedValue;
+
+                if (tipoPersona == 1 || tipoPersona == 2)
+                {
+                    try
+                    {
+                        textLegajo.Enabled = false;
+                        this.Cursor = Cursors.WaitCursor;
+
+                        int nextLegajo = await PersonaAPIClient.GetNextLegajoByTipoAsync(tipoPersona);
+                        textLegajo.Text = nextLegajo.ToString();
+
+                        this.Cursor = Cursors.Default;
+                        textLegajo.Enabled = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Cursor = Cursors.Default;
+                        textLegajo.Enabled = true;
+                        MessageBox.Show($"Error al obtener el próximo legajo: {ex.Message}",
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        textLegajo.Text = "";
+                    }
+                }
+            }
+        }
         private void SetFormMode(FormMode value)
         {
             mode = value;
@@ -197,6 +228,7 @@ namespace Academia.WindowsForms.Views.Persona
             {
                 labelId.Visible = false;
                 textId.Visible = false;
+                textLegajo.ReadOnly = true;
             }
 
             if (Mode == FormMode.Update)
@@ -204,6 +236,7 @@ namespace Academia.WindowsForms.Views.Persona
                 labelId.Visible = true;
                 textId.Visible = true;
                 textId.ReadOnly = true;
+                textLegajo.ReadOnly = false;
             }
         }
         private async Task<bool> ValidatePersona()

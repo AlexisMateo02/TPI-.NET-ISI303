@@ -175,6 +175,28 @@ namespace APIWeb
             .Produces<List<PersonaDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
 
+            app.MapGet("/personas/nextLegajoByTipo", (int tipoPersona) =>
+            {
+                try
+                {
+                    PersonaService personaService = new PersonaService();
+                    int nextLegajo = personaService.GetNextLegajoByTipo(tipoPersona);
+                    return Results.Ok(nextLegajo);
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+                catch (Exception ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+            })
+            .WithName("GetNextLegajoByTipo")
+            .Produces<int>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithOpenApi();
+
             app.MapGet("/personas/nextLegajo", () =>
             {
                 try

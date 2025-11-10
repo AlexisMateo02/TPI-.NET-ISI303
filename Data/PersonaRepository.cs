@@ -132,6 +132,23 @@ namespace Data
             return query.OrderBy(p => p.Nombre).ToList();
         }
 
+        public int GetNextLegajoByTipo(int tipoPersona)
+        {
+            using var context = CreateContext();
+
+            var personasPorTipo = context.Personas
+                .Where(p => p.TipoPersona == tipoPersona)
+                .ToList();
+
+            if (!personasPorTipo.Any())
+            {
+                return 1;
+            }
+
+            var maxLegajo = personasPorTipo.Max(p => p.Legajo);
+            return maxLegajo + 1;
+        }
+
         public int GetNextLegajo()
         {
             using var context = CreateContext();

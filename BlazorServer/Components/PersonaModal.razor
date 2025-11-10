@@ -412,7 +412,6 @@
 
     private async Task ValidateLegajo()
     {
-        // En modo agregar no validamos legajo porque es automático
         if (mode == FormMode.Update && currentPersona.Legajo > 0)
         {
             try
@@ -437,6 +436,8 @@
         }
     }
 
+    // Reemplazar el método OnTipoPersonaChanged en PersonaModal.razor
+
     private async Task OnTipoPersonaChanged(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value?.ToString(), out int tipo))
@@ -451,7 +452,7 @@
                     errorMessage = string.Empty;
                     await InvokeAsync(StateHasChanged);
 
-                    int nextLegajo = await PersonaAPIClient.GetNextLegajoAsync();
+                    int nextLegajo = await PersonaAPIClient.GetNextLegajoByTipoAsync(tipo);
 
                     if (nextLegajo <= 0)
                     {
